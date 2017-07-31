@@ -72,7 +72,7 @@ sqlConnection, _ := manager.NewSQLConnection(sqlConfig)
 _ = manager.AddConnection("conn_1", sqlConnection)
 ```
 
->### Web Wervers
+>### Web Servers
 ```go
 // EXAMPLE WEB SERVER HANDLER
 func exampleWebServerHandler(c echo.Context) error {
