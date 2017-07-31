@@ -1,0 +1,37 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;go-manager&gt;">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../gopkg.in" />
+      <root url="file://$PROJECT_DIR$/../algolia-indexer" />
+      <root url="file://$PROJECT_DIR$/../github.com" />
+      <root url="file://$PROJECT_DIR$/../golang.org" />
+      <root url="file://$PROJECT_DIR$/../gitlab.com" />
+      <root url="file://$PROJECT_DIR$/../search-and-navigation" />
+      <root url="file://$PROJECT_DIR$/../google.golang.org" />
+      <root url="file://$PROJECT_DIR$/../productoffers" />
+      <root url="file://$PROJECT_DIR$/../protoc-3.3.0-osx-x86_64" />
+      <root url="file://$PROJECT_DIR$/../go-app" />
+      <root url="file://$PROJECT_DIR$/../product-indexer" />
+      <root url="file://$PROJECT_DIR$/../golang-learn" />
+      <root url="file://$PROJECT_DIR$/../productoffers_master" />
+    </CLASSES>
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../gopkg.in" />
+      <root url="file://$PROJECT_DIR$/../algolia-indexer" />
+      <root url="file://$PROJECT_DIR$/../github.com" />
+      <root url="file://$PROJECT_DIR$/../golang.org" />
+      <root url="file://$PROJECT_DIR$/../gitlab.com" />
+      <root url="file://$PROJECT_DIR$/../search-and-navigation" />
+      <root url="file://$PROJECT_DIR$/../google.golang.org" />
+      <root url="file://$PROJECT_DIR$/../productoffers" />
+      <root url="file://$PROJECT_DIR$/../protoc-3.3.0-osx-x86_64" />
+      <root url="file://$PROJECT_DIR$/../go-app" />
+      <root url="file://$PROJECT_DIR$/../product-indexer" />
+      <root url="file://$PROJECT_DIR$/../golang-learn" />
+      <root url="file://$PROJECT_DIR$/../productoffers_master" />
+    </SOURCES>
+    <excluded>
+      <root url="file://$PROJECT_DIR$" />
+    </excluded>
+  </library>
+</component>
