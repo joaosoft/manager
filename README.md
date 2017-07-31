@@ -14,11 +14,22 @@ A package framework with application support.
 * Gateways
 * Elastic Search
 
-## Dependecy Management (using dep)
+## Dependecy Management 
+>### Dep
 
 Project dependencies are managed using Dep. Read more about [Dep](https://github.com/golang/dep).
 * Install dependencies: `dep ensure`
 * Update dependencies: `dep ensure -update`
+
+>### Glide
+```
+glide get github.com/joaosoft/go-manager
+```
+
+>### Vanila Go
+```
+go get github.com/joaosoft/go-manager
+```
 
 ## Usage 
 
