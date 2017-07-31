@@ -12,13 +12,11 @@ A package framework with application support.
 * Gateways
 * Elastic Search
 
-## Dependecy Management (using Glide)
+## Dependecy Management (using dep)
 
-Project dependencies are managed using Glide. Read more about [Glide](https://github.com/Masterminds/glide).
-* Install dependencies: `glide install`
-* Update dependencies: `glide update`
-* Add a new dependency: `glide get <package>`
-* Remove a dependency: `glide rm <package>`
+Project dependencies are managed using Dep. Read more about [Dep](https://github.com/golang/dep).
+* Install dependencies: `dep ensure`
+* Update dependencies: `dep ensure -update`
 
 ## Usage 
 

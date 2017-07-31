@@ -3,7 +3,7 @@ package pm
 import (
 	"fmt"
 	"github.com/labstack/gommon/log"
-	"go-manager/web"
+	"github.com/joaosoft/go-manager/web"
 )
 
 // -------------- WEB SERVERS --------------

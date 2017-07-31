@@ -3,8 +3,8 @@ package pm
 import (
 	"fmt"
 	"github.com/labstack/gommon/log"
-	"go-manager/nsq"
-	"go-manager/process"
+	"github.com/joaosoft/go-manager/nsq"
+	"github.com/joaosoft/go-manager/process"
 )
 
 // -------------- PROCESS CLIENTS --------------

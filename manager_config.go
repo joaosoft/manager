@@ -2,8 +2,8 @@ package pm
 
 import (
 	"fmt"
+	"github.com/joaosoft/go-manager/config"
 	"github.com/labstack/gommon/log"
-	"go-manager/config"
 )
 
 // -------------- CONFIGURATION CLIENTS --------------

@@ -3,7 +3,7 @@ package pm
 import (
 	"fmt"
 	"github.com/labstack/gommon/log"
-	"go-manager/gateway"
+	"github.com/joaosoft/go-manager/gateway"
 	"io"
 )
 

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/labstack/gommon/log"
-	"go-manager/sqlcon"
+	"github.com/joaosoft/go-manager/sqlcon"
 )
 
 // -------------- SQL POOLS --------------

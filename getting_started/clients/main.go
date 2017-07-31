@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"go-manager"
-	"go-manager/elastic"
-	"go-manager/gateway"
+	"github.com/joaosoft/go-manager"
+	"github.com/joaosoft/go-manager/elastic"
+	"github.com/joaosoft/go-manager/gateway"
 	"io"
 	"net/http"
+	"go-manager"
 )
 
 func main() {
