@@ -11,11 +11,9 @@ jobs:
         - cd $GOPATH/src/github.com/Masterminds/glide
         - go install
         - cd $TRAVIS_BUILD_DIR
-        - glide init
         - glide install
       os: linux
       go: master
       script:
         - go build .
         - go test .
-
