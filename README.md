@@ -19,22 +19,22 @@ func (instance *DummyProcess) Stop() error {
 	return nil
 }
 
-_ = manager.AddProcess("process_1", DummyProcess{})
+_ = manager.AddProcess("process_1", &DummyProcess{})
 ```
 
 >### Configurations
 ```go
 dir, _ := os.Getwd()
 simpleConfig, _ := manager.NewSimpleConfig(dir+"/getting_started/system/", "config", "json")
-manager.AddConfig("teste_3", simpleConfig)
+manager.AddConfig("config_1", simpleConfig)
 
 // Get configuration by path
-fmt.Println("a: ", manager.GetConfig("teste_3").Get("a"))
-fmt.Println("caa: ", manager.GetConfig("teste_3").Get("c.ca.caa"))
+fmt.Println("a: ", manager.GetConfig("config_1").Get("a"))
+fmt.Println("caa: ", manager.GetConfig("config_1").Get("c.ca.caa"))
 
 // Get configuration by tag
-fmt.Println("a: ", manager.GetConfig("teste_3").Get("a"))
-fmt.Println("caa: ", manager.GetConfig("teste_3").Get("c.ca.caa"))
+fmt.Println("a: ", manager.GetConfig("config_1").Get("a"))
+fmt.Println("caa: ", manager.GetConfig("config_1").Get("c.ca.caa"))
 ```
 
 >### NSQ Consumers 
@@ -54,14 +54,14 @@ nsqConfig := &nsq.Config{
 
 // Consumer
 nsqConsumer, _ := manager.NewNSQConsumer(nsqConfig, &DummyNSQHandler{})
-manager.AddProcess("teste_1", nsqConsumer)
+manager.AddProcess("consumer_1", nsqConsumer)
 ```
 
 >### NSQ Producers
 ```go
 // Producer
 nsqProducer, _ := manager.NewNSQProducer(nsqConfig)
-manager.AddProcess("teste_2", nsqProducer)
+manager.AddProcess("producer_1", nsqProducer)
 ```
 
 >### SQL Connections
