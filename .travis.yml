@@ -8,7 +8,7 @@ jobs:
     - stage: test
       install:
         - go get -v github.com/Masterminds/glide
-        - cd $GOPATH/src/github.com/Masterminds/glide && go install && cd
+        - cd $GOPATH/src/github.com/Masterminds/glide && go install && cd $TRAVIS_BUILD_DIR
         - glide install
       os: linux
       go: master
