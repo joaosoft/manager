@@ -13,7 +13,18 @@ import (
 	"os"
 )
 
-// EXAMPKE NSQ HANDLER
+// EXAMPLE PROCESS
+type DummyProcess struct{}
+
+func (instance *DummyProcess) Start() error {
+	return nil
+}
+
+func (instance *DummyProcess) Stop() error {
+	return nil
+}
+
+// EXAMPLE NSQ HANDLER
 type DummyNSQHandler struct{}
 
 func (instance *DummyNSQHandler) HandleMessage(msg *nsqlib.Message) error {
@@ -33,6 +44,11 @@ func main() {
 	// MANAGER
 	//
 	manager, _ := pm.NewManager()
+
+	//
+	// PROCESSES
+	//
+	_ = manager.AddProcess("process_1", DummyProcess{})
 
 	//
 	// SQL CONNECTION
