@@ -2,7 +2,26 @@
 A package framework with application support. 
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 
-# with support to
+## with support to
+* Processes
+* Configurations
+* NSQ Consumers
+* NSQ Producers
+* SQL Connections
+* Web Servers
+* Gateways
+* Elastic Search
+
+## Dependecy Management (using Glide)
+
+Project dependencies are managed using Glide. Read more about [Glide](https://github.com/Masterminds/glide).
+* Install dependencies: `glide install`
+* Update dependencies: `glide update`
+* Add a new dependency: `glide get <package>`
+* Remove a dependency: `glide rm <package>`
+
+## Usage 
+
 ```go
 manager, _ := pm.NewManager()
 ```
