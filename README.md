@@ -1,5 +1,6 @@
 # go-manager
 [![Build Status](https://travis-ci.org/joaosoft/go-manager.svg?branch=master)](https://travis-ci.org/joaosoft/go-manager) | [![Code Climate](https://codeclimate.com/github/joaosoft/go-manager/badges/coverage.svg)](https://codeclimate.com/github/joaosoft/go-manager)
+
 A package framework with application support. 
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 
