@@ -1,5 +1,6 @@
 # go-manager
-A package framework with application support.
+A package framework with application support. 
+###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 
 # with support to
 ```go
