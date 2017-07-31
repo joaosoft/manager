@@ -2,12 +2,12 @@
 A package framework with application support.
 
 # with support to
-```
+```go
 manager, _ := pm.NewManager()
 ```
 
 >### Processes
-```
+```go
 // EXAMPLE PROCESS
 type DummyProcess struct{}
 
@@ -23,7 +23,7 @@ _ = manager.AddProcess("process_1", DummyProcess{})
 ```
 
 >### Configurations
-```
+```go
 dir, _ := os.Getwd()
 simpleConfig, _ := manager.NewSimpleConfig(dir+"/getting_started/system/", "config", "json")
 manager.AddConfig("teste_3", simpleConfig)
@@ -38,7 +38,7 @@ fmt.Println("caa: ", manager.GetConfig("teste_3").Get("c.ca.caa"))
 ```
 
 >### NSQ Consumers 
-```
+```go
 // EXAMPLE NSQ HANDLER
 type DummyNSQHandler struct{}
 
@@ -58,21 +58,21 @@ manager.AddProcess("teste_1", nsqConsumer)
 ```
 
 >### NSQ Producers
-```
+```go
 // Producer
 nsqProducer, _ := manager.NewNSQProducer(nsqConfig)
 manager.AddProcess("teste_2", nsqProducer)
 ```
 
 >### SQL Connections
-```
+```go
 sqlConfig := sqlcon.NewConfig("localhost", "postgres", 1, 2)
 sqlConnection, _ := manager.NewSQLConnection(sqlConfig)
 _ = manager.AddConnection("conn_1", sqlConnection)
 ```
 
 >### Web Wervers
-```
+```go
 // EXAMPLE WEB SERVER HANDLER
 func exampleWebServerHandler(c echo.Context) error {
 	// User ID from path `users/:id`
@@ -88,7 +88,7 @@ configWebServer := web.NewConfig("localhost:8081")
 ```
 
 >### Gateways
-```
+```go
 var headers map[string]string
 var body io.Reader
 configGateway := gateway.NewConfig("http://localhost:8081")
@@ -100,7 +100,7 @@ fmt.Println("STATUS:", status, "RESPONSE:", string(bytes), "err:", err)
 ```
 
 >### Elastic Search
-```
+```go
 configElasticClient := elastic.NewConfig("http://localhost:9200")
 elasticClient := manager.NewElasticClient(configElasticClient)
 manager.AddElasticClient("elastic_1", elasticClient)
