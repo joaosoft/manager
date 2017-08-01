@@ -2,7 +2,7 @@
 language: go
 sudo: false
 notifications:
-  email: false
+  email: joaosoft@gmail.com
 jobs:
   include:
     - stage: test
@@ -16,4 +16,8 @@ jobs:
       script:
         - go build .
         - go test .
-        - go test -v -covermode=count -coverprofile=coverage.out $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+        - go test -coverprofile=coverage.txt -covermode=atomic .
+        - go test . -bench=. -cpu=1,2,4,8
+
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)
