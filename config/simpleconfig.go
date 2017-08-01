@@ -7,6 +7,10 @@ import (
 )
 
 type simpleConfig struct {
+	path        string
+	file        string
+	extension   string
+	object      interface{}
 	viperConfig *viper.Viper
 }
 
@@ -18,6 +22,8 @@ func (instance *simpleConfig) Get(key string) interface{} {
 func NewSimpleConfig(path string, file string, extension string) (*simpleConfig, error) {
 	config, err := LoadConfig(path, file, extension)
 	return &simpleConfig{
+		path:        path,
+		extension:   extension,
 		viperConfig: config,
 	}, err
 }
@@ -27,6 +33,22 @@ func (instance *simpleConfig) Unmarshal(obj interface{}) error {
 	if err := instance.viperConfig.Unmarshal(obj); err != nil {
 		return err
 	}
+	instance.object = obj
+
+	return nil
+}
+
+// Reload ... reload the configuration file
+func (instance *simpleConfig) Reload(key string) error {
+	var cfg *viper.Viper
+	var err error
+
+	if cfg, err = LoadConfig(instance.path, instance.file, instance.extension); err != nil {
+		return err
+	}
+	instance.viperConfig = cfg
+	instance.object = nil
+
 	return nil
 }
 
