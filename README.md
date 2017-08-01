@@ -32,7 +32,7 @@ go get github.com/joaosoft/go-manager
 ```
 
 ## Usage 
-This examples are available in the project at github.com/joaosoft/go-manager/getting_started/
+This examples are available in the project at [go-manager/getting_started](https://github.com/joaosoft/go-manager/getting_started/)
 
 ```go
 import "github.com/joaosoft/go-manager"
