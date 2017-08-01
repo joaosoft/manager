@@ -32,7 +32,6 @@ func main() {
 		Nsqd:    []string{"localhost:4150"},
 	}
 	nsqConsumer, _ := manager.NewNSQConsumer(nsqConsumerConfig, &DummyNSQHandler{})
-	nsqConsumer.Start()
 	manager.AddProcess("consumer_1", nsqConsumer)
 
 	// Producer

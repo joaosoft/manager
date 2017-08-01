@@ -73,6 +73,7 @@ func (instance *Consumer) Start() error {
 			log.Infof("nsq consumer, instance connecting to %s", addr)
 		}
 		if err := instance.client.ConnectToNSQLookupds(instance.config.Lookupd); err != nil {
+			log.Infof("nsq consumer, error connecting to loookupd %s", instance.config.Nsqd)
 			log.Error(err)
 			return err
 		}
@@ -83,6 +84,7 @@ func (instance *Consumer) Start() error {
 			log.Infof("nsq consumer, instance connecting to %s", addr)
 		}
 		if err := instance.client.ConnectToNSQDs(instance.config.Nsqd); err != nil {
+			log.Infof("nsq consumer, error connecting to nsqd %s", instance.config.Nsqd)
 			return err
 		}
 	}
