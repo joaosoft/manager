@@ -1,4 +1,4 @@
-package pm
+package mgr
 
 import (
 	"fmt"

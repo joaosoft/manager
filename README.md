@@ -34,7 +34,8 @@ go get github.com/joaosoft/go-manager
 ## Usage 
 
 ```go
-manager, _ := pm.NewManager()
+import "github.com/joaosoft/go-manager"
+manager, _ := mgr.NewManager()
 ```
 
 >### Processes

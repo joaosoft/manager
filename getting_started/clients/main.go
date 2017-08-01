@@ -7,14 +7,13 @@ import (
 	"github.com/joaosoft/go-manager/gateway"
 	"io"
 	"net/http"
-	"go-manager"
 )
 
 func main() {
 	//
 	// MANAGER
 	//
-	manager, _ := pm.NewManager()
+	manager, _ := mgr.NewManager()
 
 	//
 	// GATEWAY

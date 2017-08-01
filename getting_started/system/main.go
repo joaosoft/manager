@@ -43,7 +43,7 @@ func main() {
 	//
 	// MANAGER
 	//
-	manager, _ := pm.NewManager()
+	manager, _ := mgr.NewManager()
 
 	//
 	// PROCESSES
