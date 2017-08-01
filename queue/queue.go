@@ -1,34 +1,37 @@
 package queue
 
 import (
-	"github.com/labstack/gommon/log"
 	"fmt"
+	"github.com/labstack/gommon/log"
 	"time"
 )
 
+// init .. inicialization
 func init() {
 
 }
 
+// Queue ... queue structure
 type Queue struct {
-	shutdownChannel chan bool
-	addWorkChannel chan IWork
-	workListChannel chan []IWork
+	shutdownChannel       chan bool
+	addWorkChannel        chan IWork
+	workListChannel       chan []IWork
 	workChannelBufferSize int
-	timeoutNotifyChannel chan bool
-	controller IController
+	timeoutNotifyChannel  chan bool
+	queueController       IQueueController
 }
 
-func NewQueue(shutdownChannelIn chan bool, workChannelBufferSize int, controller IController) *Queue {
+// NewQueue ... create a new queue
+func NewQueue(shutdownChannelIn chan bool, workChannelBufferSize int, queueController IQueueController) *Queue {
 	log.Infof("->NewQueue()")
 
 	queue := Queue{
-		shutdownChannel: shutdownChannelIn,
-		addWorkChannel: make(chan IWork),
+		shutdownChannel:       shutdownChannelIn,
+		addWorkChannel:        make(chan IWork),
 		workChannelBufferSize: workChannelBufferSize,
-		workListChannel: make(chan []IWork, workChannelBufferSize),
-		timeoutNotifyChannel: make(chan bool),
-		controller: controller,
+		workListChannel:       make(chan []IWork, workChannelBufferSize),
+		timeoutNotifyChannel:  make(chan bool),
+		queueController:       queueController,
 	}
 
 	go bulkBufferHandler(queue)
@@ -37,6 +40,7 @@ func NewQueue(shutdownChannelIn chan bool, workChannelBufferSize int, controller
 	return &queue
 }
 
+// AddWork ... add work to queue
 func (queue *Queue) AddWork(work IWork) error {
 	log.Infof("AddWork()")
 
@@ -45,8 +49,7 @@ func (queue *Queue) AddWork(work IWork) error {
 	return nil
 }
 
-
-// Buffer Handler
+// bulkBufferHandler ... buffer management
 func bulkBufferHandler(queue Queue) {
 	log.Infof("bulkBufferHandler()")
 
@@ -65,7 +68,7 @@ func bulkBufferHandler(queue Queue) {
 
 	for {
 		select {
-		case data := <- queue.addWorkChannel:
+		case data := <-queue.addWorkChannel:
 			log.Infof("data := <-channel")
 			if bulkBufferSize > 100 {
 				fmt.Printf("[BUFFER] Buffer full: flushing")
@@ -94,17 +97,19 @@ func bulkBufferHandler(queue Queue) {
 	}
 }
 
+// flushBulkCall ... bulk work
 func flushBulkCall(works []IWork, queue Queue) {
 	//var obj []domain.BulkCall
 
 	log.Infof("flushBulkCall(buffer []IWork)")
 
-	queue.controller.Do(works)
+	queue.queueController.Do(works)
 
 	log.Infof("!!!!WORK DONE!!!!")
 
 }
 
+// bufferLoopTime ... loop time
 func bufferLoopTime(queue Queue) {
 	for {
 		select {
