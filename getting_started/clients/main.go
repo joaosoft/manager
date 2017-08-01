@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/joaosoft/go-manager"
+	mgr "github.com/joaosoft/go-manager"
 	"github.com/joaosoft/go-manager/elastic"
 	"github.com/joaosoft/go-manager/gateway"
 	"io"

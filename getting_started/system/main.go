@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/labstack/echo"
-	"github.com/labstack/gommon/log"
-	nsqlib "github.com/nsqio/go-nsq"
-	"github.com/joaosoft/go-manager"
+	mgr "github.com/joaosoft/go-manager"
 	"github.com/joaosoft/go-manager/nsq"
 	"github.com/joaosoft/go-manager/sqlcon"
 	"github.com/joaosoft/go-manager/web"
+	"github.com/labstack/echo"
+	"github.com/labstack/gommon/log"
+	nsqlib "github.com/nsqio/go-nsq"
 	"net/http"
 	"os"
 )
