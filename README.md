@@ -37,6 +37,9 @@ This examples are available in the project at [go-manager/getting_started](https
 ```go
 import "github.com/joaosoft/go-manager"
 manager, _ := mgr.NewManager()
+
+// After we add all manager processes, you should start the manager service!
+manager.Start()
 ```
 
 >### Processes
@@ -94,6 +97,7 @@ manager.AddProcess("consumer_1", nsqConsumer)
 ```go
 // Producer
 nsqProducer, _ := manager.NewNSQProducer(nsqConfig)
+nsqProducer.Publish("topic_1", []byte("body"), 3)
 manager.AddProcess("producer_1", nsqProducer)
 ```
 

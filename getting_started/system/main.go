@@ -11,6 +11,7 @@ import (
 	nsqlib "github.com/nsqio/go-nsq"
 	"net/http"
 	"os"
+	"strings"
 )
 
 // EXAMPLE PROCESS
@@ -72,6 +73,7 @@ func main() {
 
 	// Producer
 	nsqProducer, _ := manager.NewNSQProducer(nsqConfig)
+	nsqProducer.Publish("topic_1", []byte("body"), 3)
 	manager.AddProcess("producer_1", nsqProducer)
 
 	//
