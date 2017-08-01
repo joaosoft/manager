@@ -26,7 +26,7 @@ Project dependencies are managed using Dep. Read more about [Dep](https://github
 glide get github.com/joaosoft/go-manager
 ```
 
->### Vanila Go
+>### Go
 ```
 go get github.com/joaosoft/go-manager
 ```
