@@ -51,10 +51,10 @@ func NewConsumer(config *Config, handler IHandler) (IConsumer, error) {
 }
 
 // HandleMessage ... handle message queue
-func (instance *Consumer) HandleMessage(nsqMsg *nsqlib.Message) error {
-	nsqMsg.DisableAutoResponse()
+func (instance *Consumer) HandleMessage(message *nsqlib.Message) error {
+	message.DisableAutoResponse()
 
-	if err := instance.handler.HandleMessage(nsqMsg); err != nil {
+	if err := instance.handler.HandleMessage(message); err != nil {
 		return err
 	}
 

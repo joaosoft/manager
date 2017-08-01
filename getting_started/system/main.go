@@ -72,7 +72,7 @@ func main() {
 
 	// Producer
 	nsqProducer, _ := manager.NewNSQProducer(nsqConfig)
-	nsqProducer.Publish("topic_1", []byte("body"), 3)
+	nsqProducer.Publish("topic_1", []byte("MENSAGEM ENVIADA PARA A NSQ"), 3)
 	manager.AddProcess("producer_1", nsqProducer)
 
 	//
