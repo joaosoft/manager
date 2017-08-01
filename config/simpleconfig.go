@@ -22,6 +22,14 @@ func NewSimpleConfig(path string, file string, extension string) (*simpleConfig,
 	}, err
 }
 
+// Unmarshal ... unmarshal configuration
+func (instance *simpleConfig) Unmarshal(key string, obj interface{}) error {
+	if err := instance.viperConfig.Unmarshal(obj); err != nil {
+		return err
+	}
+	return nil
+}
+
 // LoadConfig ... loads the configuration file
 func LoadConfig(path string, file string, extension string) (*viper.Viper, error) {
 	viperConfig := viper.New()

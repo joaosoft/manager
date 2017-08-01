@@ -18,6 +18,14 @@ func (instance *manager) GetConfig(key string) config.IConfig {
 	return instance.ConfigController[key]
 }
 
+// Unmarshal ... unmarshal configuration
+func (instance *manager) Unmarshal(key string, obj interface{}) (interface{}, error) {
+	if err := instance.ConfigController[key].Unmarshal(obj); err != nil {
+		return nil, err
+	}
+	return obj, nil
+}
+
 // AddProcess ... add a config with key
 func (instance *manager) AddConfig(key string, cfg config.IConfig) error {
 	if instance.Started {
