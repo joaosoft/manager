@@ -23,7 +23,7 @@ func NewSimpleConfig(path string, file string, extension string) (*simpleConfig,
 }
 
 // Unmarshal ... unmarshal configuration
-func (instance *simpleConfig) Unmarshal(key string, obj interface{}) error {
+func (instance *simpleConfig) Unmarshal(obj interface{}) error {
 	if err := instance.viperConfig.Unmarshal(obj); err != nil {
 		return err
 	}

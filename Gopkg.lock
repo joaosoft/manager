@@ -17,7 +17,7 @@
   branch = "master"
   name = "github.com/joaosoft/go-manager"
   packages = [".","config","elastic","gateway","nsq","process","sqlcon","web"]
-  revision = "1d11f6d120daab854805d9bc33dd6178f3d3a4a5"
+  revision = "922e69489996b12b84c2337d0c539bb695ae6d42"
 
 [[projects]]
   name = "github.com/labstack/echo"

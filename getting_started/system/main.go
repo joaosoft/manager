@@ -11,7 +11,6 @@ import (
 	nsqlib "github.com/nsqio/go-nsq"
 	"net/http"
 	"os"
-	"strings"
 )
 
 // EXAMPLE PROCESS

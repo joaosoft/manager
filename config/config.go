@@ -4,6 +4,7 @@ package config
 type IConfig interface {
 	Get(key string) interface{}
 	Unmarshal(obj interface{}) error
+	Reload(key string) error
 }
 
 // ConfigController ... config structure
@@ -26,15 +27,15 @@ func (instance *ConfigController) Get(key string) interface{} {
 	return instance.Config.Get(key)
 }
 
-// Reload ... reload the configuration file
-func (instance *ConfigController) Reload(key string) error {
-	return nil
-}
-
 // Unmarshal ... unmarshal configuration
 func (instance *ConfigController) Unmarshal(obj interface{}) error {
 	if err := instance.Config.Unmarshal(obj); err != nil {
 		return err
 	}
+	return nil
+}
+
+// Reload ... reload the configuration file
+func (instance *ConfigController) Reload(key string) error {
 	return nil
 }
