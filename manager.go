@@ -12,7 +12,6 @@ import (
 	"github.com/joaosoft/go-manager/web"
 	"github.com/labstack/gommon/log"
 	"go-manager/workqueue"
-	"golang-learn/examples/49_queue_struct/common/queue"
 	"io"
 	"os"
 	"os/signal"
