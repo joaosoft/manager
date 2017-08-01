@@ -1,14 +1,15 @@
-version: '2.1'
+version: '3.1'
 services:
-  psql:
+  database:
     build:
-      context: .
-      dockerfile: ./sbin/docker/dev.psql.dockerfile
+      context: ./docker/
+      dockerfile: ./database.dockerfile
     ports:
       - 7000:5432
 
   nsqlookup:
     image: nsqio/nsq
+    container_name: nsqlookup
     hostname: nsqlookup
     ports:
       - 4160:4160
@@ -17,6 +18,7 @@ services:
 
   nsqd:
     image: nsqio/nsq
+    container_name: nsqd
     ports:
       - 4150:4150
       - 4151:4151
@@ -26,72 +28,33 @@ services:
 
   nsqadmin:
     image: nsqio/nsq
+    container_name: nsqadmin
     links:
       - nsqlookup:nsqlookup
     ports:
       - 4171:4171
     command: /nsqadmin --lookupd-http-address=nsqlookup:4161
 
-  redis_master:
-    image: redis:3.0-alpine
+  redis:
+    image: redis:alpine
+    container_name: redis
     ports:
       - 7100:6379
 
-  redis_slave:
-    image: redis:3.0-alpine
-
-  sentinel:
-    image: s7anley/redis-sentinel-docker
-    environment:
-      - MASTER_NAME=dev
-      - QUORUM=1
-      - MASTER=redis_master
-      - SLAVES=redis_slave
-    ports:
-      - 26379:26379
-    depends_on:
-      - redis_master
-      - redis_slave
-
   elasticsearch:
     build:
-      context: ./sbin/docker/
-      dockerfile: ./dev.elasticsearch.v5.4.dockerfile
-    environment:
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    mem_limit: 1g
-    cap_add:
-      - IPC_LOCK
+      context: ./docker/
+      dockerfile: ./elasticsearch.dockerfile
+    container_name: elasticsearch
     volumes:
       - esdata1:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
 
-  api:
-    image: golang-learn:base
-    build:
-      context: ./sbin/docker/
-      dockerfile: ./base-alpine.dockerfile
-    command: run ./bin/main.go
-    volumes:
-      - .:/go/src/golang-learn
-    ports:
-      - 8080:8080
-    environment:
-      - env=dev
-    depends_on:
-      - elasticsearch
-
   cassandra-1:
     hostname: cassandra-1
     image: cassandra:latest
+    container_name: cassandra-1
     command: /bin/bash -c "sleep 1 && echo ' -- Pausing to let system catch up ... -->' && /docker-entrypoint.sh cassandra -f"
     expose:
       - 7000
@@ -105,6 +68,7 @@ services:
   cassandra-2:
     hostname: cassandra-2
     image: cassandra:latest
+    container_name: cassandra-2
     command: /bin/bash -c "sleep 30 && echo ' -- Pausing to let system catch up ... -->' && /docker-entrypoint.sh cassandra -f"
     environment:
       - CASSANDRA_SEEDS=cassandra-1
