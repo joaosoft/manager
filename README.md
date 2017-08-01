@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/joaosoft/go-manager.svg?branch=master)](https://travis-ci.org/joaosoft/go-manager) | [![Code Climate](https://codeclimate.com/github/joaosoft/go-manager/badges/coverage.svg)](https://codeclimate.com/github/joaosoft/go-manager)
 
 A package framework with application support. 
+Based on go-app project [go-app](https://gitlab.com/mandalore/go-app)
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 
 ## with support to
