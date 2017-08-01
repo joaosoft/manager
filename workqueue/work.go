@@ -1,4 +1,4 @@
-package queue
+package workqueue
 
 type IWork interface {
 	GetWork() (interface{}, error)

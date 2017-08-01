@@ -3,7 +3,6 @@ package mgr
 import (
 	"database/sql"
 	"fmt"
-	"github.com/labstack/gommon/log"
 	"github.com/joaosoft/go-manager/config"
 	"github.com/joaosoft/go-manager/elastic"
 	"github.com/joaosoft/go-manager/gateway"
@@ -11,6 +10,9 @@ import (
 	"github.com/joaosoft/go-manager/process"
 	"github.com/joaosoft/go-manager/sqlcon"
 	"github.com/joaosoft/go-manager/web"
+	"github.com/labstack/gommon/log"
+	"go-manager/workqueue"
+	"golang-learn/examples/49_queue_struct/common/queue"
 	"io"
 	"os"
 	"os/signal"
@@ -61,11 +63,12 @@ type IManager interface {
 
 // manager ... manager structure
 type manager struct {
-	ProcessController map[string]*process.ProcessController
-	ConfigController  map[string]*config.ConfigController
-	SqlConController  map[string]*sqlcon.SQLConController
-	GatewayController map[string]*gateway.Gateway
-	ElasticController map[string]*elastic.ElasticController
+	ProcessController     map[string]*process.ProcessController
+	ConfigController      map[string]*config.ConfigController
+	SqlConController      map[string]*sqlcon.SQLConController
+	GatewayController     map[string]*gateway.Gateway
+	ElasticController     map[string]*elastic.ElasticController
+	WorkerQueueController map[string]*workqueue.QueueController
 
 	control chan int
 	Started bool
@@ -75,11 +78,12 @@ type manager struct {
 func NewManager() (IManager, error) {
 
 	return &manager{
-		ProcessController: make(map[string]*process.ProcessController),
-		ConfigController:  make(map[string]*config.ConfigController),
-		SqlConController:  make(map[string]*sqlcon.SQLConController),
-		GatewayController: make(map[string]*gateway.Gateway),
-		ElasticController: make(map[string]*elastic.ElasticController),
+		ProcessController:     make(map[string]*process.ProcessController),
+		ConfigController:      make(map[string]*config.ConfigController),
+		SqlConController:      make(map[string]*sqlcon.SQLConController),
+		GatewayController:     make(map[string]*gateway.Gateway),
+		ElasticController:     make(map[string]*elastic.ElasticController),
+		WorkerQueueController: make(map[string]*workqueue.QueueController),
 
 		control: make(chan int),
 	}, nil

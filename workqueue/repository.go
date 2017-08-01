@@ -1,4 +1,4 @@
-package queue
+package workqueue
 
 import (
 	"github.com/labstack/gommon/log"

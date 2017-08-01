@@ -1,16 +1,16 @@
-package queue
+package workqueue
 
 import (
 	"github.com/labstack/gommon/log"
 )
 
-// IQueueController queue controller interface
+// IQueueController ... queue controller interface
 type IQueueController interface {
 	Do(data interface{}) error
 	Undo() error
 }
 
-// QueueController queue controller structure
+// QueueController ... queue controller structure
 type QueueController struct {
 	Repository Repository
 	Data       interface{}
