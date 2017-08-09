@@ -1,4 +1,4 @@
-package exceptions
+package main
 
 import (
 	"fmt"
