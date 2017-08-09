@@ -22,8 +22,8 @@
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/go-manager"
-  packages = [".","config","elastic","gateway","nsq","process","sqlcon","web","workqueue"]
-  revision = "7df7d96720a1b75e8d5cf235154ecc50deb6ef1f"
+  packages = [".","config","elastic","exceptions","gateway","nsq","process","sqlcon","web","workqueue"]
+  revision = "d879fea54617d7a1f3b542300df388e2c3f439d1"
 
 [[projects]]
   name = "github.com/labstack/echo"
@@ -172,6 +172,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3e92f7bc17f90916e35e0cdc1b64ac417f5c3f85ae10678134916fbf3a0fbc4c"
+  inputs-digest = "c1b549691f7a9079dc25b9528fec5b5414af188f50f0f0d7221ba4eb82f935aa"
   solver-name = "gps-cdcl"
   solver-version = 1

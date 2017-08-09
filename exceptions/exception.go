@@ -1,9 +1,5 @@
 package exceptions
 
-import (
-	"fmt"
-)
-
 type Block struct {
 	Try     func()
 	Catch   func(Exception)
