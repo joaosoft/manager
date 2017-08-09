@@ -9,6 +9,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/golang/snappy"
+  packages = ["."]
+  revision = "553a641470496b2327abcac10b36396bd98e45c9"
+
+[[projects]]
+  branch = "master"
   name = "github.com/hashicorp/hcl"
   packages = [".","hcl/ast","hcl/parser","hcl/scanner","hcl/strconv","hcl/token","json/parser","json/scanner","json/token"]
   revision = "392dba7d905ed5d04a5794ba89f558b27e2ba1ca"
@@ -17,7 +23,7 @@
   branch = "master"
   name = "github.com/joaosoft/go-manager"
   packages = [".","config","elastic","gateway","nsq","process","sqlcon","web","workqueue"]
-  revision = "ebbb3478a8ada2233c2151012fec3c74885b1c4f"
+  revision = "7df7d96720a1b75e8d5cf235154ecc50deb6ef1f"
 
 [[projects]]
   name = "github.com/labstack/echo"
@@ -56,16 +62,10 @@
   revision = "d0303fe809921458f417bcf828397a65db30a7e4"
 
 [[projects]]
-  name = "github.com/mreiferson/go-snappystream"
-  packages = [".","snappy-go"]
-  revision = "028eae7ab5c4c9e2d1cb4c4ca1e53259bbe7e504"
-  version = "v0.2.3"
-
-[[projects]]
   name = "github.com/nsqio/go-nsq"
   packages = ["."]
-  revision = "d71fb89c9e0263aaed89645b0b168e11ccf597b1"
-  version = "v1.0.6"
+  revision = "eee57a3ac4174c55924125bb15eeeda8cffb6e6f"
+  version = "v1.0.7"
 
 [[projects]]
   name = "github.com/onsi/ginkgo"
@@ -143,19 +143,19 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert"]
-  revision = "558b6879de74bc843225cde5686419267ff707ca"
+  revision = "b176d7def5d71bdd214203491f89843ed217f420"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["html","html/atom","html/charset"]
-  revision = "f5079bd7f6f74e23c4d65efa0f4ce14cbd6a3c0f"
+  revision = "1c05540f6879653db88113bc4a2b70aec4bd491f"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "b892924b68aa53038e8a55b255ee0d8391e8eec5"
+  revision = "b0e0dd72976dc482b6cb37c5640440f876ac1907"
 
 [[projects]]
   branch = "master"

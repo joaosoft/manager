@@ -1,8 +1,8 @@
 package in_development
 
 import (
+	queue "github.com/joaosoft/go-manager/workqueue"
 	"github.com/labstack/gommon/log"
-	queue "go-manager/queue"
 )
 
 func main() {
