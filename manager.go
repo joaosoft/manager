@@ -3,14 +3,14 @@ package mgr
 import (
 	"database/sql"
 	"fmt"
-	"github.com/joaosoft/go-manager/config"
-	"github.com/joaosoft/go-manager/elastic"
-	"github.com/joaosoft/go-manager/gateway"
-	"github.com/joaosoft/go-manager/nsq"
-	"github.com/joaosoft/go-manager/process"
-	"github.com/joaosoft/go-manager/sqlcon"
-	"github.com/joaosoft/go-manager/web"
-	"github.com/joaosoft/go-manager/workqueue"
+	"github.com/joaosoft/go-Manager/config"
+	"github.com/joaosoft/go-Manager/elastic"
+	"github.com/joaosoft/go-Manager/gateway"
+	"github.com/joaosoft/go-Manager/nsq"
+	"github.com/joaosoft/go-Manager/process"
+	"github.com/joaosoft/go-Manager/sqlcon"
+	"github.com/joaosoft/go-Manager/web"
+	"github.com/joaosoft/go-Manager/workqueue"
 	"github.com/labstack/gommon/log"
 	"io"
 	"os"
@@ -18,79 +18,37 @@ import (
 	"syscall"
 )
 
-// IManager ... manager interface
-type IManager interface {
-	// Processes
-	GetProcess(key string) process.IProcess
-	AddProcess(key string, process process.IProcess) error
-	RemProcess(key string) (process.IProcess, error)
-
-	// Configurations
-	GetConfig(key string) config.IConfig
-	AddConfig(key string, config config.IConfig) error
-	RemConfig(key string) (config.IConfig, error)
-
-	// Connections
-	GetConnection(key string) (*sql.DB, error)
-	AddConnection(key string, controller *sqlcon.SQLConController) error
-	RemConnection(key string) (*sql.DB, error)
-
-	// Gateways
-	GetGateway(key string) (*gateway.Gateway, error)
-	AddGateway(key string, gateway *gateway.Gateway) error
-	RemGateway(key string) (*gateway.Gateway, error)
-	RequestGateway(key string, method string, endpoint string, headers map[string]string, body io.Reader) (int, []byte, error)
-
-	// ElasticSearch
-	GetElasticClient(key string) (*elastic.ElasticController, error)
-	AddElasticClient(key string, elacticClient *elastic.ElasticController) error
-	RemElasticClient(key string) (*elastic.ElasticController, error)
-
-	// NEW Instances
-	NewSimpleConfig(path string, file string, extension string) (config.IConfig, error)
-	NewSQLConnection(config *sqlcon.Config) (*sqlcon.SQLConController, error)
-	NewNSQConsumer(config *nsq.Config, handler nsq.IHandler) (nsq.IConsumer, error)
-	NewNSQProducer(config *nsq.Config) (nsq.IProducer, error)
-	NewWEBServer(config *web.Config) (web.IWebController, error)
-	NewGateway(config *gateway.Config) (*gateway.Gateway, error)
-	NewElasticClient(config *elastic.Config) *elastic.ElasticController
-
-	// MANAGER
-	Start() error
-	Stop() error
-}
-
-// manager ... manager structure
-type manager struct {
-	ProcessController     map[string]*process.ProcessController
-	ConfigController      map[string]*config.ConfigController
-	SqlConController      map[string]*sqlcon.SQLConController
-	GatewayController     map[string]*gateway.Gateway
-	ElasticController     map[string]*elastic.ElasticController
-	WorkerQueueController map[string]*workqueue.QueueController
+// Manager ... Manager structure
+type Manager struct {
+	processController     map[string]*process.ProcessController
+	configController      map[string]*config.ConfigController
+	sqlConController      map[string]*sqlcon.SQLConController
+	gatewayController     map[string]*gateway.Gateway
+	elasticController     map[string]*elastic.ElasticController
+	workerQueueController map[string]*workqueue.QueueController
 
 	control chan int
 	Started bool
 }
 
-// NewManager ... create a new manager
-func NewManager() (IManager, error) {
+// NewManager ... create a new Manager
+func NewManager() (*Manager, error) {
 
-	return &manager{
-		ProcessController:     make(map[string]*process.ProcessController),
-		ConfigController:      make(map[string]*config.ConfigController),
-		SqlConController:      make(map[string]*sqlcon.SQLConController),
-		GatewayController:     make(map[string]*gateway.Gateway),
-		ElasticController:     make(map[string]*elastic.ElasticController),
-		WorkerQueueController: make(map[string]*workqueue.QueueController),
+	return &Manager{
+		processController:     make(map[string]*process.ProcessController),
+		configController:      make(map[string]*config.ConfigController),
+		sqlConController:      make(map[string]*sqlcon.SQLConController),
+		gatewayController:     make(map[string]*gateway.Gateway),
+		elasticController:     make(map[string]*elastic.ElasticController),
+		workerQueueController: make(map[string]*workqueue.QueueController),
 
 		control: make(chan int),
 	}, nil
 }
 
 // Start ... starts and blocks until it receives a signal in its control channel or a SIGTERM,
-func (instance *manager) Start() error {
-	log.Infof("manager, starting")
+func (instance *Manager) Start() error {
+	log.Infof("Manager, starting")
 	instance.Started = true
 
 	// listen for termination signals
@@ -98,19 +56,19 @@ func (instance *manager) Start() error {
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
 
 	// launch every process in a separeted process
-	for name, process := range instance.ProcessController {
-		log.Infof("manager, starting process [process:%s]", name)
+	for name, process := range instance.processController {
+		log.Infof("Manager, starting process [process:%s]", name)
 
 		go instance.launch(name, process)
 
-		log.Infof("manager, started process [process:%s]", name)
+		log.Infof("Manager, started process [process:%s]", name)
 	}
 
 	select {
 	case <-termChan:
-		log.Infof("manager, received term signal")
+		log.Infof("Manager, received term signal")
 	case <-instance.control:
-		log.Infof("manager, received shutdown signal")
+		log.Infof("Manager, received shutdown signal")
 	}
 
 	instance.Stop()
@@ -118,27 +76,27 @@ func (instance *manager) Start() error {
 	return nil
 }
 
-// Stop ... stop all processes and stops the manager
-func (instance *manager) Stop() error {
+// Stop ... stop all processes and stops the Manager
+func (instance *Manager) Stop() error {
 	if instance.Started {
-		log.Infof("manager, stopping")
+		log.Infof("Manager, stopping")
 
-		for key, controller := range instance.ProcessController {
+		for key, controller := range instance.processController {
 			if controller.Started {
-				log.Infof("manager, stopping process [process:%s]", key)
+				log.Infof("Manager, stopping process [process:%s]", key)
 				if err := controller.Process.Stop(); err != nil {
 					log.Error(err, fmt.Sprintf("error stopping process [process:%s]", key))
 				}
-				log.Infof("manager, close channel [process:%s]", key)
+				log.Infof("Manager, close channel [process:%s]", key)
 				<-controller.Control
 				close(controller.Control)
-				delete(instance.ProcessController, key)
-				log.Infof("manager, stopped process [process:%s]", key)
+				delete(instance.processController, key)
+				log.Infof("Manager, stopped process [process:%s]", key)
 			}
 		}
 
 		instance.Started = false
-		log.Infof("manager, stopped")
+		log.Infof("Manager, stopped")
 	}
 
 	return nil
