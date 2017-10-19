@@ -2,8 +2,9 @@ package mgr
 
 import (
 	"fmt"
+
+	"github.com/joaosoft/go-manager/services/web"
 	"github.com/labstack/gommon/log"
-	"github.com/joaosoft/go-Manager/web"
 )
 
 // -------------- WEB SERVERS --------------

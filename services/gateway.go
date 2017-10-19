@@ -2,9 +2,10 @@ package mgr
 
 import (
 	"fmt"
-	"github.com/labstack/gommon/log"
-	"github.com/joaosoft/go-Manager/gateway"
 	"io"
+
+	"github.com/joaosoft/go-manager/services/gateway"
+	"github.com/labstack/gommon/log"
 )
 
 // -------------- GATEWAY --------------

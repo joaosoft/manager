@@ -2,17 +2,19 @@ package main
 
 import (
 	"fmt"
-	mgr "github.com/joaosoft/go-manager"
-	"github.com/joaosoft/go-manager/elastic"
-	"github.com/joaosoft/go-manager/gateway"
 	"io"
 	"net/http"
+
+	mgr "github.com/joaosoft/go-manager"
+	"github.com/joaosoft/go-manager/services/elastic"
+	"github.com/joaosoft/go-manager/services/gateway"
 )
 
 func main() {
 	//
 	// MANAGER
 	//
+	
 	manager, _ := mgr.NewManager()
 
 	//

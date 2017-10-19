@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	mgr "github.com/joaosoft/go-manager"
-	"github.com/joaosoft/go-manager/nsq"
+	"github.com/joaosoft/go-manager/services/nsq"
 	nsqlib "github.com/nsqio/go-nsq"
 )
 

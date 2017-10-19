@@ -3,8 +3,9 @@ package mgr
 import (
 	"database/sql"
 	"fmt"
+
+	"github.com/joaosoft/go-manager/services/sqlcon"
 	"github.com/labstack/gommon/log"
-	"github.com/joaosoft/go-Manager/sqlcon"
 )
 
 // -------------- SQL POOLS --------------

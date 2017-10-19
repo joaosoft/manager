@@ -1,7 +1,7 @@
 package in_development
 
 import (
-	queue "github.com/joaosoft/go-manager/workqueue"
+	queue "github.com/joaosoft/go-manager/services/workqueue"
 	"github.com/labstack/gommon/log"
 )
 

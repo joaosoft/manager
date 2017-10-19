@@ -1,21 +1,18 @@
 package mgr
 
 import (
-	"database/sql"
 	"fmt"
-	"github.com/joaosoft/go-Manager/config"
-	"github.com/joaosoft/go-Manager/elastic"
-	"github.com/joaosoft/go-Manager/gateway"
-	"github.com/joaosoft/go-Manager/nsq"
-	"github.com/joaosoft/go-Manager/process"
-	"github.com/joaosoft/go-Manager/sqlcon"
-	"github.com/joaosoft/go-Manager/web"
-	"github.com/joaosoft/go-Manager/workqueue"
-	"github.com/labstack/gommon/log"
-	"io"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/joaosoft/go-manager/services/config"
+	"github.com/joaosoft/go-manager/services/elastic"
+	"github.com/joaosoft/go-manager/services/gateway"
+	"github.com/joaosoft/go-manager/services/process"
+	"github.com/joaosoft/go-manager/services/sqlcon"
+	"github.com/joaosoft/go-manager/services/workqueue"
+	"github.com/labstack/gommon/log"
 )
 
 // Manager ... Manager structure

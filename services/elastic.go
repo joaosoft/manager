@@ -2,8 +2,9 @@ package mgr
 
 import (
 	"fmt"
+
+	"github.com/joaosoft/go-manager/services/elastic"
 	"github.com/labstack/gommon/log"
-	"github.com/joaosoft/go-Manager/elastic"
 )
 
 // -------------- ELASTIC --------------

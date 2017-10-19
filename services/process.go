@@ -2,9 +2,10 @@ package mgr
 
 import (
 	"fmt"
+
+	"github.com/joaosoft/go-manager/services/nsq"
+	"github.com/joaosoft/go-manager/services/process"
 	"github.com/labstack/gommon/log"
-	"github.com/joaosoft/go-Manager/nsq"
-	"github.com/joaosoft/go-Manager/process"
 )
 
 // -------------- PROCESS CLIENTS --------------

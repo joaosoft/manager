@@ -2,7 +2,8 @@ package mgr
 
 import (
 	"fmt"
-	"github.com/joaosoft/go-Manager/config"
+
+	"github.com/joaosoft/go-manager/services/config"
 	"github.com/labstack/gommon/log"
 )
 
