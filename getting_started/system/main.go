@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	mgr "github.com/joaosoft/go-manager"
+	mgr "github.com/joaosoft/go-manager/services"
 	"github.com/joaosoft/go-manager/services/nsq"
 	"github.com/joaosoft/go-manager/services/sqlcon"
 	"github.com/joaosoft/go-manager/services/web"

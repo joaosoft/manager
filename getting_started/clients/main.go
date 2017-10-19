@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	mgr "github.com/joaosoft/go-manager"
+	mgr "github.com/joaosoft/go-manager/services"
 	"github.com/joaosoft/go-manager/services/elastic"
 	"github.com/joaosoft/go-manager/services/gateway"
 )
@@ -14,7 +14,7 @@ func main() {
 	//
 	// MANAGER
 	//
-	
+
 	manager, _ := mgr.NewManager()
 
 	//

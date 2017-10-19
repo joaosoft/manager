@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	mgr "github.com/joaosoft/go-manager"
+	mgr "github.com/joaosoft/go-manager/services"
 	"github.com/joaosoft/go-manager/services/nsq"
 	nsqlib "github.com/nsqio/go-nsq"
 )
