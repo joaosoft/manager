@@ -17,12 +17,12 @@ import (
 
 // Manager ... Manager structure
 type Manager struct {
-	processController     map[string]*process.ProcessController
-	configController      map[string]*config.ConfigController
-	sqlConController      map[string]*sqlcon.SQLConController
-	gatewayController     map[string]*gateway.Gateway
-	elasticController     map[string]*elastic.ElasticController
-	workerQueueController map[string]*workqueue.QueueController
+	ProcessController     map[string]*process.ProcessController
+	ConfigController      map[string]*config.ConfigController
+	SqlConController      map[string]*sqlcon.SQLConController
+	GatewayController     map[string]*gateway.Gateway
+	ElasticController     map[string]*elastic.ElasticController
+	WorkerQueueController map[string]*workqueue.QueueController
 
 	control chan int
 	Started bool
@@ -32,12 +32,12 @@ type Manager struct {
 func NewManager() (*Manager, error) {
 
 	return &Manager{
-		processController:     make(map[string]*process.ProcessController),
-		configController:      make(map[string]*config.ConfigController),
-		sqlConController:      make(map[string]*sqlcon.SQLConController),
-		gatewayController:     make(map[string]*gateway.Gateway),
-		elasticController:     make(map[string]*elastic.ElasticController),
-		workerQueueController: make(map[string]*workqueue.QueueController),
+		ProcessController:     make(map[string]*process.ProcessController),
+		ConfigController:      make(map[string]*config.ConfigController),
+		SqlConController:      make(map[string]*sqlcon.SQLConController),
+		GatewayController:     make(map[string]*gateway.Gateway),
+		ElasticController:     make(map[string]*elastic.ElasticController),
+		WorkerQueueController: make(map[string]*workqueue.QueueController),
 
 		control: make(chan int),
 	}, nil
@@ -53,7 +53,7 @@ func (instance *Manager) Start() error {
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
 
 	// launch every process in a separeted process
-	for name, process := range instance.processController {
+	for name, process := range instance.ProcessController {
 		log.Infof("Manager, starting process [process:%s]", name)
 
 		go instance.launch(name, process)
@@ -78,7 +78,7 @@ func (instance *Manager) Stop() error {
 	if instance.Started {
 		log.Infof("Manager, stopping")
 
-		for key, controller := range instance.processController {
+		for key, controller := range instance.ProcessController {
 			if controller.Started {
 				log.Infof("Manager, stopping process [process:%s]", key)
 				if err := controller.Process.Stop(); err != nil {
@@ -87,7 +87,7 @@ func (instance *Manager) Stop() error {
 				log.Infof("Manager, close channel [process:%s]", key)
 				<-controller.Control
 				close(controller.Control)
-				delete(instance.processController, key)
+				delete(instance.ProcessController, key)
 				log.Infof("Manager, stopped process [process:%s]", key)
 			}
 		}

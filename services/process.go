@@ -22,7 +22,7 @@ func (instance *Manager) NewNSQProducer(config *nsq.Config) (nsq.IProducer, erro
 // -------------- METHODS --------------
 // GetProcess ... get a process with key
 func (instance *Manager) GetProcess(key string) process.IProcess {
-	return instance.processController[key].Process
+	return instance.ProcessController[key].Process
 }
 
 // AddProcess ... add a process with key
@@ -31,7 +31,7 @@ func (instance *Manager) AddProcess(key string, prc process.IProcess) error {
 		panic("Manager, can not add processes after start")
 	}
 
-	instance.processController[key] = &process.ProcessController{
+	instance.ProcessController[key] = &process.ProcessController{
 		Process: prc,
 		Control: make(chan int),
 	}
@@ -43,10 +43,10 @@ func (instance *Manager) AddProcess(key string, prc process.IProcess) error {
 // RemProcess ... remove the process by bey
 func (instance *Manager) RemProcess(key string) (process.IProcess, error) {
 	// get process
-	controller := instance.processController[key]
+	controller := instance.ProcessController[key]
 
 	// delete process
-	delete(instance.processController, key)
+	delete(instance.ProcessController, key)
 	log.Infof(fmt.Sprintf("Manager, process '%s' removed", key))
 
 	return controller.Process, nil
