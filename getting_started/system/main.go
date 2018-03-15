@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"os"
 
-	mgr "github.com/joaosoft/go-manager/services"
-	"github.com/joaosoft/go-manager/services/nsq"
-	"github.com/joaosoft/go-manager/services/sqlcon"
-	"github.com/joaosoft/go-manager/services/web"
+	mgr "go-manager/services"
+	"go-manager/services/nsq"
+	"go-manager/services/sqlcon"
+	"go-manager/services/web"
 	"github.com/labstack/echo"
 	"github.com/labstack/gommon/log"
 	nsqlib "github.com/nsqio/go-nsq"
@@ -17,18 +17,18 @@ import (
 // EXAMPLE PROCESS
 type DummyProcess struct{}
 
-func (instance *DummyProcess) Start() error {
+func (manager *DummyProcess) Start() error {
 	return nil
 }
 
-func (instance *DummyProcess) Stop() error {
+func (manager *DummyProcess) Stop() error {
 	return nil
 }
 
 // EXAMPLE NSQ HANDLER
 type DummyNSQHandler struct{}
 
-func (instance *DummyNSQHandler) HandleMessage(msg *nsqlib.Message) error {
+func (manager *DummyNSQHandler) HandleMessage(msg *nsqlib.Message) error {
 	return nil
 }
 

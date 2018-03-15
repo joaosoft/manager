@@ -24,19 +24,19 @@ Project dependencies are managed using Dep. Read more about [Dep](https://github
 
 >### Glide
 ```
-glide get github.com/joaosoft/go-manager
+glide get go-manager
 ```
 
 >### Go
 ```
-go get github.com/joaosoft/go-manager
+go get go-manager
 ```
 
 ## Usage 
-This examples are available in the project at [go-manager/getting_started](https://github.com/joaosoft/go-manager/tree/master/getting_started)
+This examples are available in the project at [go-manager/getting_started](https://go-manager/tree/master/getting_started)
 
 ```go
-import "github.com/joaosoft/go-manager"
+import "go-manager"
 manager, _ := mgr.NewManager()
 
 // After we add all manager processes, you should start the manager service!
@@ -48,11 +48,11 @@ manager.Start()
 // EXAMPLE PROCESS
 type DummyProcess struct{}
 
-func (instance *DummyProcess) Start() error {
+func (manager *DummyProcess) Start() error {
 	return nil
 }
 
-func (instance *DummyProcess) Stop() error {
+func (manager *DummyProcess) Stop() error {
 	return nil
 }
 
@@ -79,7 +79,7 @@ fmt.Println("caa: ", manager.GetConfig("config_1").Get("c.ca.caa"))
 // EXAMPLE NSQ HANDLER
 type DummyNSQHandler struct{}
 
-func (instance *DummyNSQHandler) HandleMessage(msg *nsqlib.Message) error {
+func (manager *DummyNSQHandler) HandleMessage(msg *nsqlib.Message) error {
 	return nil
 }
 

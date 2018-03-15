@@ -5,9 +5,9 @@ import (
 	"io"
 	"net/http"
 
-	mgr "github.com/joaosoft/go-manager/services"
-	"github.com/joaosoft/go-manager/services/elastic"
-	"github.com/joaosoft/go-manager/services/gateway"
+	mgr "go-manager/services"
+	"go-manager/services/elastic"
+	"go-manager/services/gateway"
 )
 
 func main() {

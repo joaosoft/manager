@@ -3,15 +3,15 @@ package main
 import (
 	"fmt"
 
-	mgr "github.com/joaosoft/go-manager/services"
-	"github.com/joaosoft/go-manager/services/nsq"
+	mgr "go-manager/services"
+	"go-manager/services/nsq"
 	nsqlib "github.com/nsqio/go-nsq"
 )
 
 // EXAMPLE NSQ HANDLER
 type DummyNSQHandler struct{}
 
-func (instance *DummyNSQHandler) HandleMessage(message *nsqlib.Message) error {
+func (manager *DummyNSQHandler) HandleMessage(message *nsqlib.Message) error {
 	fmt.Println("THIS IS THE RECEIVED MESSAGE: ", string(message.Body))
 	return nil
 }

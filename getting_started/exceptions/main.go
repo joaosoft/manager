@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	. "github.com/joaosoft/go-manager/services/exceptions"
+	. "go-manager/services/exceptions"
 )
 
 func main() {
