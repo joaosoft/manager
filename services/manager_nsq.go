@@ -1,4 +1,4 @@
-package runner
+package gomanager
 
 // NSQConfig ...
 type NSQConfig struct {
