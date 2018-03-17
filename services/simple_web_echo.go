@@ -22,24 +22,37 @@ func NewSimpleWebEcho(host string) IWeb {
 	}
 }
 
-// HandlerFunc ...
+// AddRoute ...
 func (web *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc) error {
 	web.Add(method, path, handler.(func(echo.Context) error))
 	return nil
 }
 
+// Start ...
 func (web *SimpleWebEcho) Start() error {
-	web.started = true
-	if err := web.Echo.Start(web.host); err != nil {
-		log.Error(err)
-		return err
+	if !web.started {
+		if err := web.Echo.Start(web.host); err != nil {
+			log.Error(err)
+			return err
+		}
+		web.started = true
 	}
 
 	return nil
 }
 
+// Stop ...
+func (web *SimpleWebEcho) Stop() error {
+	if web.started {
+		if err := web.Echo.Close(); err != nil {
+			return err
+		}
+		web.started = false
+	}
+	return nil
+}
+
+// Started ...
 func (web *SimpleWebEcho) Started() bool {
 	return web.started
 }
-
-type HandleFuncEcho func(ctx echo.Context)

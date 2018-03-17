@@ -9,6 +9,15 @@ services:
     ports:
       - 7001:5432
 
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+        - 7002:3306
+
   nsqlookup:
     image: nsqio/nsq
     container_name: nsqlookup

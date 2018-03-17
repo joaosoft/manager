@@ -69,3 +69,17 @@ func readFileLines(fileName string) ([]string, error) {
 
 	return lines, nil
 }
+
+func writeFile(fileName string, obj interface{}) error {
+	if !exists(fileName) {
+		fileName = global["path"].(string) + fileName
+	}
+
+	log.Infof("writing file [ %s ]", fileName)
+	jsonBytes, _ := json.MarshalIndent(obj, "", "    ")
+	if err := ioutil.WriteFile(fileName, jsonBytes, 0644); err != nil {
+		return err
+	}
+
+	return nil
+}

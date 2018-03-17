@@ -3,7 +3,8 @@ package gomanager
 // IConfig ...
 type IConfig interface {
 	Get() interface{}
-	Set(key string, config interface{})
+	Set(config interface{})
+	Save() error
 	Reload() error
 }
 

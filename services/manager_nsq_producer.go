@@ -6,6 +6,7 @@ type INSQProducer interface {
 	Stop() error
 	Publish(topic string, body []byte, maxRetries int) error
 	Ping() error
+	Started() bool
 }
 
 // AddNSQProducer ...

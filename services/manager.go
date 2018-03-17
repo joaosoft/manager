@@ -1,41 +1,48 @@
 package gomanager
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
+	"reflect"
 	"syscall"
 )
+
+type IRunner interface {
+	Start() error
+	Stop() error
+	Started() bool
+}
 
 // GoManager ...
 type GoManager struct {
 	processes    map[string]IProcess
 	configs      map[string]IConfig
+	redis        map[string]IRedis
 	nsqProducers map[string]INSQProducer
 	nsqConsumers map[string]INSQConsumer
-
-	dbs      map[string]*DB
-	webs     map[string]IWeb
-	gateways map[string]IGateway
-	queues   map[string]IQueue
+	dbs          map[string]IDB
+	webs         map[string]IWeb
+	gateways     map[string]IGateway
+	workqueue    map[string]IWorkQueue
 
 	control chan int
 	started bool
 }
 
 // NewManager ...
-func NewManager() (*GoManager, error) {
+func NewManager() *GoManager {
 	return &GoManager{
 		processes:    make(map[string]IProcess),
 		configs:      make(map[string]IConfig),
+		redis:        make(map[string]IRedis),
 		nsqProducers: make(map[string]INSQProducer),
 		nsqConsumers: make(map[string]INSQConsumer),
-		dbs:          make(map[string]*DB),
+		dbs:          make(map[string]IDB),
 		webs:         make(map[string]IWeb),
 		gateways:     make(map[string]IGateway),
-		queues:       make(map[string]IQueue),
+		workqueue:    make(map[string]IWorkQueue),
 		control:      make(chan int),
-	}, nil
+	}
 }
 
 // Started ...
@@ -46,43 +53,21 @@ func (manager *GoManager) Started() bool {
 // Start ...
 func (manager *GoManager) Start() error {
 	log.Infof("starting...")
-	manager.started = true
 
 	// listen for termination signals
 	termChan := make(chan os.Signal, 1)
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
 
-	for key, process := range manager.processes {
-		log.Infof("starting process [ process: %s ]", key)
-		if !process.Started() {
-			go process.Start()
-		}
-		log.Infof("started process [ process: %s ]", key)
-	}
+	executeAction("start", manager.processes)
+	executeAction("start", manager.workqueue)
+	executeAction("start", manager.webs)
+	executeAction("start", manager.nsqProducers)
+	executeAction("start", manager.nsqConsumers)
+	executeAction("start", manager.dbs)
+	executeAction("start", manager.redis)
 
-	for key, queue := range manager.queues {
-		log.Infof("starting queue [ queue: %s ]", key)
-		if !queue.Started() {
-			go queue.Start()
-		}
-		log.Infof("started queue [ queue: %s ]", key)
-	}
-
-	for key, web := range manager.webs {
-		log.Infof("starting web [ web: %s ]", key)
-		if !web.Started() {
-			go web.Start()
-		}
-		log.Infof("started web [ web: %s ]", key)
-	}
-
-	for key, consumer := range manager.nsqConsumers {
-		log.Infof("starting web [ web: %s ]", key)
-		if !consumer.Started() {
-			go consumer.Start()
-		}
-		log.Infof("started web [ web: %s ]", key)
-	}
+	manager.started = true
+	log.Infof("started")
 
 	select {
 	case <-termChan:
@@ -101,20 +86,42 @@ func (manager *GoManager) Stop() error {
 	if manager.started {
 		log.Infof("stopping...")
 
-		for key, process := range manager.processes {
-			if process.Started() {
-				log.Infof("stopping process [ process: %s ]", key)
-				if err := process.Stop(); err != nil {
-					log.Error(err, fmt.Sprintf("error stopping process [process:%s]", key))
+		executeAction("stop", manager.processes)
+		executeAction("stop", manager.workqueue)
+		executeAction("stop", manager.webs)
+		executeAction("stop", manager.nsqProducers)
+		executeAction("stop", manager.nsqConsumers)
+		executeAction("stop", manager.dbs)
+		executeAction("stop", manager.redis)
+
+		manager.started = false
+		log.Infof("stopped")
+	}
+
+	return nil
+}
+
+func executeAction(action string, obj interface{}) error {
+	objMap := reflect.ValueOf(obj)
+
+	if objMap.Kind() == reflect.Map {
+		for _, key := range objMap.MapKeys() {
+			value := objMap.MapIndex(key)
+
+			started := reflect.ValueOf(value.Interface()).MethodByName("Started").Call([]reflect.Value{})[0]
+			switch action {
+			case "start":
+				if !started.Bool() {
+					go reflect.ValueOf(value.Interface()).MethodByName("Start").Call([]reflect.Value{})
+					log.Infof("started [ process: %s ]", key)
 				}
-				log.Infof("close channel [ process: %s ]", key)
-				delete(manager.processes, key)
-				log.Infof("stopped process [ process: %s ]", key)
+			case "stop":
+				if started.Bool() {
+					go reflect.ValueOf(value.Interface()).MethodByName("Stop").Call([]reflect.Value{})
+					log.Infof("stopped [ process: %s ]", key)
+				}
 			}
 		}
-
-		manager.started = true
-		log.Infof("stopped")
 	}
 
 	return nil

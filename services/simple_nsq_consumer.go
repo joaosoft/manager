@@ -10,9 +10,9 @@ import (
 // SimpleNSQConsumer ...
 type SimpleNSQConsumer struct {
 	client  *nsqlib.Consumer
-	started bool
 	handler INSQHandler
 	config  *NSQConfig
+	started bool
 }
 
 // NewSimpleNSQConsumer ...
@@ -35,7 +35,6 @@ func NewSimpleNSQConsumer(config *NSQConfig, handler INSQHandler) (INSQConsumer,
 	consumer := &SimpleNSQConsumer{
 		client:  nsqConsumer,
 		config:  config,
-		started: false,
 		handler: handler,
 	}
 
@@ -101,10 +100,10 @@ func (consumer *SimpleNSQConsumer) Start() error {
 
 // Stop ...
 func (consumer *SimpleNSQConsumer) Stop() error {
-	log.Infof("nsq consumer, stopping ")
-	consumer.client.Stop()
-	consumer.started = false
-	log.Infof("nsq consumer, stopped")
+	if consumer.started {
+		consumer.client.Stop()
+		consumer.started = false
+	}
 
 	return nil
 }

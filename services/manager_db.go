@@ -2,13 +2,29 @@ package gomanager
 
 import "database/sql"
 
-// DB ...
-type DB struct {
-	*sql.DB
+type IDB interface {
+	Get() *sql.DB
+	Start() error
+	Stop() error
+	Started() bool
+}
+
+// DBConfig ...
+type DBConfig struct {
+	Driver     string `json:"driver"`
+	DataSource string `json:"datasource"`
+}
+
+// NewDBConfig...
+func NewDBConfig(driver, datasource string) *DBConfig {
+	return &DBConfig{
+		Driver:     driver,
+		DataSource: datasource,
+	}
 }
 
 // AddWeb ...
-func (manager *GoManager) AddDB(key string, db *DB) error {
+func (manager *GoManager) AddDB(key string, db IDB) error {
 	manager.dbs[key] = db
 	log.Infof("database %s added", key)
 
@@ -16,7 +32,7 @@ func (manager *GoManager) AddDB(key string, db *DB) error {
 }
 
 // RemoveWeb ...
-func (manager *GoManager) RemoveDB(key string) (*DB, error) {
+func (manager *GoManager) RemoveDB(key string) (IDB, error) {
 	db := manager.dbs[key]
 
 	delete(manager.dbs, key)
@@ -26,7 +42,7 @@ func (manager *GoManager) RemoveDB(key string) (*DB, error) {
 }
 
 // GetDB ...
-func (manager *GoManager) GetDB(key string) *DB {
+func (manager *GoManager) GetDB(key string) IDB {
 	if db, exists := manager.dbs[key]; exists {
 		return db
 	}

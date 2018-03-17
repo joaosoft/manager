@@ -1,19 +1,20 @@
 # go-manager
 [![Build Status](https://travis-ci.org/joaosoft/go-manager.svg?branch=master)](https://travis-ci.org/joaosoft/go-manager) | [![Code Climate](https://codeclimate.com/github/joaosoft/go-manager/badges/coverage.svg)](https://codeclimate.com/github/joaosoft/go-manager)
 
-A package framework with application support. 
+A package that allows you to have all your processes and data organized and with control.
+ 
 Based on go-app project [go-app](https://gitlab.com/mandalore/go-app)
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 
-## with support to
+## with clients for
 * Processes
 * Configurations
+* Databases
+* Web Servers
+* Gateways
 * NSQ Consumers
 * NSQ Producers
 * SQL Connections
-* Web Servers
-* Gateways
-* Elastic Search
 
 ## Dependecy Management 
 >### Dep
@@ -22,10 +23,6 @@ Project dependencies are managed using Dep. Read more about [Dep](https://github
 * Install dependencies: `dep ensure`
 * Update dependencies: `dep ensure -update`
 
->### Glide
-```
-glide get go-manager
-```
 
 >### Go
 ```
@@ -33,7 +30,7 @@ go get go-manager
 ```
 
 ## Usage 
-This examples are available in the project at [go-manager/getting_started](https://go-manager/tree/master/getting_started)
+This examples are available in the project at [go-manager/bin/launcher/main.go](https://go-manager/tree/master/bin/launcher/main.go)
 
 ```go
 import "go-manager"

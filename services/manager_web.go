@@ -6,6 +6,7 @@ type HandlerFunc interface{}
 type IWeb interface {
 	AddRoute(method, path string, handler HandlerFunc) error
 	Start() error
+	Stop() error
 	Started() bool
 }
 

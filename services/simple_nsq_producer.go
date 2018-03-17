@@ -9,8 +9,9 @@ import (
 
 // Producer ...
 type SimpleNSQProducer struct {
-	client *nsqlib.Producer
-	config *NSQConfig
+	client  *nsqlib.Producer
+	config  *NSQConfig
+	started bool
 }
 
 // NewSimpleNSQProducer ...
@@ -59,15 +60,24 @@ func (producer *SimpleNSQProducer) Publish(topic string, body []byte, maxRetries
 
 // Start ...
 func (producer *SimpleNSQProducer) Start() error {
+	if !producer.started {
+		producer.started = true
+	}
 	return nil
 }
 
 // Stop ...
 func (producer *SimpleNSQProducer) Stop() error {
-	log.Infof("producer producer, stopping")
-	producer.client.Stop()
-	log.Infof("producer producer, stopped")
+	if producer.started {
+		producer.client.Stop()
+		producer.started = false
+	}
 	return nil
+}
+
+// Start ...
+func (producer *SimpleNSQProducer) Started() bool {
+	return true
 }
 
 // Ping ...

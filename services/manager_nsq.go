@@ -14,7 +14,7 @@ type NSQConfig struct {
 
 // NewNSQConfig...
 func NewNSQConfig(topic, channel string, lookupd, nsqd []string) *NSQConfig {
-	config := &NSQConfig{
+	return &NSQConfig{
 		Topic:        topic,
 		Channel:      channel,
 		Lookupd:      lookupd,
@@ -22,6 +22,4 @@ func NewNSQConfig(topic, channel string, lookupd, nsqd []string) *NSQConfig {
 		RequeueDelay: 30,
 		MaxInFlight:  5,
 	}
-
-	return config
 }

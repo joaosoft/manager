@@ -20,26 +20,37 @@ func NewSimpleWebHttp(host string) IWeb {
 	}
 }
 
-// HandlerFunc ...
+// AddRoute ...
 func (web *SimpleWebHttp) AddRoute(method, path string, handler HandlerFunc) error {
 	http.HandleFunc(path, handler.(func(http.ResponseWriter, *http.Request)))
 	return nil
 }
 
+// Start ...
 func (web *SimpleWebHttp) Start() error {
-	web.started = true
-	if err := http.ListenAndServe(web.host, nil); err != nil {
-		log.Error(err)
-		return err
+	if !web.started {
+		if err := http.ListenAndServe(web.host, nil); err != nil {
+			log.Error(err)
+			return err
+		}
 	}
+	web.started = true
 
 	return nil
 }
 
-func (web *SimpleWebHttp) Started() bool {
-	return web.started
+// Stop ...
+func (web *SimpleWebHttp) Stop() error {
+	if web.started {
+		if err := web.Server.Close(); err != nil {
+			return err
+		}
+		web.started = false
+	}
+	return nil
 }
 
-func (web *SimpleWebHttp) Handle(writer http.ResponseWriter, request *http.Request) (http.ResponseWriter, *http.Request) {
-	return writer, request
+// Started ...
+func (web *SimpleWebHttp) Started() bool {
+	return web.started
 }

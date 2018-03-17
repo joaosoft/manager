@@ -1,8 +1,5 @@
 env:
-	docker-compose up -d postgres
-	docker-compose up -d nsqd
-	docker-compose up -d nsqadmin
-	docker-compose up -d redis
+	docker-compose up -d postgres mysql nsqd nsqadmin redis
 run:
 	go run ./bin/launcher/main.go
 

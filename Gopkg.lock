@@ -2,6 +2,18 @@
 
 
 [[projects]]
+  branch = "go1"
+  name = "github.com/alphazero/Go-Redis"
+  packages = ["."]
+  revision = "a0637b1543645181061469efea75f57ad2e3f23a"
+
+[[projects]]
+  name = "github.com/go-sql-driver/mysql"
+  packages = ["."]
+  revision = "a0583e0143b1624142adab07e0e97fe106d99561"
+  version = "v1.3"
+
+[[projects]]
   branch = "master"
   name = "github.com/golang/snappy"
   packages = ["."]
@@ -24,6 +36,12 @@
   packages = ["color","log"]
   revision = "6fe1405d73ec4bd4cd8a4ac8e2a2b2bf95d03954"
   version = "0.2.4"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lib/pq"
+  packages = [".","oid"]
+  revision = "88edab0803230a3898347e77b474f8c1820a1f20"
 
 [[projects]]
   name = "github.com/mattn/go-colorable"
@@ -94,6 +112,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f9c3932fd8b19e8e4a90f8c6a32744a0ac9d894af09cfca76797b9bf4e448470"
+  inputs-digest = "cc5692d842de69427af687ffef9f8addc17afb16ea79e5e6448157db9471437e"
   solver-name = "gps-cdcl"
   solver-version = 1
