@@ -1,99 +1,120 @@
-package mgr
+package gomanager
 
 import (
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"github.com/joaosoft/go-manager/services/config"
-	"github.com/joaosoft/go-manager/services/elastic"
-	"github.com/joaosoft/go-manager/services/gateway"
-	"github.com/joaosoft/go-manager/services/process"
-	"github.com/joaosoft/go-manager/services/sqlcon"
-	"github.com/joaosoft/go-manager/services/workqueue"
-	"github.com/labstack/gommon/log"
 )
 
-// Manager ... Manager structure
-type Manager struct {
-	ProcessController     map[string]*process.ProcessController
-	ConfigController      map[string]*config.ConfigController
-	SqlConController      map[string]*sqlcon.SQLConController
-	GatewayController     map[string]*gateway.Gateway
-	ElasticController     map[string]*elastic.ElasticController
-	WorkerQueueController map[string]*workqueue.QueueController
+// GoManager ...
+type GoManager struct {
+	processes    map[string]IProcess
+	configs      map[string]IConfig
+	nsqProducers map[string]INSQProducer
+	nsqConsumers map[string]INSQConsumer
+
+	dbs      map[string]*DB
+	webs     map[string]IWeb
+	gateways map[string]IGateway
+	queues   map[string]IQueue
 
 	control chan int
-	Started bool
+	started bool
 }
 
-// NewManager ... create a new Manager
-func NewManager() (*Manager, error) {
-
-	return &Manager{
-		ProcessController:     make(map[string]*process.ProcessController),
-		ConfigController:      make(map[string]*config.ConfigController),
-		SqlConController:      make(map[string]*sqlcon.SQLConController),
-		GatewayController:     make(map[string]*gateway.Gateway),
-		ElasticController:     make(map[string]*elastic.ElasticController),
-		WorkerQueueController: make(map[string]*workqueue.QueueController),
-
-		control: make(chan int),
+// NewManager ...
+func NewManager() (*GoManager, error) {
+	return &GoManager{
+		processes:    make(map[string]IProcess),
+		configs:      make(map[string]IConfig),
+		nsqProducers: make(map[string]INSQProducer),
+		nsqConsumers: make(map[string]INSQConsumer),
+		dbs:          make(map[string]*DB),
+		webs:         make(map[string]IWeb),
+		gateways:     make(map[string]IGateway),
+		queues:       make(map[string]IQueue),
+		control:      make(chan int),
 	}, nil
 }
 
-// Start ... starts and blocks until it receives a signal in its control channel or a SIGTERM,
-func (instance *Manager) Start() error {
-	log.Infof("Manager, starting")
-	instance.Started = true
+// Started ...
+func (manager *GoManager) Started() bool {
+	return manager.started
+}
+
+// Start ...
+func (manager *GoManager) Start() error {
+	log.Infof("starting...")
+	manager.started = true
 
 	// listen for termination signals
 	termChan := make(chan os.Signal, 1)
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
 
-	// launch every process in a separeted process
-	for name, process := range instance.ProcessController {
-		log.Infof("Manager, starting process [process:%s]", name)
+	for key, process := range manager.processes {
+		log.Infof("starting process [ process: %s ]", key)
+		if !process.Started() {
+			go process.Start()
+		}
+		log.Infof("started process [ process: %s ]", key)
+	}
 
-		go instance.launch(name, process)
+	for key, queue := range manager.queues {
+		log.Infof("starting queue [ queue: %s ]", key)
+		if !queue.Started() {
+			go queue.Start()
+		}
+		log.Infof("started queue [ queue: %s ]", key)
+	}
 
-		log.Infof("Manager, started process [process:%s]", name)
+	for key, web := range manager.webs {
+		log.Infof("starting web [ web: %s ]", key)
+		if !web.Started() {
+			go web.Start()
+		}
+		log.Infof("started web [ web: %s ]", key)
+	}
+
+	for key, consumer := range manager.nsqConsumers {
+		log.Infof("starting web [ web: %s ]", key)
+		if !consumer.Started() {
+			go consumer.Start()
+		}
+		log.Infof("started web [ web: %s ]", key)
 	}
 
 	select {
 	case <-termChan:
-		log.Infof("Manager, received term signal")
-	case <-instance.control:
-		log.Infof("Manager, received shutdown signal")
+		log.Infof("received term signal")
+	case <-manager.control:
+		log.Infof("received shutdown signal")
 	}
 
-	instance.Stop()
+	manager.Stop()
 
 	return nil
 }
 
-// Stop ... stop all processes and stops the Manager
-func (instance *Manager) Stop() error {
-	if instance.Started {
-		log.Infof("Manager, stopping")
+// Stop ...
+func (manager *GoManager) Stop() error {
+	if manager.started {
+		log.Infof("stopping...")
 
-		for key, controller := range instance.ProcessController {
-			if controller.Started {
-				log.Infof("Manager, stopping process [process:%s]", key)
-				if err := controller.Process.Stop(); err != nil {
+		for key, process := range manager.processes {
+			if process.Started() {
+				log.Infof("stopping process [ process: %s ]", key)
+				if err := process.Stop(); err != nil {
 					log.Error(err, fmt.Sprintf("error stopping process [process:%s]", key))
 				}
-				log.Infof("Manager, close channel [process:%s]", key)
-				<-controller.Control
-				close(controller.Control)
-				delete(instance.ProcessController, key)
-				log.Infof("Manager, stopped process [process:%s]", key)
+				log.Infof("close channel [ process: %s ]", key)
+				delete(manager.processes, key)
+				log.Infof("stopped process [ process: %s ]", key)
 			}
 		}
 
-		instance.Started = false
-		log.Infof("Manager, stopped")
+		manager.started = true
+		log.Infof("stopped")
 	}
 
 	return nil
