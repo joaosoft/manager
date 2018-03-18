@@ -65,7 +65,7 @@ if err := manager.AddProcess("process_1", process); err != nil {
 ```go
 //
 // manager: configuration
-type DummyConfig struct {
+type dummy_config struct {
     App  string `json:"app"`
     User struct {
         Name   string `json:"name"`
@@ -74,7 +74,7 @@ type DummyConfig struct {
     } `json:"user"`
 }
 dir, _ := os.Getwd()
-obj := &DummyConfig{}
+obj := &dummy_config{}
 simpleConfig, _ := gomanager.NewSimpleConfig(dir+"/bin/launcher/data/config.json", obj)
 manager.AddConfig("config_1", simpleConfig)
 config := manager.GetConfig("config_1")
