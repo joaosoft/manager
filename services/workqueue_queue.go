@@ -49,7 +49,6 @@ func NewQueue(options ...QueueOption) *Queue {
 func (queue *Queue) Add(id string, data interface{}) error {
 	queue.mux.Lock()
 	defer queue.mux.Unlock()
-	fmt.Printf("A ADICIONAR\n")
 
 	if queue.maxSize > 0 && queue.size >= queue.maxSize {
 		return fmt.Errorf("the queue is full with [ size: %d ]", queue.size)
@@ -72,8 +71,6 @@ func (queue *Queue) Add(id string, data interface{}) error {
 func (queue *Queue) Remove(ids ...string) interface{} {
 	queue.mux.Lock()
 	defer queue.mux.Unlock()
-	fmt.Printf("A REMOVER\n")
-	fmt.Println(queue.Dump())
 
 	if queue.size == 0 {
 		log.Error("the list is empty")
