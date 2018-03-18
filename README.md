@@ -214,7 +214,7 @@ func work_handler(id string, data interface{}) error {
 
 //
 // manager: workqueue
-workqueueConfig := gomanager.NewWorkQueueConfig("queue_001", 1, 2, time.Second*2)
+workqueueConfig := gomanager.NewWorkQueueConfig("queue_001", 1, 2, time.Second*2, gomanager.FIFO)
 workqueue := gomanager.NewSimpleWorkQueue(workqueueConfig, work_handler)
 manager.AddWorkQueue("queue_001", workqueue)
 workqueue = manager.GetWorkQueue("queue_001")

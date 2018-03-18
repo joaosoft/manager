@@ -14,7 +14,7 @@ type SimpleWorkQueue struct {
 func NewSimpleWorkQueue(config *WorkQueueConfig, handler WorkHandler) IWorkQueue {
 	return &SimpleWorkQueue{
 		name:    config.Name,
-		queue:   NewQueue(WithMode(FIFO)),
+		queue:   NewQueue(WithMode(config.Mode)),
 		config:  config,
 		handler: handler,
 	}

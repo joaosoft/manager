@@ -19,12 +19,13 @@ type WorkQueueConfig struct {
 }
 
 // NewWorkQueueConfig...
-func NewWorkQueueConfig(name string, maxWorkers, maxRetries int, sleepTime time.Duration) *WorkQueueConfig {
+func NewWorkQueueConfig(name string, maxWorkers, maxRetries int, sleepTime time.Duration, mode Mode) *WorkQueueConfig {
 	return &WorkQueueConfig{
 		Name:       name,
 		MaxWorkers: maxWorkers,
 		MaxRetries: maxRetries,
 		SleepTime:  sleepTime,
+		Mode:       mode,
 	}
 }
 
