@@ -140,6 +140,19 @@ manager.AddDB("mysql", mysqlConn)
 //
 // manager: web
 
+// --------- dummy web http ---------
+func dummy_web_http_handler(w http.ResponseWriter, r *http.Request) {
+	type Example struct {
+		Id   string `json:"id"`
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+	}
+
+	example := Example{Id: "123", Name: "joao", Age: 29}
+	jsonIndent, _ := json.MarshalIndent(example, "", "    ")
+	w.Write(jsonIndent)
+}
+
 // web - with http
 web := gomanager.NewSimpleWebHttp(":8081")
 if err := manager.AddWeb("web_http", web); err != nil {
@@ -147,6 +160,17 @@ if err := manager.AddWeb("web_http", web); err != nil {
 }
 web = manager.GetWeb("web_http")
 web.AddRoute(http.MethodGet, "/web_http", dummy_web_http_handler)
+
+
+func dummy_web_echo_handler(ctx echo.Context) error {
+	type Example struct {
+		Id   string `json:"id"`
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+	}
+
+	return ctx.JSON(http.StatusOK, Example{Id: ctx.Param("id"), Name: "joao", Age: 29})
+}
 
 // web - with echo
 web = gomanager.NewSimpleWebEcho(":8082")
@@ -182,6 +206,11 @@ manager.AddRedis("redis", redisConn)
 
 >### Work Queues
 ```go
+func work_handler(id string, data interface{}) error {
+	log.Infof("work with the id %s and data %s done!", id, data.(string))
+	return nil
+}
+
 //
 // manager: workqueue
 workqueueConfig := gomanager.NewWorkQueueConfig("queue_001", 1, 2, time.Second*2)
