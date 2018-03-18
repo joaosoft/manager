@@ -26,7 +26,7 @@ Project dependencies are managed using Dep. Read more about [Dep](https://github
 
 >### Go
 ```
-go get go-manager
+go get github.com/joaosoft/go-manager
 ```
 
 ## Usage 
