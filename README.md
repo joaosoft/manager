@@ -38,8 +38,9 @@ This examples are available in the project at [go-manager/bin/launcher/main.go](
 manager := gomanager.NewManager()
 
 // ADD ALL THE PROCESSES YOU WANT...
+// ...
 
-/ AT LAST... START YOUR MANAGER!
+// DONT FORGET TO START YOUR MANAGER!
 manager.Start()
 
 ```
