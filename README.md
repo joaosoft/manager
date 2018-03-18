@@ -120,7 +120,7 @@ nsqProducer = manager.GetNSQProducer("nsq_producer_1")
 nsqProducer.Publish("topic_1", []byte("MENSAGEM ENVIADA PARA A NSQ"), 3)
 ```
 
->### Database connections
+>### Database Connections
 ```go
 //
 // manager: database
