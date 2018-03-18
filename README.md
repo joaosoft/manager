@@ -5,7 +5,7 @@ A package that allows you to have all your processes and data organized and with
  
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 
-## with support for
+## With support for
 * Processes
 * Configurations (with reload and write options)
 * NSQ Consumers
