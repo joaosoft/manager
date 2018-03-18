@@ -162,7 +162,7 @@ if err := manager.AddWeb("web_http", web); err != nil {
 web = manager.GetWeb("web_http")
 web.AddRoute(http.MethodGet, "/web_http", dummy_web_http_handler)
 
-
+// --------- dummy web echo ---------
 func dummy_web_echo_handler(ctx echo.Context) error {
 	type Example struct {
 		Id   string `json:"id"`

@@ -47,6 +47,7 @@ func dummy_web_http_handler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonIndent)
 }
 
+// --------- dummy web echo ---------
 func dummy_web_echo_handler(ctx echo.Context) error {
 	type Example struct {
 		Id   string `json:"id"`
