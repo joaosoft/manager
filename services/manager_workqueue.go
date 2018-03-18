@@ -1,37 +1,37 @@
 package gomanager
 
-type IWork interface {
-	Run() error
-}
+import "time"
 
 type IWorkQueue interface {
 	Start() error
 	Stop() error
 	Started() bool
-	AddWork(work IWork)
+	AddWork(id string, work interface{})
 }
 
 // WorkQueueConfig ...
 type WorkQueueConfig struct {
-	Name        string `json:"name"`
-	MaxWorkers  int    `json:"max_workers"`
-	MaxLenQueue int    `json:"max_len_queue"`
-	Mode        Mode   `json:"mode"`
+	Name       string        `json:"name"`
+	MaxWorkers int           `json:"max_workers"`
+	MaxRetries int           `json:"max_retries"`
+	SleepTime  time.Duration `json:"sleep_time"`
+	Mode       Mode          `json:"mode"`
 }
 
 // NewWorkQueueConfig...
-func NewWorkQueueConfig(name string, maxWorkers, maxLenQueue int) *WorkQueueConfig {
+func NewWorkQueueConfig(name string, maxWorkers, maxRetries int, sleepTime time.Duration) *WorkQueueConfig {
 	return &WorkQueueConfig{
-		Name:        name,
-		MaxWorkers:  maxWorkers,
-		MaxLenQueue: maxLenQueue,
+		Name:       name,
+		MaxWorkers: maxWorkers,
+		MaxRetries: maxRetries,
+		SleepTime:  sleepTime,
 	}
 }
 
 // AddQueue ...
 func (manager *GoManager) AddWorkQueue(key string, workqueue IWorkQueue) error {
 	manager.workqueue[key] = workqueue
-	log.Infof("work queue %s added", key)
+	log.Infof("work list %s added", key)
 
 	return nil
 }
@@ -41,7 +41,7 @@ func (manager *GoManager) RemoveWorkQueue(key string) (IWorkQueue, error) {
 	queue := manager.workqueue[key]
 
 	delete(manager.workqueue, key)
-	log.Infof("work queue %s removed", key)
+	log.Infof("work list %s removed", key)
 
 	return queue, nil
 }
@@ -51,6 +51,6 @@ func (manager *GoManager) GetWorkQueue(key string) IWorkQueue {
 	if queue, exists := manager.workqueue[key]; exists {
 		return queue
 	}
-	log.Infof("work queue %s doesn't exist", key)
+	log.Infof("work list %s doesn't exist", key)
 	return nil
 }

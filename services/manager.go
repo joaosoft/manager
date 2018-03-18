@@ -7,12 +7,6 @@ import (
 	"syscall"
 )
 
-type IRunner interface {
-	Start() error
-	Stop() error
-	Started() bool
-}
-
 // GoManager ...
 type GoManager struct {
 	processes    map[string]IProcess

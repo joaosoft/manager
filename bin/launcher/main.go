@@ -11,6 +11,8 @@ import (
 
 	"time"
 
+	"fmt"
+
 	"os"
 
 	"github.com/labstack/echo"
@@ -55,6 +57,11 @@ func dummy_web_echo_handler(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, Example{Id: ctx.Param("id"), Name: "joao", Age: 29})
 }
 
+func work_handler(id string, data interface{}) error {
+	log.Infof("work with the id %s and data %s done!", id, data.(string))
+	return nil
+}
+
 func main() {
 	//
 	// manager
@@ -63,7 +70,9 @@ func main() {
 	//
 	// manager: processes
 	process := gomanager.NewSimpleProcess(dummy_process)
-	_ = manager.AddProcess("process_1", process)
+	if err := manager.AddProcess("process_1", process); err != nil {
+		log.Errorf("MAIN: error on processes %s", err)
+	}
 
 	//
 	// nsq producer
@@ -102,9 +111,13 @@ func main() {
 	log.Infof("CONFIGURATION: %s", jsonIndent)
 
 	// allows to set a new configuration and save in the file
-	obj.User.Random = rand.Intn(100)
+	n := rand.Intn(9000)
+	obj.User.Random = n
+	log.Infof("MAIN: Random: %d", n)
 	config.Set(obj)
-	config.Save()
+	if err := config.Save(); err != nil {
+		log.Error("MAIN: error whe saving configuration file")
+	}
 
 	//
 	// manager: web
@@ -161,9 +174,16 @@ func main() {
 
 	//
 	// manager: workqueue
-	workqueueConfig := gomanager.NewWorkQueueConfig("queue_001", 5, 2)
-	workqueue := gomanager.NewSimpleWorkQueue(workqueueConfig)
+	workqueueConfig := gomanager.NewWorkQueueConfig("queue_001", 1, 2, time.Second*2)
+	workqueue := gomanager.NewSimpleWorkQueue(workqueueConfig, work_handler)
 	manager.AddWorkQueue("queue_001", workqueue)
+	workqueue = manager.GetWorkQueue("queue_001")
+	for i := 1; i <= 1000; i++ {
+		go workqueue.AddWork(fmt.Sprintf("PROCESS: %d", i), fmt.Sprintf("THIS IS MY MESSAGE %d", i))
+	}
+	if err := workqueue.Start(); err != nil {
+		log.Errorf("MAIN: error on workqueue %s", err)
+	}
 
 	manager.Start()
 }

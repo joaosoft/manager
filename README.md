@@ -3,18 +3,18 @@
 
 A package that allows you to have all your processes and data organized and with control.
  
-Based on go-app project [go-app](https://gitlab.com/mandalore/go-app)
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 
 ## with clients for
 * Processes
-* Configurations
-* Databases
-* Web Servers
-* Gateways
+* Configurations (with reload and write options)
 * NSQ Consumers
 * NSQ Producers
-* SQL Connections
+* Database Connections
+* Web Servers
+* Gateways
+* Redis Connections
+* Work Queues (with FIFO and LIFO modes)
 
 ## Dependecy Management 
 >### Dep
@@ -33,114 +33,167 @@ go get go-manager
 This examples are available in the project at [go-manager/bin/launcher/main.go](https://go-manager/tree/master/bin/launcher/main.go)
 
 ```go
-import "go-manager"
-manager, _ := mgr.NewManager()
+//
+// manager
+manager := gomanager.NewManager()
 
-// After we add all manager processes, you should start the manager service!
+// ADD ALL THE PROCESSES YOU WANT...
+
+/ AT LAST... START YOUR MANAGER!
 manager.Start()
+
 ```
 
 >### Processes
 ```go
-// EXAMPLE PROCESS
-type DummyProcess struct{}
-
-func (manager *DummyProcess) Start() error {
+// --------- dummy process ---------
+func dummy_process() error {
+	log.Info("hello, i'm exetuting the dummy process")
 	return nil
 }
 
-func (manager *DummyProcess) Stop() error {
-	return nil
+//
+// manager: processes
+process := gomanager.NewSimpleProcess(dummy_process)
+if err := manager.AddProcess("process_1", process); err != nil {
+    log.Errorf("MAIN: error on processes %s", err)
 }
-
-_ = manager.AddProcess("process_1", &DummyProcess{})
 ```
 
 >### Configurations
 ```go
+//
+// manager: configuration
+type DummyConfig struct {
+    App  string `json:"app"`
+    User struct {
+        Name   string `json:"name"`
+        Age    int    `json:"age"`
+        Random int    `json:"random"`
+    } `json:"user"`
+}
 dir, _ := os.Getwd()
-simpleConfig, _ := manager.NewSimpleConfig(dir+"/getting_started/system/", "config", "json")
+obj := &DummyConfig{}
+simpleConfig, _ := gomanager.NewSimpleConfig(dir+"/bin/launcher/data/config.json", obj)
 manager.AddConfig("config_1", simpleConfig)
+config := manager.GetConfig("config_1")
 
-// Get configuration by path
-fmt.Println("a: ", manager.GetConfig("config_1").Get("a"))
-fmt.Println("caa: ", manager.GetConfig("config_1").Get("c.ca.caa"))
+jsonIndent, _ := json.MarshalIndent(config.Get(), "", "    ")
+log.Infof("CONFIGURATION: %s", jsonIndent)
 
-// Get configuration by tag
-fmt.Println("a: ", manager.GetConfig("config_1").Get("a"))
-fmt.Println("caa: ", manager.GetConfig("config_1").Get("c.ca.caa"))
+// allows to set a new configuration and save in the file
+n := rand.Intn(9000)
+obj.User.Random = n
+log.Infof("MAIN: Random: %d", n)
+config.Set(obj)
+if err := config.Save(); err != nil {
+    log.Error("MAIN: error whe saving configuration file")
+}
 ```
 
 >### NSQ Consumers 
 ```go
-// EXAMPLE NSQ HANDLER
-type DummyNSQHandler struct{}
+// --------- dummy nsq ---------
+type dummy_nsq_handler struct{}
 
-func (manager *DummyNSQHandler) HandleMessage(msg *nsqlib.Message) error {
+func (dummy *dummy_nsq_handler) HandleMessage(msg *nsqlib.Message) error {
+	log.Infof("executing the handle message of NSQ with [ message: %s ]", string(msg.Body))
 	return nil
 }
 
-nsqConfig := &nsq.Config{
-    Topic:   "topic_1",
-    Channel: "channel_2",
-    Lookupd: []string{"http://localhost:4151"},
-}
-
-// Consumer
-nsqConsumer, _ := manager.NewNSQConsumer(nsqConfig, &DummyNSQHandler{})
-manager.AddProcess("consumer_1", nsqConsumer)
+//
+// manager: nsq consumer
+nsqConfigConsumer := gomanager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4161"}, []string{"127.0.0.1:4150"})
+nsqConsumer, _ := gomanager.NewSimpleNSQConsumer(nsqConfigConsumer, &dummy_nsq_handler{})
+manager.AddProcess("nsq_consumer_1", nsqConsumer)
 ```
 
 >### NSQ Producers
 ```go
-// Producer
-nsqProducer, _ := manager.NewNSQProducer(nsqConfig)
-nsqProducer.Publish("topic_1", []byte("body"), 3)
-manager.AddProcess("producer_1", nsqProducer)
+//
+// nsq producer
+nsqConfigProducer := gomanager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4150"}, []string{"127.0.0.1:4161"})
+nsqProducer, _ := gomanager.NewSimpleNSQProducer(nsqConfigProducer)
+manager.AddNSQProducer("nsq_producer_1", nsqProducer)
+nsqProducer = manager.GetNSQProducer("nsq_producer_1")
+nsqProducer.Publish("topic_1", []byte("MENSAGEM ENVIADA PARA A NSQ"), 3)
 ```
 
->### SQL Connections
+>### Database connections
 ```go
-sqlConfig := sqlcon.NewConfig("localhost", "postgres", 1, 2)
-sqlConnection, _ := manager.NewSQLConnection(sqlConfig)
-_ = manager.AddConnection("conn_1", sqlConnection)
+//
+// manager: database
+
+// database - postgres
+postgresConfig := gomanager.NewDBConfig("postgres", "postgres://user:password@localhost:7001?sslmode=disable")
+postgresConn := gomanager.NewSimpleDB(postgresConfig)
+manager.AddDB("postgres", postgresConn)
+
+// database - mysql
+mysqlConfig := gomanager.NewDBConfig("mysql", "root:password@tcp(127.0.0.1:7002)/mysql")
+mysqlConn := gomanager.NewSimpleDB(mysqlConfig)
+manager.AddDB("mysql", mysqlConn)
 ```
 
 >### Web Servers
 ```go
-// EXAMPLE WEB SERVER HANDLER
-func exampleWebServerHandler(c echo.Context) error {
-	// User ID from path `users/:id`
-	id := c.Param("id")
-	log.Info(fmt.Sprintf("Web Server requested with id '%s'", id))
-	return c.String(http.StatusOK, id)
-}
+//
+// manager: web
 
-configWebServer := web.NewConfig("localhost:8081")
-	webServer, _ := manager.NewWEBServer(configWebServer)
-	webServer.AddRoute(http.MethodGet, "/example/:id", exampleWebServerHandler)
-	manager.AddProcess("web_server_1", webServer)
+// web - with http
+web := gomanager.NewSimpleWebHttp(":8081")
+if err := manager.AddWeb("web_http", web); err != nil {
+    log.Error("error adding web process to manager")
+}
+web = manager.GetWeb("web_http")
+web.AddRoute(http.MethodGet, "/web_http", dummy_web_http_handler)
+
+// web - with echo
+web = gomanager.NewSimpleWebEcho(":8082")
+if err := manager.AddWeb("web_echo", web); err != nil {
+    log.Error("error adding web process to manager")
+}
+web = manager.GetWeb("web_echo")
+web.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
 ```
 
 >### Gateways
 ```go
-var headers map[string]string
+//
+// manager: gateway
+headers := map[string][]string{"Content-Type": {"application/json"}}
 var body io.Reader
-configGateway := gateway.NewConfig("http://localhost:8081")
-gateway, _ := manager.NewGateway(configGateway)
+
+gateway := gomanager.NewSimpleGateway()
 manager.AddGateway("gateway_1", gateway)
-manager.GetGateway("gateway_1")
-status, bytes, err := manager.RequestGateway("gateway_1", http.MethodGet, "/example/123456789", headers, body)
-fmt.Println("STATUS:", status, "RESPONSE:", string(bytes), "err:", err)
+gateway = manager.GetGateway("gateway_1")
+status, bytes, err := gateway.Request(http.MethodGet, "http://127.0.0.1:8082", "/web_echo/123", headers, body)
+log.Infof("status: %d, response: %s, error? %t", status, string(bytes), err != nil)
 ```
 
->### Elastic Search
+>### Redis Connections
 ```go
-configElasticClient := elastic.NewConfig("http://localhost:9200")
-elasticClient := manager.NewElasticClient(configElasticClient)
-manager.AddElasticClient("elastic_1", elasticClient)
-response, err := elasticClient.Search("index", "type", "body")
-fmt.Println("RESPONSE:", response, "ERROR:", err)
+//
+// manager: redis
+redisConfig := gomanager.NewRedisConfig("127.0.0.1", 7100, 0, "")
+redisConn := gomanager.NewSimpleRedis(redisConfig)
+manager.AddRedis("redis", redisConn)
+```
+
+>### Work Queues
+```go
+//
+// manager: workqueue
+workqueueConfig := gomanager.NewWorkQueueConfig("queue_001", 1, 2, time.Second*2)
+workqueue := gomanager.NewSimpleWorkQueue(workqueueConfig, work_handler)
+manager.AddWorkQueue("queue_001", workqueue)
+workqueue = manager.GetWorkQueue("queue_001")
+for i := 1; i <= 1000; i++ {
+    go workqueue.AddWork(fmt.Sprintf("PROCESS: %d", i), fmt.Sprintf("THIS IS MY MESSAGE %d", i))
+}
+if err := workqueue.Start(); err != nil {
+    log.Errorf("MAIN: error on workqueue %s", err)
+}
 ```
 
 ## Follow me at
