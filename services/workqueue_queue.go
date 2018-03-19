@@ -17,21 +17,21 @@ const (
 )
 
 type node struct {
-	id       string      `json:"id"`
-	data     interface{} `json:"data"`
-	next     *node       `json:"next"`
-	previous *node       `json:"previous"`
+	id       string
+	data     interface{}
+	next     *node
+	previous *node
 }
 
 // Queue ...
 type Queue struct {
-	size    int              `json:"size"`
-	start   *node            `json:"start"`
-	end     *node            `json:"end"`
-	mode    Mode             `json:"mode"`
-	maxSize int              `json:"max_size"`
-	mux     *sync.Mutex      `json:"-"`
-	ids     map[string]*node `json:"-"`
+	size    int
+	start   *node
+	end     *node
+	mode    Mode
+	maxSize int
+	mux     *sync.Mutex
+	ids     map[string]*node
 }
 
 // NewQueue ...
