@@ -31,27 +31,27 @@ func NewWorkQueueConfig(name string, maxWorkers, maxRetries int, sleepTime time.
 
 // AddQueue ...
 func (manager *GoManager) AddWorkQueue(key string, workqueue IWorkQueue) error {
-	manager.workqueue[key] = workqueue
-	log.Infof("work list %s added", key)
+	manager.workqueues[key] = workqueue
+	log.Infof("work queue %s added", key)
 
 	return nil
 }
 
 // RemoveQueue ...
 func (manager *GoManager) RemoveWorkQueue(key string) (IWorkQueue, error) {
-	queue := manager.workqueue[key]
+	queue := manager.workqueues[key]
 
-	delete(manager.workqueue, key)
-	log.Infof("work list %s removed", key)
+	delete(manager.workqueues, key)
+	log.Infof("work queue %s removed", key)
 
 	return queue, nil
 }
 
 // GetQueue ...
 func (manager *GoManager) GetWorkQueue(key string) IWorkQueue {
-	if queue, exists := manager.workqueue[key]; exists {
+	if queue, exists := manager.workqueues[key]; exists {
 		return queue
 	}
-	log.Infof("work list %s doesn't exist", key)
+	log.Infof("work queue %s doesn't exist", key)
 	return nil
 }

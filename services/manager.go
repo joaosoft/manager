@@ -17,9 +17,9 @@ type GoManager struct {
 	dbs          map[string]IDB
 	webs         map[string]IWeb
 	gateways     map[string]IGateway
-	workqueue    map[string]IWorkQueue
+	workqueues   map[string]IWorkQueue
 
-	control chan int
+	quit    chan int
 	started bool
 }
 
@@ -34,8 +34,8 @@ func NewManager() *GoManager {
 		dbs:          make(map[string]IDB),
 		webs:         make(map[string]IWeb),
 		gateways:     make(map[string]IGateway),
-		workqueue:    make(map[string]IWorkQueue),
-		control:      make(chan int),
+		workqueues:   make(map[string]IWorkQueue),
+		quit:         make(chan int),
 	}
 }
 
@@ -46,14 +46,14 @@ func (manager *GoManager) Started() bool {
 
 // Start ...
 func (manager *GoManager) Start() error {
-	log.Infof("starting...")
+	log.Info("starting...")
 
 	// listen for termination signals
 	termChan := make(chan os.Signal, 1)
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
 
 	executeAction("start", manager.processes)
-	executeAction("start", manager.workqueue)
+	executeAction("start", manager.workqueues)
 	executeAction("start", manager.webs)
 	executeAction("start", manager.nsqProducers)
 	executeAction("start", manager.nsqConsumers)
@@ -66,7 +66,7 @@ func (manager *GoManager) Start() error {
 	select {
 	case <-termChan:
 		log.Infof("received term signal")
-	case <-manager.control:
+	case <-manager.quit:
 		log.Infof("received shutdown signal")
 	}
 
@@ -81,7 +81,7 @@ func (manager *GoManager) Stop() error {
 		log.Infof("stopping...")
 
 		executeAction("stop", manager.processes)
-		executeAction("stop", manager.workqueue)
+		executeAction("stop", manager.workqueues)
 		executeAction("stop", manager.webs)
 		executeAction("stop", manager.nsqProducers)
 		executeAction("stop", manager.nsqConsumers)

@@ -128,7 +128,7 @@ func (queue *Queue) Size() int {
 	return queue.size
 }
 
-// String ...
+// Dump ...
 func (queue *Queue) Dump() string {
 	type queuePrint struct {
 		Size    int              `json:"size"`
