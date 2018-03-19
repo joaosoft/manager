@@ -20,3 +20,10 @@ func WithLogLevel(level logrus.Level) GoManagerOption {
 		logrus.SetLevel(level)
 	}
 }
+
+// WithRunInBackground ...
+func WithRunInBackground(runInBackground bool) GoManagerOption {
+	return func(gomanager *GoManager) {
+		gomanager.runInBackground = runInBackground
+	}
+}

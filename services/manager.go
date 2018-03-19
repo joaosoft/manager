@@ -9,23 +9,24 @@ import (
 
 // GoManager ...
 type GoManager struct {
-	processes    map[string]IProcess
-	configs      map[string]IConfig
-	redis        map[string]IRedis
-	nsqProducers map[string]INSQProducer
-	nsqConsumers map[string]INSQConsumer
-	dbs          map[string]IDB
-	webs         map[string]IWeb
-	gateways     map[string]IGateway
-	workqueues   map[string]IWorkQueue
+	processes       map[string]IProcess
+	configs         map[string]IConfig
+	redis           map[string]IRedis
+	nsqProducers    map[string]INSQProducer
+	nsqConsumers    map[string]INSQConsumer
+	dbs             map[string]IDB
+	webs            map[string]IWeb
+	gateways        map[string]IGateway
+	workqueues      map[string]IWorkQueue
+	runInBackground bool
 
 	quit    chan int
 	started bool
 }
 
 // NewManager ...
-func NewManager() *GoManager {
-	return &GoManager{
+func NewManager(options ...GoManagerOption) *GoManager {
+	gomanager := &GoManager{
 		processes:    make(map[string]IProcess),
 		configs:      make(map[string]IConfig),
 		redis:        make(map[string]IRedis),
@@ -37,6 +38,10 @@ func NewManager() *GoManager {
 		workqueues:   make(map[string]IWorkQueue),
 		quit:         make(chan int),
 	}
+
+	gomanager.Reconfigure(options...)
+
+	return gomanager
 }
 
 // Started ...
@@ -46,31 +51,11 @@ func (manager *GoManager) Started() bool {
 
 // Start ...
 func (manager *GoManager) Start() error {
-	log.Info("starting...")
-
-	// listen for termination signals
-	termChan := make(chan os.Signal, 1)
-	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
-
-	executeAction("start", manager.processes)
-	executeAction("start", manager.workqueues)
-	executeAction("start", manager.webs)
-	executeAction("start", manager.nsqProducers)
-	executeAction("start", manager.nsqConsumers)
-	executeAction("start", manager.dbs)
-	executeAction("start", manager.redis)
-
-	manager.started = true
-	log.Infof("started")
-
-	select {
-	case <-termChan:
-		log.Infof("received term signal")
-	case <-manager.quit:
-		log.Infof("received shutdown signal")
+	if manager.runInBackground {
+		go manager.executeStart()
+	} else {
+		return manager.executeStart()
 	}
-
-	manager.Stop()
 
 	return nil
 }
@@ -93,6 +78,48 @@ func (manager *GoManager) Stop() error {
 	}
 
 	return nil
+}
+
+func (manager *GoManager) executeStart() error {
+	log.Info("starting...")
+
+	// listen for termination signals
+	termChan := make(chan os.Signal, 1)
+	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
+
+	if err := executeAction("start", manager.processes); err != nil {
+		return err
+	}
+	if err := executeAction("start", manager.workqueues); err != nil {
+		return err
+	}
+	if err := executeAction("start", manager.webs); err != nil {
+		return err
+	}
+	if err := executeAction("start", manager.nsqProducers); err != nil {
+		return err
+	}
+	if err := executeAction("start", manager.nsqConsumers); err != nil {
+		return err
+	}
+	if err := executeAction("start", manager.dbs); err != nil {
+		return err
+	}
+	if err := executeAction("start", manager.redis); err != nil {
+		return err
+	}
+
+	manager.started = true
+	log.Infof("started")
+
+	select {
+	case <-termChan:
+		log.Infof("received term signal")
+	case <-manager.quit:
+		log.Infof("received shutdown signal")
+	}
+
+	return manager.Stop()
 }
 
 func executeAction(action string, obj interface{}) error {
