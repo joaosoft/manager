@@ -15,10 +15,18 @@ import (
 
 	"os"
 
+	logger "github.com/joaosoft/go-log/service"
 	"github.com/labstack/echo"
-	"github.com/labstack/gommon/log"
 	nsqlib "github.com/nsqio/go-nsq"
 )
+
+var log = logger.NewLog(
+	logger.WithLevel(logger.InfoLevel),
+	logger.WithFormatHandler(logger.TextFormatHandler),
+	logger.WithWriter(os.Stdout)).WithPrefixes(map[string]interface{}{
+	"level":   logger.LEVEL,
+	"time":    logger.TIME,
+	"service": "go-manager"})
 
 // --------- dummy process ---------
 func dummy_process() error {
