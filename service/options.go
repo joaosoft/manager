@@ -1,7 +1,7 @@
 package gomanager
 
 import (
-	"github.com/sirupsen/logrus"
+	"github.com/joaosoft/go-log/service"
 )
 
 // GoManagerOption ...
@@ -14,16 +14,23 @@ func (gomanager *GoManager) Reconfigure(options ...GoManagerOption) {
 	}
 }
 
-// WithLogLevel ...
-func WithLogLevel(level logrus.Level) GoManagerOption {
-	return func(gomanager *GoManager) {
-		logrus.SetLevel(level)
-	}
-}
-
 // WithRunInBackground ...
 func WithRunInBackground(runInBackground bool) GoManagerOption {
 	return func(gomanager *GoManager) {
 		gomanager.runInBackground = runInBackground
+	}
+}
+
+// WithRunInBackground ...
+func WithLogger(logger golog.Log) GoManagerOption {
+	return func(gomanager *GoManager) {
+		log = logger
+	}
+}
+
+// WithLogLevel ...
+func WithLogLevel(level golog.Level) GoManagerOption {
+	return func(gomanager *GoManager) {
+		log.SetLevel(level)
 	}
 }
