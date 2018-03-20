@@ -20,6 +20,12 @@
   revision = "553a641470496b2327abcac10b36396bd98e45c9"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/joaosoft/go-log"
+  packages = ["service"]
+  revision = "f687adb49c861de611d8c3a29793575a23270a60"
+
+[[projects]]
   name = "github.com/json-iterator/go"
   packages = ["."]
   revision = "3353055b2a1a5ae1b6a8dfde887a524e7088f3a2"
@@ -54,12 +60,6 @@
   packages = ["."]
   revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
   version = "v0.0.3"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/mediocregopher/radix.v3"
-  packages = [".","resp"]
-  revision = "d285b9d40ad446202117b4bf102c0b00e116660a"
 
 [[projects]]
   name = "github.com/modern-go/concurrent"
@@ -112,6 +112,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "cc5692d842de69427af687ffef9f8addc17afb16ea79e5e6448157db9471437e"
+  inputs-digest = "bfd87af2d2c30c59e81ca0b949768dc4c75313cb93836fe98ffde48946534c01"
   solver-name = "gps-cdcl"
   solver-version = 1

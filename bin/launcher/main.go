@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"net/http"
 
-	"go-manager/services"
+	"go-manager/service"
 
 	"encoding/json"
 
