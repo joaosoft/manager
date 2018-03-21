@@ -54,15 +54,8 @@ func (queue *Queue) Add(id string, data interface{}) error {
 		return fmt.Errorf("the queue is full with [ size: %d ]", queue.size)
 	}
 
-	nodeToAdd := &node{id: id, data: data, previous: queue.end}
-	if queue.size == 0 {
-		queue.start = nodeToAdd
-		queue.end = nodeToAdd
-	} else {
-		queue.end.next = queue.end
-		queue.end = nodeToAdd
-	}
-	queue.ids[id] = nodeToAdd
+	queue.start = &node{id: id, data: data, next: queue.start}
+	queue.ids[id] = queue.start
 	queue.size++
 	return nil
 }
