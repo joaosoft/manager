@@ -31,7 +31,7 @@ go get github.com/joaosoft/go-manager/service
 ```
 
 ## Usage 
-This examples are available in the project at [go-manager/bin/launcher/main.go](https://go-manager/tree/master/bin/launcher/main.go)
+This examples are available in the project at [go-manager/bin/launcher/main.go](https://github.com/joaosoft/go-manager/tree/master/bin/launcher/main.go)
 
 ```go
 //
