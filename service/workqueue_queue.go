@@ -35,7 +35,7 @@ type Queue struct {
 }
 
 // NewQueue ...
-func NewQueue(options ...QueueOption) *Queue {
+func NewQueue(options ...QueueOption) IList {
 	queue := &Queue{
 		ids: make(map[string]*node),
 		mux: &sync.Mutex{},
@@ -127,6 +127,13 @@ func (queue *Queue) Size() int {
 	queue.mux.Lock()
 	defer queue.mux.Unlock()
 	return queue.size
+}
+
+// IsEmpty ...
+func (queue *Queue) IsEmpty() bool {
+	queue.mux.Lock()
+	defer queue.mux.Unlock()
+	return queue.size == 0
 }
 
 // Dump ...

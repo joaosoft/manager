@@ -5,7 +5,7 @@ type SimpleWorkQueue struct {
 	name    string
 	config  *WorkQueueConfig
 	handler WorkHandler
-	queue   *Queue
+	list    IList
 	workers []*Worker
 	started bool
 }
@@ -14,7 +14,7 @@ type SimpleWorkQueue struct {
 func NewSimpleWorkQueue(config *WorkQueueConfig, handler WorkHandler) IWorkQueue {
 	return &SimpleWorkQueue{
 		name:    config.Name,
-		queue:   NewQueue(WithMode(config.Mode)),
+		list:    NewQueue(WithMode(config.Mode)),
 		config:  config,
 		handler: handler,
 	}
@@ -25,7 +25,7 @@ func (workqueue *SimpleWorkQueue) Start() error {
 	var workers []*Worker
 	for i := 1; i <= workqueue.config.MaxWorkers; i++ {
 		log.Infof("starting worker [ %d ]", i)
-		worker := NewWorker(i, workqueue.config, workqueue.handler, workqueue.queue)
+		worker := NewWorker(i, workqueue.config, workqueue.handler, workqueue.list)
 		worker.Start()
 		workers = append(workers, worker)
 	}
@@ -53,5 +53,5 @@ func (workqueue *SimpleWorkQueue) Started() bool {
 func (workqueue *SimpleWorkQueue) AddWork(id string, data interface{}) {
 	log.Infof("adding work to the list [ name: %s ]", workqueue.name)
 	work := NewWork(id, data)
-	workqueue.queue.Add(id, work)
+	workqueue.list.Add(id, work)
 }
