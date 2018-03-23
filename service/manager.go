@@ -17,7 +17,7 @@ type GoManager struct {
 	dbs             map[string]IDB
 	webs            map[string]IWeb
 	gateways        map[string]IGateway
-	workqueues      map[string]IWorkQueue
+	worklist        map[string]IWorkList
 	runInBackground bool
 
 	quit    chan int
@@ -35,7 +35,7 @@ func NewManager(options ...GoManagerOption) *GoManager {
 		dbs:          make(map[string]IDB),
 		webs:         make(map[string]IWeb),
 		gateways:     make(map[string]IGateway),
-		workqueues:   make(map[string]IWorkQueue),
+		worklist:     make(map[string]IWorkList),
 		quit:         make(chan int),
 	}
 
@@ -66,7 +66,7 @@ func (manager *GoManager) Stop() error {
 		log.Infof("stopping...")
 
 		executeAction("stop", manager.processes)
-		executeAction("stop", manager.workqueues)
+		executeAction("stop", manager.worklist)
 		executeAction("stop", manager.webs)
 		executeAction("stop", manager.nsqProducers)
 		executeAction("stop", manager.nsqConsumers)
@@ -90,7 +90,7 @@ func (manager *GoManager) executeStart() error {
 	if err := executeAction("start", manager.processes); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.workqueues); err != nil {
+	if err := executeAction("start", manager.worklist); err != nil {
 		return err
 	}
 	if err := executeAction("start", manager.webs); err != nil {

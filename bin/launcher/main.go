@@ -183,10 +183,10 @@ func main() {
 
 	//
 	// manager: workqueue
-	workqueueConfig := gomanager.NewWorkQueueConfig("queue_001", 1, 2, time.Second*2, gomanager.FIFO)
-	workqueue := gomanager.NewSimpleWorkQueue(workqueueConfig, work_handler)
-	manager.AddWorkQueue("queue_001", workqueue)
-	workqueue = manager.GetWorkQueue("queue_001")
+	workqueueConfig := gomanager.NewWorkListConfig("queue_001", 1, 2, time.Second*2, gomanager.FIFO)
+	workqueue := gomanager.NewSimpleWorkList(workqueueConfig, work_handler)
+	manager.AddWorkList("queue_001", workqueue)
+	workqueue = manager.GetWorkList("queue_001")
 	for i := 1; i <= 1000; i++ {
 		go workqueue.AddWork(fmt.Sprintf("PROCESS: %d", i), fmt.Sprintf("THIS IS MY MESSAGE %d", i))
 	}

@@ -31,7 +31,7 @@ type Worker struct {
 }
 
 // NewWorker ...
-func NewWorker(id int, config *WorkQueueConfig, handler WorkHandler, list IList) *Worker {
+func NewWorker(id int, config *WorkListConfig, handler WorkHandler, list IList) *Worker {
 	worker := &Worker{
 		id:         id,
 		name:       config.Name,
