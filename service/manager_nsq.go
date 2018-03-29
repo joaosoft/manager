@@ -13,13 +13,13 @@ type NSQConfig struct {
 }
 
 // NewNSQConfig...
-func NewNSQConfig(topic, channel string, lookupd, nsqd []string) *NSQConfig {
+func NewNSQConfig(topic, channel string, lookupd, nsqd []string, requeueDelay int64, maxInFlight int) *NSQConfig {
 	return &NSQConfig{
 		Topic:        topic,
 		Channel:      channel,
 		Lookupd:      lookupd,
 		Nsqd:         nsqd,
-		RequeueDelay: 30,
-		MaxInFlight:  5,
+		RequeueDelay: requeueDelay,
+		MaxInFlight:  maxInFlight,
 	}
 }

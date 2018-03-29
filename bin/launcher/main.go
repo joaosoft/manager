@@ -85,7 +85,7 @@ func main() {
 
 	//
 	// nsq producer
-	nsqConfigProducer := gomanager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4150"}, []string{"127.0.0.1:4161"})
+	nsqConfigProducer := gomanager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4150"}, []string{"127.0.0.1:4161"}, 30, 5)
 	nsqProducer, _ := gomanager.NewSimpleNSQProducer(nsqConfigProducer)
 	manager.AddNSQProducer("nsq_producer_1", nsqProducer)
 	nsqProducer = manager.GetNSQProducer("nsq_producer_1")
@@ -96,7 +96,7 @@ func main() {
 
 	//
 	// manager: nsq consumer
-	nsqConfigConsumer := gomanager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4161"}, []string{"127.0.0.1:4150"})
+	nsqConfigConsumer := gomanager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4161"}, []string{"127.0.0.1:4150"}, 30, 5)
 	nsqConsumer, _ := gomanager.NewSimpleNSQConsumer(nsqConfigConsumer, &dummy_nsq_handler{})
 	manager.AddProcess("nsq_consumer_1", nsqConsumer)
 
