@@ -1,5 +1,5 @@
 # go-manager
-[![Build Status](https://travis-ci.org/joaosoft/go-manager.svg?branch=master)](https://travis-ci.org/joaosoft/go-manager) | [![Code Climate](https://codeclimate.com/github/joaosoft/go-manager/badges/coverage.svg)](https://codeclimate.com/github/joaosoft/go-manager)
+[![Build Status](https://travis-ci.org/joaosoft/go-manager.svg?branch=master)](https://travis-ci.org/joaosoft/go-manager) | [![codecov](https://codecov.io/gh/joaosoft/go-manager/branch/master/graph/badge.svg)](https://codecov.io/gh/joaosoft/go-manager)
 
 A package that allows you to have all your processes and data organized and with control.
 After a read of the project https://gitlab.com/mandalore/go-app extracted some concepts. 
