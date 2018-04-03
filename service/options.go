@@ -22,7 +22,7 @@ func WithRunInBackground(runInBackground bool) GoManagerOption {
 }
 
 // WithLogger ...
-func WithLogger(logger logger.Log) GoManagerOption {
+func WithLogger(logger logger.ILog) GoManagerOption {
 	return func(gomanager *GoManager) {
 		log = logger
 	}
