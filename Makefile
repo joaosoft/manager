@@ -11,7 +11,7 @@ stop:
 	docker-compose stop
 
 build:
-	go build .
+	go build ./...
 
 fmt:
 	go fmt ./...
