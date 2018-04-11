@@ -1,5 +1,5 @@
 /*
-GoManager helps to manage you application
+GoManager helps you to manage you application
 
 ## With support for
 * Processes
@@ -12,7 +12,7 @@ GoManager helps to manage you application
 * Redis Connections
 * Work Queues (with FIFO and LIFO modes)
 
-example at https://github.com/joaosoft/go-manager/tree/master/bin/launcher
-
+##Usage
+at https://github.com/joaosoft/go-manager/tree/master/bin/launcher
 */
 package gomanager
