@@ -23,7 +23,7 @@
   branch = "master"
   name = "github.com/joaosoft/go-log"
   packages = ["service"]
-  revision = "14737dce72a7fb9bda9fefab53bf5fae602e22f4"
+  revision = "5440ef3c601d7ce1748fd5f9a5317d28d5adbad3"
 
 [[projects]]
   branch = "master"
@@ -89,7 +89,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert"]
-  revision = "b2aa35443fbc700ab74c586ae79b81c171851023"
+  revision = "f70185d77e8278766928032ee1355e3da47e7181"
 
 [[projects]]
   branch = "master"
@@ -100,6 +100,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0e15bc6ec9249d56dd2b77255705a9244d2c5f37a361b7d468951d6eb98bb5d7"
+  inputs-digest = "3caa729613422a1e35959dfc52231dd72a036802b0205a138b58ade38a0ff18f"
   solver-name = "gps-cdcl"
   solver-version = 1
