@@ -9,19 +9,9 @@ import (
 	"fmt"
 	"os"
 
-	logger "github.com/joaosoft/go-log/service"
-	"github.com/joaosoft/go-manager/service"
 	"github.com/labstack/echo"
 	nsqlib "github.com/nsqio/go-nsq"
 )
-
-var log = logger.NewLog(
-	logger.WithLevel(logger.InfoLevel),
-	logger.WithFormatHandler(logger.JsonFormatHandler),
-	logger.WithWriter(os.Stdout)).WithPrefixes(map[string]interface{}{
-	"level":   logger.LEVEL,
-	"time":    logger.TIME,
-	"service": "go-manager"})
 
 // --------- dummy process ---------
 func dummy_process() error {
@@ -69,19 +59,19 @@ func work_handler(id string, data interface{}) error {
 func usage() {
 	//
 	// manager
-	manager := gomanager.NewManager()
+	manager := NewManager()
 
 	//
 	// manager: processes
-	process := gomanager.NewSimpleProcess(dummy_process)
+	process := NewSimpleProcess(dummy_process)
 	if err := manager.AddProcess("process_1", process); err != nil {
 		log.Errorf("MAIN: error on processes %s", err)
 	}
 
 	//
 	// nsq producer
-	nsqConfigProducer := gomanager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4150"}, []string{"127.0.0.1:4161"}, 30, 5)
-	nsqProducer, _ := gomanager.NewSimpleNSQProducer(nsqConfigProducer)
+	nsqConfigProducer := NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4150"}, []string{"127.0.0.1:4161"}, 30, 5)
+	nsqProducer, _ := NewSimpleNSQProducer(nsqConfigProducer)
 	manager.AddNSQProducer("nsq_producer_1", nsqProducer)
 	nsqProducer = manager.GetNSQProducer("nsq_producer_1")
 	nsqProducer.Publish("topic_1", []byte("MENSAGEM ENVIADA PARA A NSQ"), 3)
@@ -91,8 +81,8 @@ func usage() {
 
 	//
 	// manager: nsq consumer
-	nsqConfigConsumer := gomanager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4161"}, []string{"127.0.0.1:4150"}, 30, 5)
-	nsqConsumer, _ := gomanager.NewSimpleNSQConsumer(nsqConfigConsumer, &dummy_nsq_handler{})
+	nsqConfigConsumer := NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4161"}, []string{"127.0.0.1:4150"}, 30, 5)
+	nsqConsumer, _ := NewSimpleNSQConsumer(nsqConfigConsumer, &dummy_nsq_handler{})
 	manager.AddProcess("nsq_consumer_1", nsqConsumer)
 
 	//
@@ -107,7 +97,7 @@ func usage() {
 	}
 	dir, _ := os.Getwd()
 	obj := &dummy_config{}
-	simpleConfig, _ := gomanager.NewSimpleConfig(dir+"/bin/launcher/data/config.json", obj)
+	simpleConfig, _ := NewSimpleConfig(dir+"/bin/launcher/data/config.json", obj)
 	manager.AddConfig("config_1", simpleConfig)
 	config := manager.GetConfig("config_1")
 
@@ -127,7 +117,7 @@ func usage() {
 	// manager: web
 
 	// web - with http
-	web := gomanager.NewSimpleWebHttp(":8081")
+	web := NewSimpleWebHttp(":8081")
 	if err := manager.AddWeb("web_http", web); err != nil {
 		log.Error("error adding web process to manager")
 	}
@@ -135,7 +125,7 @@ func usage() {
 	web.AddRoute(http.MethodGet, "/web_http", dummy_web_http_handler)
 
 	// web - with echo
-	web = gomanager.NewSimpleWebEcho(":8082")
+	web = NewSimpleWebEcho(":8082")
 	if err := manager.AddWeb("web_echo", web); err != nil {
 		log.Error("error adding web process to manager")
 	}
@@ -151,7 +141,7 @@ func usage() {
 	headers := map[string][]string{"Content-Type": {"application/json"}}
 	var body io.Reader
 
-	gateway := gomanager.NewSimpleGateway()
+	gateway := NewSimpleGateway()
 	manager.AddGateway("gateway_1", gateway)
 	gateway = manager.GetGateway("gateway_1")
 	status, bytes, err := gateway.Request(http.MethodGet, "http://127.0.0.1:8082", "/web_echo/123", headers, body)
@@ -161,25 +151,25 @@ func usage() {
 	// manager: database
 
 	// database - postgres
-	postgresConfig := gomanager.NewDBConfig("postgres", "postgres://user:password@localhost:7001?sslmode=disable")
-	postgresConn := gomanager.NewSimpleDB(postgresConfig)
+	postgresConfig := NewDBConfig("postgres", "postgres://user:password@localhost:7001?sslmode=disable")
+	postgresConn := NewSimpleDB(postgresConfig)
 	manager.AddDB("postgres", postgresConn)
 
 	// database - mysql
-	mysqlConfig := gomanager.NewDBConfig("mysql", "root:password@tcp(127.0.0.1:7002)/mysql")
-	mysqlConn := gomanager.NewSimpleDB(mysqlConfig)
+	mysqlConfig := NewDBConfig("mysql", "root:password@tcp(127.0.0.1:7002)/mysql")
+	mysqlConn := NewSimpleDB(mysqlConfig)
 	manager.AddDB("mysql", mysqlConn)
 
 	//
 	// manager: redis
-	redisConfig := gomanager.NewRedisConfig("127.0.0.1", 7100, 0, "")
-	redisConn := gomanager.NewSimpleRedis(redisConfig)
+	redisConfig := NewRedisConfig("127.0.0.1", 7100, 0, "")
+	redisConn := NewSimpleRedis(redisConfig)
 	manager.AddRedis("redis", redisConn)
 
 	//
 	// manager: workqueue
-	workqueueConfig := gomanager.NewWorkListConfig("queue_001", 1, 2, time.Second*2, gomanager.FIFO)
-	workqueue := gomanager.NewSimpleWorkList(workqueueConfig, work_handler)
+	workqueueConfig := NewWorkListConfig("queue_001", 1, 2, time.Second*2, FIFO)
+	workqueue := NewSimpleWorkList(workqueueConfig, work_handler)
 	manager.AddWorkList("queue_001", workqueue)
 	workqueue = manager.GetWorkList("queue_001")
 	for i := 1; i <= 1000; i++ {
