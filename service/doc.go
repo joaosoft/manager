@@ -1,5 +1,5 @@
 /*
-GoMock helps to manage you application
+GoManager helps to manage you application
 
 ## With support for
 * Processes
