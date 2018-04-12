@@ -8,7 +8,7 @@ type SimpleConfig struct {
 
 // NewSimpleConfig...
 func NewSimpleConfig(file string, obj interface{}) (IConfig, error) {
-	if bytes, err := ReadFile(file, obj); err != nil {
+	if bytes, err := readFile(file, obj); err != nil {
 		return nil, err
 	} else {
 		return &SimpleConfig{
@@ -31,7 +31,7 @@ func (setup *SimpleConfig) Set(config interface{}) {
 
 // Reload ...
 func (setup *SimpleConfig) Reload() error {
-	if bytes, err := ReadFile(setup.file, setup.obj); err != nil {
+	if bytes, err := readFile(setup.file, setup.obj); err != nil {
 		return err
 	} else {
 		setup.bytes = bytes
@@ -42,7 +42,7 @@ func (setup *SimpleConfig) Reload() error {
 
 // Save ...
 func (setup *SimpleConfig) Save() error {
-	if err := WriteFile(setup.file, setup.obj); err != nil {
+	if err := writeFile(setup.file, setup.obj); err != nil {
 		return err
 	}
 
