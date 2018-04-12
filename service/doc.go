@@ -16,3 +16,7 @@ Usage
 at https://github.com/joaosoft/go-manager/tree/master/bin/launcher
 */
 package gomanager
+
+// For full documentation of examples, see:
+// http://golang.org/pkg/testing/
+type Examples int
