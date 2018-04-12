@@ -4,28 +4,25 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
-
-	"go-manager/service"
-
 	"encoding/json"
-
 	"time"
-
 	"fmt"
-
 	"os"
 
-	logger "github.com/joaosoft/go-log/service"
+	"github.com/joaosoft/go-log/service"
+	"github.com/joaosoft/go-writer/service"
+
 	"github.com/labstack/echo"
 	nsqlib "github.com/nsqio/go-nsq"
+	"go-manager/service"
 )
 
-var log = logger.NewLog(
-	logger.WithLevel(logger.InfoLevel),
-	logger.WithFormatHandler(logger.JsonFormatHandler),
-	logger.WithWriter(os.Stdout)).WithPrefixes(map[string]interface{}{
-	"level":   logger.LEVEL,
-	"time":    logger.TIME,
+var log = golog.NewLog(
+	golog.WithLevel(golog.InfoLevel),
+	golog.WithFormatHandler(gowriter.JsonFormatHandler),
+	golog.WithWriter(os.Stdout)).WithPrefixes(map[string]interface{}{
+	"level":   golog.LEVEL,
+	"time":    golog.TIME,
 	"service": "go-manager"})
 
 // --------- dummy process ---------
@@ -73,8 +70,19 @@ func work_handler(id string, data interface{}) error {
 
 func main() {
 	//
+	// config
+	appConfig := &gomanager.AppConfig{}
+	if _, err := gomanager.ReadFile("./config/app.json", appConfig); err != nil {
+		log.Error(err)
+	}
+	//
 	// manager
-	manager := gomanager.NewManager()
+	var level golog.Level
+	var err error
+	if level, err = golog.ParseLevel(appConfig.Log.Level); err != nil {
+		log.Error(err)
+	}
+	manager := gomanager.NewManager(gomanager.WithLogLevel(level))
 
 	//
 	// manager: processes
@@ -112,7 +120,7 @@ func main() {
 	}
 	dir, _ := os.Getwd()
 	obj := &dummy_config{}
-	simpleConfig, _ := gomanager.NewSimpleConfig(dir+"/bin/launcher/data/config.json", obj)
+	simpleConfig, _ := gomanager.NewSimpleConfig(dir+"/example/data/config.json", obj)
 	manager.AddConfig("config_1", simpleConfig)
 	config := manager.GetConfig("config_1")
 

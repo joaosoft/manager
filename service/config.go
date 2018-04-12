@@ -1,7 +1,7 @@
 package gomanager
 
 // App ...
-type App struct {
+type AppConfig struct {
 	Log struct {
 		Level string `json:"level"`
 	} `json:"log"`
