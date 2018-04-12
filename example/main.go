@@ -75,13 +75,14 @@ func main() {
 	if _, err := gomanager.ReadFile("./config/app.json", appConfig); err != nil {
 		log.Error(err)
 	}
-	//
-	// manager
 	var level golog.Level
 	var err error
 	if level, err = golog.ParseLevel(appConfig.Log.Level); err != nil {
 		log.Error(err)
 	}
+
+	//
+	// manager
 	manager := gomanager.NewManager(gomanager.WithLogLevel(level))
 
 	//
