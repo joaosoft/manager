@@ -5,6 +5,7 @@ import (
 	"os/signal"
 	"reflect"
 	"syscall"
+
 	"github.com/joaosoft/go-log/service"
 )
 
@@ -20,6 +21,7 @@ type GoManager struct {
 	gateways        map[string]IGateway
 	worklist        map[string]IWorkList
 	runInBackground bool
+	config          *AppConfig
 
 	quit    chan int
 	started bool
@@ -27,6 +29,16 @@ type GoManager struct {
 
 // NewManager ...
 func NewManager(options ...GoManagerOption) *GoManager {
+	// load configuration file
+	configApp := &AppConfig{}
+	if _, err := readFile("./config/app.json", configApp); err != nil {
+		log.Error(err)
+	} else {
+		level, _ := golog.ParseLevel(configApp.Log.Level)
+		log.Debugf("setting log level to %s", level)
+		WithLogLevel(level)
+	}
+
 	gomanager := &GoManager{
 		processes:    make(map[string]IProcess),
 		configs:      make(map[string]IConfig),
@@ -38,16 +50,7 @@ func NewManager(options ...GoManagerOption) *GoManager {
 		gateways:     make(map[string]IGateway),
 		worklist:     make(map[string]IWorkList),
 		quit:         make(chan int),
-	}
-
-	// load configuration file
-	configApp := &AppConfig{}
-	if _, err := readFile("./config/app.json", configApp); err != nil {
-		log.Error(err)
-	} else {
-		level, _ := golog.ParseLevel(configApp.Log.Level)
-		log.Debugf("setting log level to %s", level)
-		WithLogLevel(level)
+		config:       configApp,
 	}
 
 	gomanager.Reconfigure(options...)
