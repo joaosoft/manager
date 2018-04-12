@@ -70,20 +70,8 @@ func work_handler(id string, data interface{}) error {
 
 func main() {
 	//
-	// config
-	appConfig := &gomanager.AppConfig{}
-	if _, err := gomanager.ReadFile("./config/app.json", appConfig); err != nil {
-		log.Error(err)
-	}
-	var level golog.Level
-	var err error
-	if level, err = golog.ParseLevel(appConfig.Log.Level); err != nil {
-		log.Error(err)
-	}
-
-	//
 	// manager
-	manager := gomanager.NewManager(gomanager.WithLogLevel(level))
+	manager := gomanager.NewManager()
 
 	//
 	// manager: processes

@@ -5,6 +5,7 @@ import (
 	"os/signal"
 	"reflect"
 	"syscall"
+	"github.com/joaosoft/go-log/service"
 )
 
 // GoManager ...
@@ -37,6 +38,16 @@ func NewManager(options ...GoManagerOption) *GoManager {
 		gateways:     make(map[string]IGateway),
 		worklist:     make(map[string]IWorkList),
 		quit:         make(chan int),
+	}
+
+	// load configuration file
+	configApp := &AppConfig{}
+	if _, err := ReadFile("./config/app.json", configApp); err != nil {
+		log.Error(err)
+	} else {
+		level, _ := golog.ParseLevel(configApp.Log.Level)
+		log.Debugf("setting log level to %s", level)
+		WithLogLevel(level)
 	}
 
 	gomanager.Reconfigure(options...)
