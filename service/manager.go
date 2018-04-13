@@ -31,7 +31,7 @@ type GoManager struct {
 func NewManager(options ...GoManagerOption) *GoManager {
 	// load configuration file
 	configApp := &AppConfig{}
-	if _, err := readFile("./config/app.json", configApp); err != nil {
+	if _, err := readFile("/config/app.json", configApp); err != nil {
 		log.Error(err)
 	} else {
 		level, _ := golog.ParseLevel(configApp.Log.Level)
@@ -52,8 +52,6 @@ func NewManager(options ...GoManagerOption) *GoManager {
 		quit:         make(chan int),
 		config:       configApp,
 	}
-
-	global["path"] = defaultPath
 
 	gomanager.Reconfigure(options...)
 
