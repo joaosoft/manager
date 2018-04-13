@@ -1,6 +1,11 @@
 package gomanager
 
 import (
+	"fmt"
+	"reflect"
+
+	"strings"
+
 	"github.com/alphazero/Go-Redis"
 )
 
@@ -46,6 +51,24 @@ func (redis *SimpleRedis) Stop() error {
 // Started ...
 func (redis *SimpleRedis) Started() bool {
 	return redis.started
+}
+
+// Action ...
+func (redis *SimpleRedis) Action(command string, arguments ...string) error {
+	inputs := make([]reflect.Value, len(arguments))
+	for i, arg := range arguments {
+		inputs[i] = reflect.ValueOf(arg)
+	}
+
+	chars := strings.SplitN(command, "", 1)
+	method := fmt.Sprintf("%s%s", strings.ToUpper(chars[0]), strings.ToLower(chars[1]))
+
+	result := reflect.ValueOf(redis.client).MethodByName(method).Call(inputs)
+	if result != nil && len(result) > 0 && !result[0].IsNil() {
+		return fmt.Errorf(result[0].String())
+	}
+
+	return nil
 }
 
 func (redis *SimpleRedis) Quit() error {

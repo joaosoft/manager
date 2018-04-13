@@ -178,7 +178,7 @@ func main() {
 	manager.AddWorkList("queue_001", workqueue)
 	workqueue = manager.GetWorkList("queue_001")
 	for i := 1; i <= 1000; i++ {
-		go workqueue.AddWork(fmt.Sprintf("PROCESS: %d", i), fmt.Sprintf("THIS IS MY MESSAGE %d", i))
+		workqueue.AddWork(fmt.Sprintf("PROCESS: %d", i), fmt.Sprintf("THIS IS MY MESSAGE %d", i))
 	}
 	if err := workqueue.Start(); err != nil {
 		log.Errorf("MAIN: error on workqueue %s", err)

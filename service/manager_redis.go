@@ -5,6 +5,8 @@ type IRedis interface {
 	Stop() error
 	Started() bool
 
+	Action(command string, arguments ...string) error
+
 	Quit() (err error)
 	Get(key string) (result []byte, err error)
 	Type(key string) (result byte, err error)
