@@ -53,6 +53,8 @@ func NewManager(options ...GoManagerOption) *GoManager {
 		config:       configApp,
 	}
 
+	global["path"] = defaultPath
+
 	gomanager.Reconfigure(options...)
 
 	return gomanager
