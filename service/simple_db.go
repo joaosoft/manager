@@ -29,7 +29,7 @@ func (db *SimpleDB) Get() *sql.DB {
 // Start ...
 func (db *SimpleDB) Start() error {
 	if !db.started {
-		if conn, err := db.config.connect(); err != nil {
+		if conn, err := db.config.Connect(); err != nil {
 			return err
 		} else {
 			db.DB = conn

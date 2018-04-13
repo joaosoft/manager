@@ -28,7 +28,7 @@ func NewSimpleNSQProducer(config *NSQConfig) (INSQProducer, error) {
 	if config.Lookupd != nil && len(config.Lookupd) > 0 {
 		addr = config.Lookupd[0]
 	} else {
-		return nil, fmt.Errorf("nsq producer hasn't the address to connect")
+		return nil, fmt.Errorf("nsq producer hasn't the address to Connect")
 	}
 
 	log.Infof("connecting nsq producer to %s", addr)
