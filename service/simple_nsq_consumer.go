@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	nsqlib "github.com/nsqio/go-nsq"
+	"github.com/nsqio/go-nsq"
 )
 
 // SimpleNSQConsumer ...
 type SimpleNSQConsumer struct {
-	client  *nsqlib.Consumer
+	client  *nsq.Consumer
 	handler INSQHandler
 	config  *NSQConfig
 	started bool
@@ -20,13 +20,13 @@ func NewSimpleNSQConsumer(config *NSQConfig, handler INSQHandler) (INSQConsumer,
 	log.Infof("nsq consumer, creating consumer [ topic: %s, channel: %s ]", config.Topic, config.Channel)
 
 	// Creating nsq configuration
-	nsqConfig := nsqlib.NewConfig()
+	nsqConfig := nsq.NewConfig()
 	nsqConfig.MaxAttempts = config.MaxAttempts
 	nsqConfig.DefaultRequeueDelay = time.Duration(config.RequeueDelay) * time.Second
 	nsqConfig.MaxInFlight = config.MaxInFlight
 	nsqConfig.ReadTimeout = 120 * time.Second
 
-	nsqConsumer, err := nsqlib.NewConsumer(config.Topic, config.Channel, nsqConfig)
+	nsqConsumer, err := nsq.NewConsumer(config.Topic, config.Channel, nsqConfig)
 	nsqConsumer.AddHandler(handler)
 	if err != nil {
 		panic(err)
@@ -44,7 +44,7 @@ func NewSimpleNSQConsumer(config *NSQConfig, handler INSQHandler) (INSQConsumer,
 }
 
 // HandleMessage ...
-func (consumer *SimpleNSQConsumer) HandleMessage(message *nsqlib.Message) error {
+func (consumer *SimpleNSQConsumer) HandleMessage(message *nsq.Message) error {
 	message.DisableAutoResponse()
 
 	if err := consumer.handler.HandleMessage(message); err != nil {

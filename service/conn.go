@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"time"
 
-	redis "github.com/alphazero/Go-Redis"
-	nsqlib "github.com/nsqio/go-nsq"
+	"github.com/alphazero/Go-Redis"
+	"github.com/nsqio/go-nsq"
 )
 
 // createConnection ...
@@ -22,13 +22,13 @@ func (config *DBConfig) Connect() (*sql.DB, error) {
 }
 
 // createConnection ...
-func (config *NSQConfig) Connect() (*nsqlib.Producer, error) {
-	nsqConfig := nsqlib.NewConfig()
+func (config *NSQConfig) Connect() (*nsq.Producer, error) {
+	nsqConfig := nsq.NewConfig()
 	nsqConfig.MaxAttempts = config.MaxAttempts
 	nsqConfig.DefaultRequeueDelay = time.Duration(config.RequeueDelay) * time.Second
 	nsqConfig.MaxInFlight = config.MaxInFlight
 	nsqConfig.ReadTimeout = 120 * time.Second
 
 	log.Infof("connecting nsq with max attempts [ %d ]", config.MaxAttempts)
-	return nsqlib.NewProducer(config.Lookupd[0], nsqConfig)
+	return nsq.NewProducer(config.Lookupd[0], nsqConfig)
 }

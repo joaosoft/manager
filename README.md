@@ -98,7 +98,7 @@ if err := config.Save(); err != nil {
 // --------- dummy nsq ---------
 type dummy_nsq_handler struct{}
 
-func (dummy *dummy_nsq_handler) HandleMessage(msg *nsqlib.Message) error {
+func (dummy *dummy_nsq_handler) HandleMessage(msg *nsq.Message) error {
 	log.Infof("executing the handle message of NSQ with [ message: %s ]", string(msg.Body))
 	return nil
 }

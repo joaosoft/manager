@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	nsqlib "github.com/nsqio/go-nsq"
+	"github.com/nsqio/go-nsq"
 )
 
 // Producer ...
 type SimpleNSQProducer struct {
-	client  *nsqlib.Producer
+	client  *nsq.Producer
 	config  *NSQConfig
 	started bool
 }
@@ -19,7 +19,7 @@ func NewSimpleNSQProducer(config *NSQConfig) (INSQProducer, error) {
 	var addr string
 
 	// nsq configuration
-	nsqConfig := nsqlib.NewConfig()
+	nsqConfig := nsq.NewConfig()
 	nsqConfig.MaxAttempts = config.MaxAttempts
 	nsqConfig.DefaultRequeueDelay = time.Duration(config.RequeueDelay) * time.Second
 	nsqConfig.MaxInFlight = config.MaxInFlight
@@ -32,7 +32,7 @@ func NewSimpleNSQProducer(config *NSQConfig) (INSQProducer, error) {
 	}
 
 	log.Infof("connecting nsq producer to %s", addr)
-	nsqProducer, err := nsqlib.NewProducer(addr, nsqConfig)
+	nsqProducer, err := nsq.NewProducer(addr, nsqConfig)
 	if err != nil {
 		panic(err)
 	}

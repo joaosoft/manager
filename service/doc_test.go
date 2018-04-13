@@ -10,7 +10,7 @@ import (
 	"os"
 
 	"github.com/labstack/echo"
-	nsqlib "github.com/nsqio/go-nsq"
+	"github.com/nsqio/go-nsq"
 )
 
 // --------- dummy process ---------
@@ -22,7 +22,7 @@ func dummy_process() error {
 // --------- dummy nsq ---------
 type dummy_nsq_handler struct{}
 
-func (dummy *dummy_nsq_handler) HandleMessage(msg *nsqlib.Message) error {
+func (dummy *dummy_nsq_handler) HandleMessage(msg *nsq.Message) error {
 	log.Infof("executing the handle message of NSQ with [ message: %s ]", string(msg.Body))
 	return nil
 }

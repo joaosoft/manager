@@ -1,18 +1,18 @@
 package gomanager
 
 import (
-	nsqlib "github.com/nsqio/go-nsq"
+	"github.com/nsqio/go-nsq"
 )
 
 type INSQHandler interface {
-	HandleMessage(message *nsqlib.Message) error
+	HandleMessage(message *nsq.Message) error
 }
 
 // INSQConsumer ...
 type INSQConsumer interface {
 	Start() error
 	Stop() error
-	HandleMessage(message *nsqlib.Message) error
+	HandleMessage(message *nsq.Message) error
 	Started() bool
 }
 
