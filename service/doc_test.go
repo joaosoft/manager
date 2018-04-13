@@ -1,13 +1,13 @@
 package gomanager
 
 import (
+	"encoding/json"
+	"fmt"
 	"io"
 	"math/rand"
 	"net/http"
-	"encoding/json"
-	"time"
-	"fmt"
 	"os"
+	"time"
 
 	"github.com/labstack/echo"
 	"github.com/nsqio/go-nsq"

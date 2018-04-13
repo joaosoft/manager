@@ -1,18 +1,19 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"io"
 	"math/rand"
 	"net/http"
-	"encoding/json"
-	"time"
-	"fmt"
 	"os"
+	"time"
+
+	"go-manager/service"
 
 	"github.com/joaosoft/go-log/service"
 	"github.com/labstack/echo"
 	"github.com/nsqio/go-nsq"
-	"go-manager/service"
 )
 
 var log = golog.NewLogDefault("go-manager", golog.InfoLevel)

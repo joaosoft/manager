@@ -23,19 +23,19 @@
   branch = "master"
   name = "github.com/joaosoft/go-log"
   packages = ["service"]
-  revision = "5440ef3c601d7ce1748fd5f9a5317d28d5adbad3"
+  revision = "45ce849cea86a5181f8f865edf3d33694ab5c3a0"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/go-writer"
   packages = ["service"]
-  revision = "647f479089687d12ae88538c7b746c2fc89c02fb"
+  revision = "03b024de562bdef1b632537ae5918aa17dc3c505"
 
 [[projects]]
   name = "github.com/labstack/echo"
   packages = ["."]
-  revision = "a5d81b8d4a627f3f49dcb3164ef2bb5239682227"
-  version = "3.3.4"
+  revision = "6d227dfea4d2e52cb76856120b3c17f758139b4e"
+  version = "3.3.5"
 
 [[projects]]
   name = "github.com/labstack/gommon"
@@ -60,6 +60,12 @@
   packages = ["."]
   revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
   version = "v0.0.3"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/mediocregopher/radix.v3"
+  packages = [".","resp"]
+  revision = "ad2e28d1563c76d5ae7b62a66f12e72c208f461d"
 
 [[projects]]
   name = "github.com/nsqio/go-nsq"
@@ -89,17 +95,17 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert"]
-  revision = "f70185d77e8278766928032ee1355e3da47e7181"
+  revision = "d6449816ce06963d9d136eee5a56fca5b0616e7e"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "3b87a42e500a6dc65dae1a55d0b641295971163e"
+  revision = "f6f352972f061230a99fbf49d1eb8073ebdb36cb"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3caa729613422a1e35959dfc52231dd72a036802b0205a138b58ade38a0ff18f"
+  inputs-digest = "13ff6a6690a1ec39333ccccbb56765acab4a0ddce7858fb4a1934fa7d410d73b"
   solver-name = "gps-cdcl"
   solver-version = 1

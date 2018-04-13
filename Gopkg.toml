@@ -35,11 +35,15 @@
 
 [[constraint]]
   name = "github.com/labstack/echo"
-  version = "3.3.4"
+  version = "3.3.5"
 
 [[constraint]]
   branch = "master"
   name = "github.com/lib/pq"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/mediocregopher/radix.v3"
 
 [[constraint]]
   name = "github.com/nsqio/go-nsq"

@@ -1,12 +1,12 @@
 package gomanager
 
 import (
-	"github.com/alphazero/Go-Redis"
+	goredis "github.com/alphazero/Go-Redis"
 )
 
 // SimpleRedis ...
 type SimpleRedis struct {
-	client  redis.Client
+	client  goredis.Client
 	config  *RedisConfig
 	started bool
 }
