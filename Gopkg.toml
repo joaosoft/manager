@@ -42,9 +42,9 @@
   name = "github.com/lib/pq"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/mediocregopher/radix.v3"
-
-[[constraint]]
   name = "github.com/nsqio/go-nsq"
   version = "1.0.7"
+
+[[constraint]]
+  name = "github.com/spf13/viper"
+  version = "1.0.2"
