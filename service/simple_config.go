@@ -3,6 +3,8 @@ package gomanager
 import (
 	"time"
 
+	"bytes"
+
 	"github.com/spf13/viper"
 )
 
@@ -22,7 +24,7 @@ func NewSimpleConfig(file string, obj interface{}) (IConfig, error) {
 			file:  file,
 			obj:   obj,
 			bytes: bytes,
-			viper: loadViper(file),
+			viper: loadViper(bytes),
 		}, err
 	}
 }
@@ -102,7 +104,7 @@ func (simple *SimpleConfig) Reload() error {
 	if bytes, err := readFile(simple.file, simple.obj); err != nil {
 		return err
 	} else {
-		simple.viper = loadViper(simple.file)
+		simple.viper = loadViper(simple.bytes)
 		simple.bytes = bytes
 	}
 
@@ -115,14 +117,12 @@ func (simple *SimpleConfig) Save() error {
 		return err
 	}
 
-	simple.viper = loadViper(simple.file)
-
-	return nil
+	return simple.Reload()
 }
 
-func loadViper(file string) *viper.Viper {
+func loadViper(b []byte) *viper.Viper {
 	viper := viper.New()
-	viper.AddConfigPath(file)
+	viper.ReadConfig(bytes.NewBuffer(b))
 	viper.ReadInConfig()
 
 	return viper
