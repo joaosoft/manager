@@ -123,8 +123,8 @@ func (simple *SimpleConfig) Save() error {
 
 func loadViper(b []byte) *viper.Viper {
 	viper := viper.New()
+	viper.SetConfigType("json")
 	viper.ReadConfig(bytes.NewBuffer(b))
-	viper.ReadInConfig()
 
 	return viper
 }
