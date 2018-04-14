@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// SimpleConfig ...
 type SimpleConfig struct {
 	file  string
 	obj   interface{}
