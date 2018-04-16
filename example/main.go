@@ -106,7 +106,7 @@ func main() {
 	manager.AddConfig("config_1", simpleConfig)
 	config := manager.GetConfig("config_1")
 
-	jsonIndent, _ := json.MarshalIndent(config.Get(), "", "    ")
+	jsonIndent, _ := json.MarshalIndent(config.GetObj(), "", "    ")
 	log.Infof("CONFIGURATION: %s", jsonIndent)
 
 	// allows to set a new configuration and save in the file

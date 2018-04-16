@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"syscall"
 
+	"fmt"
+
 	"github.com/joaosoft/go-log/service"
 )
 
@@ -31,7 +33,7 @@ type GoManager struct {
 func NewManager(options ...GoManagerOption) *GoManager {
 	// load configuration file
 	configApp := &AppConfig{}
-	if _, err := readFile("/config/app.json", configApp); err != nil {
+	if _, err := readFile(fmt.Sprintf("/config/app.%s.json", getEnv()), configApp); err != nil {
 		log.Error(err)
 	} else {
 		level, _ := golog.ParseLevel(configApp.Log.Level)

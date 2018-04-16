@@ -7,6 +7,16 @@ import (
 	"os"
 )
 
+func getEnv() string {
+	env := os.Getenv("env")
+	if env == "" {
+		env = "local"
+	}
+	log.Infof("environment: %s", env)
+
+	return env
+}
+
 func exists(file string) bool {
 	if _, err := os.Stat(file); err != nil {
 		if os.IsNotExist(err) {
