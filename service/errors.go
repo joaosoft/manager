@@ -7,7 +7,7 @@ type ErrorData struct {
 	error
 }
 
-func (manager *GoManager) NewError(err error) *ErrorData {
+func NewError(err error) *ErrorData {
 	return &ErrorData{error: err}
 }
 
