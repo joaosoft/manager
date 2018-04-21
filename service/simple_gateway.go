@@ -34,7 +34,7 @@ func (gateway *SimpleGateway) Request(method, host, endpoint string, headers map
 	url := fmt.Sprintf("%s%s", host, endpoint)
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(bodyBytes))
 	if err != nil {
-		return 0, nil, err
+		return 0, res, err
 	}
 
 	if headers != nil {
@@ -45,14 +45,19 @@ func (gateway *SimpleGateway) Request(method, host, endpoint string, headers map
 	}
 
 	response, err := gateway.client.Do(req)
-	if err != nil {
-		return 0, nil, err
+
+	var bodyResponse []byte
+
+	if response != nil {
+		defer response.Body.Close()
+		bodyResponse, err = ioutil.ReadAll(response.Body)
+		if err != nil {
+			return response.StatusCode, nil, err
+		}
 	}
 
-	defer response.Body.Close()
-	bodyResponse, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return response.StatusCode, nil, err
+		return 0, bodyResponse, err
 	}
 
 	return response.StatusCode, bodyResponse, nil
