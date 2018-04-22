@@ -1,7 +1,7 @@
 package gomanager
 
 import (
-	logger "github.com/joaosoft/go-log/service"
+	"github.com/joaosoft/go-log/service"
 )
 
 // ManagerOption ...
@@ -22,7 +22,7 @@ func WithRunInBackground(runInBackground bool) ManagerOption {
 }
 
 // WithLogger ...
-func WithLogger(logger logger.ILog) ManagerOption {
+func WithLogger(logger golog.ILog) ManagerOption {
 	return func(manager *Manager) {
 		log = logger
 		manager.logIsExternal = true
@@ -30,7 +30,7 @@ func WithLogger(logger logger.ILog) ManagerOption {
 }
 
 // WithLogLevel ...
-func WithLogLevel(level logger.Level) ManagerOption {
+func WithLogLevel(level golog.Level) ManagerOption {
 	return func(manager *Manager) {
 		log.SetLevel(level)
 	}
