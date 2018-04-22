@@ -26,13 +26,18 @@ func NewSimpleGateway() IGateway {
 
 // Request ...
 func (gateway *SimpleGateway) Request(method, host, endpoint string, headers map[string][]string, body interface{}) (int, []byte, error) {
-	bodyBytes, err := json.Marshal(body)
-	if err != nil {
-		return 0, nil, err
+	var bodyBuffer *bytes.Buffer
+
+	if body != nil {
+		bodyBytes, err := json.Marshal(body)
+		bodyBuffer = bytes.NewBuffer(bodyBytes)
+		if err != nil {
+			return 0, nil, err
+		}
 	}
 
 	url := fmt.Sprintf("%s%s", host, endpoint)
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(bodyBytes))
+	req, err := http.NewRequest(method, url, bodyBuffer)
 	if err != nil {
 		return 0, nil, err
 	}
