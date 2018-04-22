@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"syscall"
 
-	"fmt"
-
 	"github.com/joaosoft/go-log/service"
+
+	"fmt"
 )
 
 // Manager ...
@@ -32,15 +32,7 @@ type Manager struct {
 
 // NewManager ...
 func NewManager(options ...managerOption) *Manager {
-	// load configuration file
 	configApp := &appConfig{}
-	if _, err := readFile(fmt.Sprintf("/config/app.%s.json", getEnv()), configApp); err != nil {
-		log.Error(err)
-	} else {
-		level, _ := golog.ParseLevel(configApp.GoManager.Log.Level)
-		log.Debugf("setting log level to %s", level)
-		WithLogLevel(level)
-	}
 
 	gomanager := &Manager{
 		processes:    make(map[string]IProcess),
@@ -57,6 +49,15 @@ func NewManager(options ...managerOption) *Manager {
 	}
 
 	gomanager.Reconfigure(options...)
+
+	// load configuration file
+	if _, err := readFile(fmt.Sprintf("/config/app.%s.json", getEnv()), configApp); err != nil {
+		log.Error(err)
+	} else {
+		level, _ := golog.ParseLevel(configApp.GoManager.Log.Level)
+		log.Debugf("setting log level to %s", level)
+		log.Reconfigure(golog.WithLevel(level))
+	}
 
 	return gomanager
 }

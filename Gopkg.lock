@@ -33,15 +33,21 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/joaosoft/go-error"
+  packages = ["service"]
+  revision = "a44e27c13ad9fed6a8a813e8e6f8251768581404"
+
+[[projects]]
+  branch = "master"
   name = "github.com/joaosoft/go-log"
   packages = ["service"]
-  revision = "45ce849cea86a5181f8f865edf3d33694ab5c3a0"
+  revision = "bb80ed104841dee7e3cc38a161c28bffc3fd274e"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/go-writer"
   packages = ["service"]
-  revision = "03b024de562bdef1b632537ae5918aa17dc3c505"
+  revision = "5916e348a3faa57e172332068979b8376c0e496a"
 
 [[projects]]
   name = "github.com/labstack/echo"
@@ -149,13 +155,13 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert"]
-  revision = "d6449816ce06963d9d136eee5a56fca5b0616e7e"
+  revision = "e73bf333ef8920dbb52ad18d4bd38ad9d9bc76d7"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "f6f352972f061230a99fbf49d1eb8073ebdb36cb"
+  revision = "79b0c6888797020a994db17c8510466c72fe75d9"
 
 [[projects]]
   name = "golang.org/x/text"
