@@ -188,12 +188,11 @@ web.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
 //
 // manager: gateway
 headers := map[string][]string{"Content-Type": {"application/json"}}
-var body io.Reader
 
 gateway := gomanager.NewSimpleGateway()
 manager.AddGateway("gateway_1", gateway)
 gateway = manager.GetGateway("gateway_1")
-status, bytes, err := gateway.Request(http.MethodGet, "http://127.0.0.1:8082", "/web_echo/123", headers, body)
+status, bytes, err := gateway.Request(http.MethodGet, "http://127.0.0.1:8082", "/web_echo/123", headers, nil)
 log.Infof("status: %d, response: %s, error? %t", status, string(bytes), err != nil)
 ```
 
