@@ -2,7 +2,7 @@ package gomanager
 
 // IGateway ...
 type IGateway interface {
-	Request(method, host, endpoint string, headers map[string][]string, body interface{}) (int, []byte, error)
+	Request(method, host, endpoint string, headers map[string][]string, body []byte) (int, []byte, error)
 }
 
 // AddGateway ...

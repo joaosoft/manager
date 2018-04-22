@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"bytes"
-	"encoding/json"
 	"fmt"
 )
 
@@ -25,21 +24,9 @@ func NewSimpleGateway() IGateway {
 }
 
 // Request ...
-func (gateway *SimpleGateway) Request(method, host, endpoint string, headers map[string][]string, body interface{}) (int, []byte, error) {
-	var bodyBuffer *bytes.Buffer
-
-	if body != nil {
-		bodyBytes, err := json.Marshal(body)
-		bodyBuffer = bytes.NewBuffer(bodyBytes)
-		if err != nil {
-			return 0, nil, err
-		}
-	} else {
-		bodyBuffer = bytes.NewBuffer([]byte(""))
-	}
-
+func (gateway *SimpleGateway) Request(method, host, endpoint string, headers map[string][]string, body []byte) (int, []byte, error) {
 	url := fmt.Sprintf("%s%s", host, endpoint)
-	req, err := http.NewRequest(method, url, bodyBuffer)
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(body))
 	if err != nil {
 		return 0, nil, err
 	}
