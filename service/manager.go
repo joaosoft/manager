@@ -23,7 +23,7 @@ type GoManager struct {
 	gateways        map[string]IGateway
 	worklist        map[string]IWorkList
 	runInBackground bool
-	config          *AppConfig
+	config          *goManagerConfig
 
 	quit    chan int
 	started bool
@@ -32,11 +32,11 @@ type GoManager struct {
 // NewManager ...
 func NewManager(options ...GoManagerOption) *GoManager {
 	// load configuration file
-	configApp := &AppConfig{}
+	configApp := &appConfig{}
 	if _, err := readFile(fmt.Sprintf("/config/app.%s.json", getEnv()), configApp); err != nil {
 		log.Error(err)
 	} else {
-		level, _ := golog.ParseLevel(configApp.Log.Level)
+		level, _ := golog.ParseLevel(configApp.GoManager.Log.Level)
 		log.Debugf("setting log level to %s", level)
 		WithLogLevel(level)
 	}
@@ -52,7 +52,7 @@ func NewManager(options ...GoManagerOption) *GoManager {
 		gateways:     make(map[string]IGateway),
 		worklist:     make(map[string]IWorkList),
 		quit:         make(chan int),
-		config:       configApp,
+		config:       &configApp.GoManager,
 	}
 
 	gomanager.Reconfigure(options...)
