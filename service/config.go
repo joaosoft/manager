@@ -2,11 +2,11 @@ package gomanager
 
 // appConfig ...
 type appConfig struct {
-	GoManager goManagerConfig `json:"log"`
+	GoManager GoManagerConfig `json:"log"`
 }
 
-// goManagerConfig ...
-type goManagerConfig struct {
+// GoManagerConfig ...
+type GoManagerConfig struct {
 	Log struct {
 		Level string `json:"level"`
 	} `json:"log"`

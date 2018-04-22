@@ -23,7 +23,7 @@ type Manager struct {
 	gateways        map[string]IGateway
 	worklist        map[string]IWorkList
 	runInBackground bool
-	config          *goManagerConfig
+	config          *GoManagerConfig
 
 	quit    chan int
 	started bool
