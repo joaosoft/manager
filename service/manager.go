@@ -32,8 +32,6 @@ type Manager struct {
 
 // NewManager ...
 func NewManager(options ...managerOption) *Manager {
-	configApp := &appConfig{}
-
 	gomanager := &Manager{
 		processes:    make(map[string]IProcess),
 		configs:      make(map[string]IConfig),
@@ -45,12 +43,12 @@ func NewManager(options ...managerOption) *Manager {
 		gateways:     make(map[string]IGateway),
 		worklist:     make(map[string]IWorkList),
 		quit:         make(chan int),
-		config:       &configApp.GoManager,
 	}
 
 	gomanager.Reconfigure(options...)
 
 	// load configuration file
+	configApp := &appConfig{}
 	if _, err := readFile(fmt.Sprintf("/config/app.%s.json", getEnv()), configApp); err != nil {
 		log.Error(err)
 	} else {
@@ -58,6 +56,7 @@ func NewManager(options ...managerOption) *Manager {
 		log.Debugf("setting log level to %s", level)
 		log.Reconfigure(golog.WithLevel(level))
 	}
+	gomanager.config = &configApp.GoManager
 
 	return gomanager
 }
