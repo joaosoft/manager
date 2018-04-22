@@ -34,6 +34,8 @@ func (gateway *SimpleGateway) Request(method, host, endpoint string, headers map
 		if err != nil {
 			return 0, nil, err
 		}
+	} else {
+		bodyBuffer = bytes.NewBuffer([]byte(""))
 	}
 
 	url := fmt.Sprintf("%s%s", host, endpoint)
