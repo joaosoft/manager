@@ -24,7 +24,7 @@ func NewDBConfig(driver, datasource string) *DBConfig {
 }
 
 // AddWeb ...
-func (manager *GoManager) AddDB(key string, db IDB) error {
+func (manager *Manager) AddDB(key string, db IDB) error {
 	manager.dbs[key] = db
 	log.Infof("database %s added", key)
 
@@ -32,7 +32,7 @@ func (manager *GoManager) AddDB(key string, db IDB) error {
 }
 
 // RemoveWeb ...
-func (manager *GoManager) RemoveDB(key string) (IDB, error) {
+func (manager *Manager) RemoveDB(key string) (IDB, error) {
 	db := manager.dbs[key]
 
 	delete(manager.dbs, key)
@@ -42,7 +42,7 @@ func (manager *GoManager) RemoveDB(key string) (IDB, error) {
 }
 
 // GetDB ...
-func (manager *GoManager) GetDB(key string) IDB {
+func (manager *Manager) GetDB(key string) IDB {
 	if db, exists := manager.dbs[key]; exists {
 		return db
 	}

@@ -24,7 +24,7 @@ type IConfig interface {
 }
 
 // AddConfig ...
-func (manager *GoManager) AddConfig(key string, config IConfig) error {
+func (manager *Manager) AddConfig(key string, config IConfig) error {
 	manager.configs[key] = config
 	log.Infof("config %s added", key)
 
@@ -32,7 +32,7 @@ func (manager *GoManager) AddConfig(key string, config IConfig) error {
 }
 
 // RemoveConfig ...
-func (manager *GoManager) RemoveConfig(key string) (IConfig, error) {
+func (manager *Manager) RemoveConfig(key string) (IConfig, error) {
 	config := manager.configs[key]
 
 	delete(manager.configs, key)
@@ -42,7 +42,7 @@ func (manager *GoManager) RemoveConfig(key string) (IConfig, error) {
 }
 
 // GetConfig ...
-func (manager *GoManager) GetConfig(key string) IConfig {
+func (manager *Manager) GetConfig(key string) IConfig {
 	if config, exists := manager.configs[key]; exists {
 		return config
 	}

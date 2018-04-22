@@ -6,7 +6,7 @@ type IGateway interface {
 }
 
 // AddGateway ...
-func (manager *GoManager) AddGateway(key string, gateway IGateway) error {
+func (manager *Manager) AddGateway(key string, gateway IGateway) error {
 	manager.gateways[key] = gateway
 	log.Infof("gateway %s added", key)
 
@@ -14,7 +14,7 @@ func (manager *GoManager) AddGateway(key string, gateway IGateway) error {
 }
 
 // RemoveGateway ...
-func (manager *GoManager) RemoveGateway(key string) (IGateway, error) {
+func (manager *Manager) RemoveGateway(key string) (IGateway, error) {
 	gateway := manager.gateways[key]
 
 	delete(manager.configs, key)
@@ -24,7 +24,7 @@ func (manager *GoManager) RemoveGateway(key string) (IGateway, error) {
 }
 
 // GetGateway ...
-func (manager *GoManager) GetGateway(key string) IGateway {
+func (manager *Manager) GetGateway(key string) IGateway {
 	if gateway, exists := manager.gateways[key]; exists {
 		return gateway
 	}

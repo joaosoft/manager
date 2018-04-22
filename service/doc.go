@@ -1,5 +1,5 @@
 /*
-GoManager helps you to manage you application
+Manager helps you to manage you application
 
 With support for
 Processes

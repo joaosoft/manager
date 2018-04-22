@@ -4,33 +4,33 @@ import (
 	logger "github.com/joaosoft/go-log/service"
 )
 
-// GoManagerOption ...
-type GoManagerOption func(gomanager *GoManager)
+// ManagerOption ...
+type ManagerOption func(manager *Manager)
 
 // Reconfigure ...
-func (gomanager *GoManager) Reconfigure(options ...GoManagerOption) {
+func (manager *Manager) Reconfigure(options ...ManagerOption) {
 	for _, option := range options {
-		option(gomanager)
+		option(manager)
 	}
 }
 
 // WithRunInBackground ...
-func WithRunInBackground(runInBackground bool) GoManagerOption {
-	return func(gomanager *GoManager) {
-		gomanager.runInBackground = runInBackground
+func WithRunInBackground(runInBackground bool) ManagerOption {
+	return func(manager *Manager) {
+		manager.runInBackground = runInBackground
 	}
 }
 
 // WithLogger ...
-func WithLogger(logger logger.ILog) GoManagerOption {
-	return func(gomanager *GoManager) {
+func WithLogger(logger logger.ILog) ManagerOption {
+	return func(manager *Manager) {
 		log = logger
 	}
 }
 
 // WithLogLevel ...
-func WithLogLevel(level logger.Level) GoManagerOption {
-	return func(gomanager *GoManager) {
+func WithLogLevel(level logger.Level) ManagerOption {
+	return func(manager *Manager) {
 		log.SetLevel(level)
 	}
 }

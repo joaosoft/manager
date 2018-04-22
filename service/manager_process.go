@@ -8,7 +8,7 @@ type IProcess interface {
 }
 
 // AddProcess ...
-func (manager *GoManager) AddProcess(key string, process IProcess) error {
+func (manager *Manager) AddProcess(key string, process IProcess) error {
 	manager.processes[key] = process
 	log.Infof("process %s added", key)
 
@@ -16,7 +16,7 @@ func (manager *GoManager) AddProcess(key string, process IProcess) error {
 }
 
 // RemoveProcess ...
-func (manager *GoManager) RemoveProcess(key string) (IProcess, error) {
+func (manager *Manager) RemoveProcess(key string) (IProcess, error) {
 	process := manager.processes[key]
 
 	delete(manager.processes, key)
@@ -26,7 +26,7 @@ func (manager *GoManager) RemoveProcess(key string) (IProcess, error) {
 }
 
 // GetProcess ...
-func (manager *GoManager) GetProcess(key string) IProcess {
+func (manager *Manager) GetProcess(key string) IProcess {
 	if process, exists := manager.processes[key]; exists {
 		return process
 	}

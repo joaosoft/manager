@@ -11,7 +11,7 @@ type IWeb interface {
 }
 
 // AddWeb ...
-func (manager *GoManager) AddWeb(key string, web IWeb) error {
+func (manager *Manager) AddWeb(key string, web IWeb) error {
 	manager.webs[key] = web
 	log.Infof("web %s added", key)
 
@@ -19,7 +19,7 @@ func (manager *GoManager) AddWeb(key string, web IWeb) error {
 }
 
 // RemoveWeb ...
-func (manager *GoManager) RemoveWeb(key string) (IWeb, error) {
+func (manager *Manager) RemoveWeb(key string) (IWeb, error) {
 	web := manager.webs[key]
 
 	delete(manager.webs, key)
@@ -29,7 +29,7 @@ func (manager *GoManager) RemoveWeb(key string) (IWeb, error) {
 }
 
 // GetWeb ...
-func (manager *GoManager) GetWeb(key string) IWeb {
+func (manager *Manager) GetWeb(key string) IWeb {
 	if web, ok := manager.webs[key]; ok {
 		return web
 	}

@@ -11,8 +11,8 @@ import (
 	"github.com/joaosoft/go-log/service"
 )
 
-// GoManager ...
-type GoManager struct {
+// Manager ...
+type Manager struct {
 	processes       map[string]IProcess
 	configs         map[string]IConfig
 	redis           map[string]IRedis
@@ -30,7 +30,7 @@ type GoManager struct {
 }
 
 // NewManager ...
-func NewManager(options ...GoManagerOption) *GoManager {
+func NewManager(options ...ManagerOption) *Manager {
 	// load configuration file
 	configApp := &appConfig{}
 	if _, err := readFile(fmt.Sprintf("/config/app.%s.json", getEnv()), configApp); err != nil {
@@ -41,7 +41,7 @@ func NewManager(options ...GoManagerOption) *GoManager {
 		WithLogLevel(level)
 	}
 
-	gomanager := &GoManager{
+	gomanager := &Manager{
 		processes:    make(map[string]IProcess),
 		configs:      make(map[string]IConfig),
 		redis:        make(map[string]IRedis),
@@ -61,12 +61,12 @@ func NewManager(options ...GoManagerOption) *GoManager {
 }
 
 // Started ...
-func (manager *GoManager) Started() bool {
+func (manager *Manager) Started() bool {
 	return manager.started
 }
 
 // Start ...
-func (manager *GoManager) Start() error {
+func (manager *Manager) Start() error {
 	if manager.runInBackground {
 		go manager.executeStart()
 	} else {
@@ -77,7 +77,7 @@ func (manager *GoManager) Start() error {
 }
 
 // Stop ...
-func (manager *GoManager) Stop() error {
+func (manager *Manager) Stop() error {
 	if manager.started {
 		log.Infof("stopping...")
 
@@ -96,7 +96,7 @@ func (manager *GoManager) Stop() error {
 	return nil
 }
 
-func (manager *GoManager) executeStart() error {
+func (manager *Manager) executeStart() error {
 	log.Info("starting...")
 
 	// listen for termination signals

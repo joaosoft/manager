@@ -10,7 +10,7 @@ type INSQProducer interface {
 }
 
 // AddNSQProducer ...
-func (manager *GoManager) AddNSQProducer(key string, nsqProducer INSQProducer) error {
+func (manager *Manager) AddNSQProducer(key string, nsqProducer INSQProducer) error {
 	manager.nsqProducers[key] = nsqProducer
 	log.Infof("nsq producer %s added", key)
 
@@ -18,7 +18,7 @@ func (manager *GoManager) AddNSQProducer(key string, nsqProducer INSQProducer) e
 }
 
 // RemoveNSQProducer ...
-func (manager *GoManager) RemoveNSQProducer(key string) (INSQProducer, error) {
+func (manager *Manager) RemoveNSQProducer(key string) (INSQProducer, error) {
 	process := manager.nsqProducers[key]
 
 	delete(manager.processes, key)
@@ -28,7 +28,7 @@ func (manager *GoManager) RemoveNSQProducer(key string) (INSQProducer, error) {
 }
 
 // GetNSQProducer ...
-func (manager *GoManager) GetNSQProducer(key string) INSQProducer {
+func (manager *Manager) GetNSQProducer(key string) INSQProducer {
 	if process, exists := manager.nsqProducers[key]; exists {
 		return process
 	}

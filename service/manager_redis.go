@@ -95,7 +95,7 @@ func NewRedisConfig(host string, port int, database int, password string) *Redis
 }
 
 // AddRedis ...
-func (manager *GoManager) AddRedis(key string, redis IRedis) error {
+func (manager *Manager) AddRedis(key string, redis IRedis) error {
 	manager.redis[key] = redis
 	log.Infof("redis %s added", key)
 
@@ -103,7 +103,7 @@ func (manager *GoManager) AddRedis(key string, redis IRedis) error {
 }
 
 // RemoveRedis ...
-func (manager *GoManager) RemoveRedis(key string) (IRedis, error) {
+func (manager *Manager) RemoveRedis(key string) (IRedis, error) {
 	redis := manager.redis[key]
 
 	delete(manager.redis, key)
@@ -113,7 +113,7 @@ func (manager *GoManager) RemoveRedis(key string) (IRedis, error) {
 }
 
 // GetRedis ...
-func (manager *GoManager) GetRedis(key string) interface{} {
+func (manager *Manager) GetRedis(key string) interface{} {
 	if redis, exists := manager.redis[key]; exists {
 		return redis
 	}
