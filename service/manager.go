@@ -31,7 +31,7 @@ type Manager struct {
 }
 
 // NewManager ...
-func NewManager(options ...ManagerOption) *Manager {
+func NewManager(options ...managerOption) *Manager {
 	// load configuration file
 	configApp := &appConfig{}
 	if _, err := readFile(fmt.Sprintf("/config/app.%s.json", getEnv()), configApp); err != nil {
