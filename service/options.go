@@ -25,6 +25,7 @@ func WithRunInBackground(runInBackground bool) ManagerOption {
 func WithLogger(logger logger.ILog) ManagerOption {
 	return func(manager *Manager) {
 		log = logger
+		manager.logIsExternal = true
 	}
 }
 
