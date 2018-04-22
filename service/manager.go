@@ -24,7 +24,7 @@ type Manager struct {
 	worklist        map[string]IWorkList
 	runInBackground bool
 	config          *ManagerConfig
-	logIsExternal   bool
+	isLogExternal   bool
 
 	quit    chan int
 	started bool
