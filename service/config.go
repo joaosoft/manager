@@ -2,7 +2,7 @@ package gomanager
 
 // appConfig ...
 type appConfig struct {
-	GoManager ManagerConfig `json:"log"`
+	GoManager ManagerConfig `json:"gomanager"`
 }
 
 // ManagerConfig ...
