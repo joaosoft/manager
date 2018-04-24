@@ -21,7 +21,7 @@ func NewSimpleWebHttp(host string) IWeb {
 }
 
 // AddRoute ...
-func (web *SimpleWebHttp) AddRoute(method, path string, handler HandlerFunc) error {
+func (web *SimpleWebHttp) AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
 	http.HandleFunc(path, handler.(func(http.ResponseWriter, *http.Request)))
 	return nil
 }

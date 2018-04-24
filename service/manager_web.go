@@ -1,10 +1,11 @@
 package gomanager
 
 type HandlerFunc interface{}
+type MiddlewareFunc interface{}
 
 // IConfig ...
 type IWeb interface {
-	AddRoute(method, path string, handler HandlerFunc) error
+	AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error
 	Start() error
 	Stop() error
 	Started() bool
