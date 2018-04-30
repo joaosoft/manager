@@ -34,20 +34,20 @@
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/go-error"
-  packages = ["service"]
-  revision = "a44e27c13ad9fed6a8a813e8e6f8251768581404"
+  packages = ["app"]
+  revision = "1c12dfac60bb5480598d09e10ae0a057fabf65ef"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/go-log"
-  packages = ["service"]
-  revision = "bb80ed104841dee7e3cc38a161c28bffc3fd274e"
+  packages = ["app"]
+  revision = "82271c8a8f5623700a62b159a8ed52914bcba6b8"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/go-writer"
-  packages = ["service"]
-  revision = "5916e348a3faa57e172332068979b8376c0e496a"
+  packages = ["app"]
+  revision = "fc3d6933fa02e56ddae34584bbee10f02527a7cd"
 
 [[projects]]
   name = "github.com/labstack/echo"
@@ -58,8 +58,8 @@
 [[projects]]
   name = "github.com/labstack/gommon"
   packages = ["color","log"]
-  revision = "6fe1405d73ec4bd4cd8a4ac8e2a2b2bf95d03954"
-  version = "0.2.4"
+  revision = "588f4e8bddc6cb45c27b448e925c7fd6a5545434"
+  version = "0.2.5"
 
 [[projects]]
   branch = "master"
@@ -155,13 +155,13 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert"]
-  revision = "2b6c08872f4b66da917bb4ce98df4f0307330f78"
+  revision = "ae8bce0030810cf999bb2b9868ae5c7c58e6343b"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "79b0c6888797020a994db17c8510466c72fe75d9"
+  revision = "4adea008a5e5f820b6028611ae0b6b3fbcec534b"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -178,6 +178,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "366078e53ec23650294322ac249240480ad510e4827de520a026e110796de71b"
+  inputs-digest = "381720040c734775d19fd1607183548ae85b21164ad23cb855ef1f3c9f4fa3f3"
   solver-name = "gps-cdcl"
   solver-version = 1

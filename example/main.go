@@ -8,9 +8,9 @@ import (
 	"os"
 	"time"
 
-	"go-manager/service"
+	"go-manager/app"
 
-	"github.com/joaosoft/go-log/service"
+	golog "github.com/joaosoft/go-log/app"
 	"github.com/labstack/echo"
 	"github.com/nsqio/go-nsq"
 )

@@ -1,5 +1,5 @@
 # go-manager
-[![Build Status](https://travis-ci.org/joaosoft/go-manager.svg?branch=master)](https://travis-ci.org/joaosoft/go-manager) | [![codecov](https://codecov.io/gh/joaosoft/go-manager/branch/master/graph/badge.svg)](https://codecov.io/gh/joaosoft/go-manager) | [![Go Report Card](https://goreportcard.com/badge/github.com/joaosoft/go-manager)](https://goreportcard.com/report/github.com/joaosoft/go-manager) | [![GoDoc](https://godoc.org/github.com/joaosoft/go-manager?status.svg)](https://godoc.org/github.com/joaosoft/go-manager/service)
+[![Build Status](https://travis-ci.org/joaosoft/go-manager.svg?branch=master)](https://travis-ci.org/joaosoft/go-manager) | [![codecov](https://codecov.io/gh/joaosoft/go-manager/branch/master/graph/badge.svg)](https://codecov.io/gh/joaosoft/go-manager) | [![Go Report Card](https://goreportcard.com/badge/github.com/joaosoft/go-manager)](https://goreportcard.com/report/github.com/joaosoft/go-manager) | [![GoDoc](https://godoc.org/github.com/joaosoft/go-manager?status.svg)](https://godoc.org/github.com/joaosoft/go-manager/app)
 
 A package that allows you to have all your processes and data organized and with control.
 After a read of the project https://gitlab.com/mandalore/go-app extracted some concepts. 
@@ -27,7 +27,7 @@ Project dependencies are managed using Dep. Read more about [Dep](https://github
 
 >### Go
 ```
-go get github.com/joaosoft/go-manager/service
+go get github.com/joaosoft/go-manager/app
 ```
 
 ## Usage 

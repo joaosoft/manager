@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"syscall"
 
-	"github.com/joaosoft/go-log/service"
+	golog "github.com/joaosoft/go-log/app"
 
 	"fmt"
 )

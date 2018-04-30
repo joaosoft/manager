@@ -1,7 +1,7 @@
 package gomanager
 
 import (
-	"github.com/joaosoft/go-log/service"
+	golog "github.com/joaosoft/go-log/app"
 )
 
 // managerOption ...
