@@ -33,7 +33,7 @@ func (gateway *SimpleGateway) Request(method, host, endpoint string, headers map
 
 	if headers != nil {
 		for key, value := range headers {
-			logger.Infof("adding header with [ name: %s, value: %s ]", key, value)
+			log.Infof("adding header with [ name: %s, value: %s ]", key, value)
 			req.Header.Set(key, value[0])
 		}
 	}

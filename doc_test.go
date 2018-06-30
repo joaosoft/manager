@@ -14,7 +14,7 @@ import (
 
 // --------- dummy process ---------
 func dummy_process() error {
-	logger.Info("hello, i'm exetuting the dummy process")
+	log.Info("hello, i'm exetuting the dummy process")
 	return nil
 }
 
@@ -22,7 +22,7 @@ func dummy_process() error {
 type dummy_nsq_handler struct{}
 
 func (dummy *dummy_nsq_handler) HandleMessage(msg *nsq.Message) error {
-	logger.Infof("executing the handle message of NSQ with [ message: %s ]", string(msg.Body))
+	log.Infof("executing the handle message of NSQ with [ message: %s ]", string(msg.Body))
 	return nil
 }
 
@@ -51,7 +51,7 @@ func dummy_web_echo_handler(ctx echo.Context) error {
 }
 
 func work_handler(id string, data interface{}) error {
-	logger.Infof("work with the id %s and data %s done!", id, data.(string))
+	log.Infof("work with the id %s and data %s done!", id, data.(string))
 	return nil
 }
 
@@ -64,7 +64,7 @@ func usage() {
 	// manager: processes
 	process := NewSimpleProcess(dummy_process)
 	if err := manager.AddProcess("process_1", process); err != nil {
-		logger.Errorf("MAIN: error on processes %s", err)
+		log.Errorf("MAIN: error on processes %s", err)
 	}
 
 	//
@@ -75,7 +75,7 @@ func usage() {
 	nsqProducer = manager.GetNSQProducer("nsq_producer_1")
 	nsqProducer.Publish("topic_1", []byte("MENSAGEM ENVIADA PARA A NSQ"), 3)
 
-	logger.Info("waiting 1 seconds...")
+	log.Info("waiting 1 seconds...")
 	<-time.After(time.Duration(1) * time.Second)
 
 	//
@@ -101,15 +101,15 @@ func usage() {
 	config := manager.GetConfig("config_1")
 
 	jsonIndent, _ := json.MarshalIndent(config.GetObj(), "", "    ")
-	logger.Infof("CONFIGURATION: %s", jsonIndent)
+	log.Infof("CONFIGURATION: %s", jsonIndent)
 
 	// allows to set a new configuration and save in the file
 	n := rand.Intn(9000)
 	obj.User.Random = n
-	logger.Infof("MAIN: Random: %d", n)
+	log.Infof("MAIN: Random: %d", n)
 	config.Set(obj)
 	if err := config.Save(); err != nil {
-		logger.Error("MAIN: error whe saving configuration file")
+		log.Error("MAIN: error whe saving configuration file")
 	}
 
 	//
@@ -118,7 +118,7 @@ func usage() {
 	// web - with http
 	web := NewSimpleWebHttp(":8081")
 	if err := manager.AddWeb("web_http", web); err != nil {
-		logger.Error("error adding web process to manager")
+		log.Error("error adding web process to manager")
 	}
 	web = manager.GetWeb("web_http")
 	web.AddRoute(http.MethodGet, "/web_http", dummy_web_http_handler)
@@ -126,13 +126,13 @@ func usage() {
 	// web - with echo
 	web = NewSimpleWebEcho(":8082")
 	if err := manager.AddWeb("web_echo", web); err != nil {
-		logger.Error("error adding web process to manager")
+		log.Error("error adding web process to manager")
 	}
 	web = manager.GetWeb("web_echo")
 	web.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
 	go web.Start() // starting this because of the gateway
 
-	logger.Info("waiting 1 seconds...")
+	log.Info("waiting 1 seconds...")
 	<-time.After(time.Duration(1) * time.Second)
 
 	//
@@ -143,7 +143,7 @@ func usage() {
 	manager.AddGateway("gateway_1", gateway)
 	gateway = manager.GetGateway("gateway_1")
 	status, bytes, err := gateway.Request(http.MethodGet, "http://127.0.0.1:8082", "/web_echo/123", headers, nil)
-	logger.Infof("status: %d, response: %s, error? %t", status, string(bytes), err != nil)
+	log.Infof("status: %d, response: %s, error? %t", status, string(bytes), err != nil)
 
 	//
 	// manager: database
@@ -174,7 +174,7 @@ func usage() {
 		go workqueue.AddWork(fmt.Sprintf("PROCESS: %d", i), fmt.Sprintf("THIS IS MY MESSAGE %d", i))
 	}
 	if err := workqueue.Start(); err != nil {
-		logger.Errorf("MAIN: error on workqueue %s", err)
+		log.Errorf("MAIN: error on workqueue %s", err)
 	}
 
 	manager.Start()

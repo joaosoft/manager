@@ -19,7 +19,7 @@ type INSQConsumer interface {
 // AddProcess ...
 func (manager *Manager) AddNSQConsumer(key string, nsqConsumer INSQConsumer) error {
 	manager.nsqConsumers[key] = nsqConsumer
-	logger.Infof("consumer %s added", key)
+	log.Infof("consumer %s added", key)
 
 	return nil
 }
@@ -29,7 +29,7 @@ func (manager *Manager) RemoveNSQConsumer(key string) (INSQConsumer, error) {
 	nsqConsumers := manager.nsqConsumers[key]
 
 	delete(manager.processes, key)
-	logger.Infof("consumer %s removed", key)
+	log.Infof("consumer %s removed", key)
 
 	return nsqConsumers, nil
 }
@@ -39,6 +39,6 @@ func (manager *Manager) GetNSQConsumer(key string) INSQConsumer {
 	if nsqConsumers, exists := manager.nsqConsumers[key]; exists {
 		return nsqConsumers
 	}
-	logger.Infof("consumer %s doesn't exist", key)
+	log.Infof("consumer %s doesn't exist", key)
 	return nil
 }

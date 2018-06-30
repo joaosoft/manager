@@ -5,9 +5,7 @@ import (
 	"os/signal"
 	"reflect"
 	"syscall"
-
-	golog "github.com/joaosoft/go-log/app"
-
+	"github.com/joaosoft/logger"
 	"fmt"
 )
 
@@ -50,11 +48,11 @@ func NewManager(options ...ManagerOption) *Manager {
 	// load configuration file
 	configApp := &AppConfig{}
 	if _, err := ReadFile(fmt.Sprintf("/config/app.%s.json", GetEnv()), configApp); err != nil {
-		logger.Error(err)
+		log.Error(err)
 	} else {
-		level, _ := golog.ParseLevel(configApp.manager.Log.Level)
-		logger.Debugf("setting logger level to %s", level)
-		logger.Reconfigure(golog.WithLevel(level))
+		level, _ := logger.ParseLevel(configApp.manager.Log.Level)
+		log.Debugf("setting logger level to %s", level)
+		log.Reconfigure(logger.WithLevel(level))
 	}
 	manager.config = &configApp.manager
 
@@ -80,7 +78,7 @@ func (manager *Manager) Start() error {
 // Stop ...
 func (manager *Manager) Stop() error {
 	if manager.started {
-		logger.Infof("stopping...")
+		log.Infof("stopping...")
 
 		executeAction("stop", manager.processes)
 		executeAction("stop", manager.worklist)
@@ -91,14 +89,14 @@ func (manager *Manager) Stop() error {
 		executeAction("stop", manager.redis)
 
 		manager.started = false
-		logger.Infof("stopped")
+		log.Infof("stopped")
 	}
 
 	return nil
 }
 
 func (manager *Manager) executeStart() error {
-	logger.Info("starting...")
+	log.Info("starting...")
 
 	// listen for termination signals
 	termChan := make(chan os.Signal, 1)
@@ -127,13 +125,13 @@ func (manager *Manager) executeStart() error {
 	}
 
 	manager.started = true
-	logger.Infof("started")
+	log.Infof("started")
 
 	select {
 	case <-termChan:
-		logger.Infof("received term signal")
+		log.Infof("received term signal")
 	case <-manager.quit:
-		logger.Infof("received shutdown signal")
+		log.Infof("received shutdown signal")
 	}
 
 	return manager.Stop()
@@ -151,12 +149,12 @@ func executeAction(action string, obj interface{}) error {
 			case "start":
 				if !started.Bool() {
 					go reflect.ValueOf(value.Interface()).MethodByName("Start").Call([]reflect.Value{})
-					logger.Infof("started [ process: %s ]", key)
+					log.Infof("started [ process: %s ]", key)
 				}
 			case "stop":
 				if started.Bool() {
 					go reflect.ValueOf(value.Interface()).MethodByName("Stop").Call([]reflect.Value{})
-					logger.Infof("stopped [ process: %s ]", key)
+					log.Infof("stopped [ process: %s ]", key)
 				}
 			}
 		}

@@ -1,11 +1,11 @@
 package manager
 
 import (
-	golog "github.com/joaosoft/go-log/app"
+	logger "github.com/joaosoft/logger"
 )
 
 var global = make(map[string]interface{})
-var logger = golog.NewLogDefault("manager", golog.InfoLevel)
+var log = logger.NewLogDefault("manager", logger.InfoLevel)
 
 func init() {
 	global[path_key] = defaultPath

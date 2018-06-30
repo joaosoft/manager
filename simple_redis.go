@@ -27,7 +27,7 @@ func NewSimpleRedis(config *RedisConfig) IRedis {
 func (redis *SimpleRedis) Start() error {
 	if !redis.started {
 		if conn, err := redis.config.Connect(); err != nil {
-			logger.Error(err)
+			log.Error(err)
 			return err
 		} else {
 			redis.client = conn

@@ -1,8 +1,6 @@
 package manager
 
-import (
-	golog "github.com/joaosoft/go-log/app"
-)
+import "github.com/joaosoft/logger"
 
 // ManagerOption ...
 type ManagerOption func(manager *Manager)
@@ -22,7 +20,7 @@ func WithRunInBackground(runInBackground bool) ManagerOption {
 }
 
 // WithLogger ...
-func WithLogger(logger golog.ILog) ManagerOption {
+func WithLogger(logger logger.ILogger) ManagerOption {
 	return func(manager *Manager) {
 		logger = logger
 		manager.isLogExternal = true
@@ -30,8 +28,8 @@ func WithLogger(logger golog.ILog) ManagerOption {
 }
 
 // WithLogLevel ...
-func WithLogLevel(level golog.Level) ManagerOption {
+func WithLogLevel(level logger.Level) ManagerOption {
 	return func(manager *Manager) {
-		logger.SetLevel(level)
+		log.SetLevel(level)
 	}
 }

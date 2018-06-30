@@ -35,7 +35,7 @@ func (web *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc, mid
 func (web *SimpleWebEcho) Start() error {
 	if !web.started {
 		if err := web.Echo.Start(web.host); err != nil {
-			logger.Error(err)
+			log.Error(err)
 			return err
 		}
 		web.started = true

@@ -1,6 +1,6 @@
 {
   "manager": {
-    "log": {
+    "logger": {
       "level": "info"
     }
   }

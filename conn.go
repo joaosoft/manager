@@ -10,14 +10,14 @@ import (
 
 // createConnection ...
 func (config *RedisConfig) Connect() (redis.Client, error) {
-	logger.Infof("connecting redis with [ host: %s, port: %d ]", config.Host, config.Port)
+	log.Infof("connecting redis with [ host: %s, port: %d ]", config.Host, config.Port)
 	spec := redis.DefaultSpec().Host(config.Host).Port(config.Port).Password(config.Password).Db(config.Database)
 	return redis.NewSynchClientWithSpec(spec)
 }
 
 // createConnection ...
 func (config *DBConfig) Connect() (*sql.DB, error) {
-	logger.Infof("connecting database with driver [ %s ] and data source [ %s ]", config.Driver, config.DataSource)
+	log.Infof("connecting database with driver [ %s ] and data source [ %s ]", config.Driver, config.DataSource)
 	return sql.Open(config.Driver, config.DataSource)
 }
 
@@ -29,6 +29,6 @@ func (config *NSQConfig) Connect() (*nsq.Producer, error) {
 	nsqConfig.MaxInFlight = config.MaxInFlight
 	nsqConfig.ReadTimeout = 120 * time.Second
 
-	logger.Infof("connecting nsq with max attempts [ %d ]", config.MaxAttempts)
+	log.Infof("connecting nsq with max attempts [ %d ]", config.MaxAttempts)
 	return nsq.NewProducer(config.Lookupd[0], nsqConfig)
 }

@@ -31,7 +31,7 @@ func NewSimpleNSQProducer(config *NSQConfig) (INSQProducer, error) {
 		return nil, fmt.Errorf("nsq producer hasn't the address to Connect")
 	}
 
-	logger.Infof("connecting nsq producer to %s", addr)
+	log.Infof("connecting nsq producer to %s", addr)
 	nsqProducer, err := nsq.NewProducer(addr, nsqConfig)
 	if err != nil {
 		panic(err)

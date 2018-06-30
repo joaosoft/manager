@@ -12,7 +12,7 @@ type INSQProducer interface {
 // AddNSQProducer ...
 func (manager *Manager) AddNSQProducer(key string, nsqProducer INSQProducer) error {
 	manager.nsqProducers[key] = nsqProducer
-	logger.Infof("nsq producer %s added", key)
+	log.Infof("nsq producer %s added", key)
 
 	return nil
 }
@@ -22,7 +22,7 @@ func (manager *Manager) RemoveNSQProducer(key string) (INSQProducer, error) {
 	process := manager.nsqProducers[key]
 
 	delete(manager.processes, key)
-	logger.Infof("nsq producer %s removed", key)
+	log.Infof("nsq producer %s removed", key)
 
 	return process, nil
 }
@@ -32,6 +32,6 @@ func (manager *Manager) GetNSQProducer(key string) INSQProducer {
 	if process, exists := manager.nsqProducers[key]; exists {
 		return process
 	}
-	logger.Infof("nsq producer %s doesn't exist", key)
+	log.Infof("nsq producer %s doesn't exist", key)
 	return nil
 }

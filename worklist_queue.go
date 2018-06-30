@@ -74,7 +74,7 @@ func (queue *Queue) Remove(ids ...string) interface{} {
 	defer queue.mux.Unlock()
 
 	if queue.size == 0 {
-		logger.Error("the list is empty")
+		log.Error("the list is empty")
 		return nil
 	}
 	var nodeToRemove *Node
@@ -153,7 +153,7 @@ func (queue *Queue) Dump() string {
 	}
 
 	if json, err := json.Marshal(print); err != nil {
-		logger.Error(err)
+		log.Error(err)
 		return ""
 	} else {
 		return string(json)

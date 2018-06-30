@@ -10,7 +10,7 @@ type IProcess interface {
 // AddProcess ...
 func (manager *Manager) AddProcess(key string, process IProcess) error {
 	manager.processes[key] = process
-	logger.Infof("process %s added", key)
+	log.Infof("process %s added", key)
 
 	return nil
 }
@@ -20,7 +20,7 @@ func (manager *Manager) RemoveProcess(key string) (IProcess, error) {
 	process := manager.processes[key]
 
 	delete(manager.processes, key)
-	logger.Infof("process %s removed", key)
+	log.Infof("process %s removed", key)
 
 	return process, nil
 }
@@ -30,6 +30,6 @@ func (manager *Manager) GetProcess(key string) IProcess {
 	if process, exists := manager.processes[key]; exists {
 		return process
 	}
-	logger.Infof("process %s doesn't exist", key)
+	log.Infof("process %s doesn't exist", key)
 	return nil
 }

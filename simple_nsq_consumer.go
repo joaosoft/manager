@@ -17,7 +17,7 @@ type SimpleNSQConsumer struct {
 
 // NewSimpleNSQConsumer ...
 func NewSimpleNSQConsumer(config *NSQConfig, handler INSQHandler) (INSQConsumer, error) {
-	logger.Infof("nsq consumer, creating consumer [ topic: %s, channel: %s ]", config.Topic, config.Channel)
+	log.Infof("nsq consumer, creating consumer [ topic: %s, channel: %s ]", config.Topic, config.Channel)
 
 	// Creating nsq configuration
 	nsqConfig := nsq.NewConfig()
@@ -38,7 +38,7 @@ func NewSimpleNSQConsumer(config *NSQConfig, handler INSQHandler) (INSQConsumer,
 		handler: handler,
 	}
 
-	logger.Infof("nsq consumer, consumer [ topic: %s, channel: %s ] created", config.Topic, config.Channel)
+	log.Infof("nsq consumer, consumer [ topic: %s, channel: %s ] created", config.Topic, config.Channel)
 
 	return consumer, nil
 }
@@ -68,21 +68,21 @@ func (consumer *SimpleNSQConsumer) Start() error {
 	if consumer.config.Lookupd != nil && len(consumer.config.Lookupd) > 0 {
 		consumer.started = true
 		for _, addr := range consumer.config.Lookupd {
-			logger.Infof("nsq consumer, consumer connecting to %s", addr)
+			log.Infof("nsq consumer, consumer connecting to %s", addr)
 		}
 		if err := consumer.client.ConnectToNSQLookupds(consumer.config.Lookupd); err != nil {
-			logger.Infof("nsq consumer, error connecting to loookupd %s", consumer.config.Nsqd)
-			logger.Error(err)
+			log.Infof("nsq consumer, error connecting to loookupd %s", consumer.config.Nsqd)
+			log.Error(err)
 			return err
 		}
 	}
 	if consumer.config.Nsqd != nil && len(consumer.config.Nsqd) > 0 {
 		consumer.started = true
 		for _, addr := range consumer.config.Nsqd {
-			logger.Infof("nsq consumer, connecting to %s", addr)
+			log.Infof("nsq consumer, connecting to %s", addr)
 		}
 		if err := consumer.client.ConnectToNSQDs(consumer.config.Nsqd); err != nil {
-			logger.Infof("nsq consumer, error connecting to nsqd %s", consumer.config.Nsqd)
+			log.Infof("nsq consumer, error connecting to nsqd %s", consumer.config.Nsqd)
 			return err
 		}
 	}

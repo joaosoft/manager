@@ -50,7 +50,7 @@ manager.Start()
 ```go
 // --------- dummy process ---------
 func dummy_process() error {
-	logger.Info("hello, i'm exetuting the dummy process")
+	log.Info("hello, i'm exetuting the dummy process")
 	return nil
 }
 
@@ -58,7 +58,7 @@ func dummy_process() error {
 // manager: processes
 process := manager.NewSimpleProcess(dummy_process)
 if err := manager.AddProcess("process_1", process); err != nil {
-    logger.Errorf("MAIN: error on processes %s", err)
+    log.Errorf("MAIN: error on processes %s", err)
 }
 ```
 
@@ -81,15 +81,15 @@ manager.AddConfig("config_1", simpleConfig)
 config := manager.GetConfig("config_1")
 
 jsonIndent, _ := json.MarshalIndent(config.Get(), "", "    ")
-logger.Infof("CONFIGURATION: %s", jsonIndent)
+log.Infof("CONFIGURATION: %s", jsonIndent)
 
 // allows to set a new configuration and save in the file
 n := rand.Intn(9000)
 obj.User.Random = n
-logger.Infof("MAIN: Random: %d", n)
+log.Infof("MAIN: Random: %d", n)
 config.Set(obj)
 if err := config.Save(); err != nil {
-    logger.Error("MAIN: error whe saving configuration file")
+    log.Error("MAIN: error whe saving configuration file")
 }
 ```
 
@@ -99,7 +99,7 @@ if err := config.Save(); err != nil {
 type dummy_nsq_handler struct{}
 
 func (dummy *dummy_nsq_handler) HandleMessage(msg *nsq.Message) error {
-	logger.Infof("executing the handle message of NSQ with [ message: %s ]", string(msg.Body))
+	log.Infof("executing the handle message of NSQ with [ message: %s ]", string(msg.Body))
 	return nil
 }
 
@@ -158,7 +158,7 @@ func dummy_web_http_handler(w http.ResponseWriter, r *http.Request) {
 // web - with http
 web := manager.NewSimpleWebHttp(":8081")
 if err := manager.AddWeb("web_http", web); err != nil {
-    logger.Error("error adding web process to manager")
+    log.Error("error adding web process to manager")
 }
 web = manager.GetWeb("web_http")
 web.AddRoute(http.MethodGet, "/web_http", dummy_web_http_handler)
@@ -177,7 +177,7 @@ func dummy_web_echo_handler(ctx echo.Context) error {
 // web - with echo
 web = manager.NewSimpleWebEcho(":8082")
 if err := manager.AddWeb("web_echo", web); err != nil {
-    logger.Error("error adding web process to manager")
+    log.Error("error adding web process to manager")
 }
 web = manager.GetWeb("web_echo")
 web.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
@@ -193,7 +193,7 @@ gateway := manager.NewSimpleGateway()
 manager.AddGateway("gateway_1", gateway)
 gateway = manager.GetGateway("gateway_1")
 status, bytes, err := gateway.Request(http.MethodGet, "http://127.0.0.1:8082", "/web_echo/123", headers, nil)
-logger.Infof("status: %d, response: %s, error? %t", status, string(bytes), err != nil)
+log.Infof("status: %d, response: %s, error? %t", status, string(bytes), err != nil)
 ```
 
 >### Redis Connections
@@ -208,7 +208,7 @@ manager.AddRedis("redis", redisConn)
 >### Work Queues
 ```go
 func work_handler(id string, data interface{}) error {
-	logger.Infof("work with the id %s and data %s done!", id, data.(string))
+	log.Infof("work with the id %s and data %s done!", id, data.(string))
 	return nil
 }
 
@@ -222,7 +222,7 @@ for i := 1; i <= 1000; i++ {
     go workqueue.AddWork(fmt.Sprintf("PROCESS: %d", i), fmt.Sprintf("THIS IS MY MESSAGE %d", i))
 }
 if err := workqueue.Start(); err != nil {
-    logger.Errorf("MAIN: error on workqueue %s", err)
+    log.Errorf("MAIN: error on workqueue %s", err)
 }
 ```
 

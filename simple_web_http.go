@@ -30,7 +30,7 @@ func (web *SimpleWebHttp) AddRoute(method, path string, handler HandlerFunc, mid
 func (web *SimpleWebHttp) Start() error {
 	if !web.started {
 		if err := http.ListenAndServe(web.host, nil); err != nil {
-			logger.Error(err)
+			log.Error(err)
 			return err
 		}
 	}

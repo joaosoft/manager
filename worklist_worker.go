@@ -56,16 +56,16 @@ func (worker *Worker) Start() error {
 		for {
 			select {
 			case <-worker.quit:
-				logger.Debugf("worker quited [name: %s, list size: %d ]", worker.name, worker.list.Size())
+				log.Debugf("worker quited [name: %s, list size: %d ]", worker.name, worker.list.Size())
 
 				return nil
 			default:
 				if worker.list.Size() > 0 {
-					logger.Debugf("worker starting [ name: %d, queue size: %d]", worker.name, worker.list.Size())
+					log.Debugf("worker starting [ name: %d, queue size: %d]", worker.name, worker.list.Size())
 					worker.execute()
-					logger.Debugf("worker finished [ name: %s, queue size: %d]", worker.name, worker.list.Size())
+					log.Debugf("worker finished [ name: %s, queue size: %d]", worker.name, worker.list.Size())
 				} else {
-					//logger.Infof("worker waiting for work to do... [ id: %d, name: %s ]", worker.id, worker.name)
+					//log.Infof("worker waiting for work to do... [ id: %d, name: %s ]", worker.id, worker.name)
 					<-time.After(worker.sleepTime)
 				}
 			}
@@ -81,7 +81,7 @@ func (worker *Worker) Stop() error {
 	defer worker.mux.Unlock()
 
 	if worker.list.Size() > 0 {
-		logger.Infof("stopping worker with tasks in the list [ list size: %d ]", worker.list.Size())
+		log.Infof("stopping worker with tasks in the list [ list size: %d ]", worker.list.Size())
 	}
 	worker.quit <- true
 
@@ -106,10 +106,10 @@ func (worker *Worker) execute() bool {
 		if work.retries < worker.maxRetries {
 			work.retries++
 			if err := worker.list.Add(work.id, work); err != nil {
-				logger.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err)
+				log.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err)
 			}
 		} else {
-			logger.Errorf("work discarded of the queue [ retries: %d, error: %s ]", work.retries, err)
+			log.Errorf("work discarded of the queue [ retries: %d, error: %s ]", work.retries, err)
 		}
 
 		return false

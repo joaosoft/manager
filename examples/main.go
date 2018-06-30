@@ -8,16 +8,15 @@ import (
 	"os"
 	"time"
 
-	"manager/app"
+	"manager"
 
-	golog "github.com/joaosoft/go-log/app"
+	logger "github.com/joaosoft/logger"
 	"github.com/labstack/echo"
 	"github.com/nsqio/go-nsq"
 )
 
-var log = golog.NewLogDefault("manager", golog.InfoLevel)
+var log = log.NewLogDefault("manager", logger.InfoLevel)
 
-// --------- dummy process ---------
 func dummy_process() error {
 	log.Info("hello, i'm exetuting the dummy process")
 	return nil
