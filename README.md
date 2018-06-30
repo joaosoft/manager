@@ -31,7 +31,7 @@ go get github.com/joaosoft/manager
 ```
 
 ## Usage 
-This examples are available in the project at [manager/example](https://github.com/joaosoft/manager/tree/master/example)
+This examples are available in the project at [manager/examples](https://github.com/joaosoft/manager/tree/master/examples)
 
 ```go
 //
