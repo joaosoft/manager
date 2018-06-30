@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func GetEnv() string {
+func getEnv() string {
 	env := os.Getenv("env")
 	if env == "" {
 		env = "local"
@@ -17,7 +17,7 @@ func GetEnv() string {
 	return env
 }
 
-func Exists(file string) bool {
+func exists(file string) bool {
 	if _, err := os.Stat(file); err != nil {
 		if os.IsNotExist(err) {
 			return false
@@ -26,10 +26,10 @@ func Exists(file string) bool {
 	return true
 }
 
-func ReadFile(fileName string, obj interface{}) ([]byte, error) {
+func readFile(fileName string, obj interface{}) ([]byte, error) {
 	var err error
 
-	if !Exists(fileName) {
+	if !exists(fileName) {
 		fileName = global[path_key].(string) + fileName
 	}
 
@@ -54,10 +54,10 @@ func ReadFile(fileName string, obj interface{}) ([]byte, error) {
 	return data, nil
 }
 
-func ReadFileLines(fileName string) ([]string, error) {
+func readFileLines(fileName string) ([]string, error) {
 	lines := make([]string, 0)
 
-	if !Exists(fileName) {
+	if !exists(fileName) {
 		fileName = global[path_key].(string) + fileName
 	}
 
@@ -80,8 +80,8 @@ func ReadFileLines(fileName string) ([]string, error) {
 	return lines, nil
 }
 
-func WriteFile(fileName string, obj interface{}) error {
-	if !Exists(fileName) {
+func writeFile(fileName string, obj interface{}) error {
+	if !exists(fileName) {
 		fileName = global[path_key].(string) + fileName
 	}
 

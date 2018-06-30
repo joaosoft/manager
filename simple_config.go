@@ -18,7 +18,7 @@ type SimpleConfig struct {
 
 // NewSimpleConfig...
 func NewSimpleConfig(file string, obj interface{}) (IConfig, error) {
-	if bytes, err := ReadFile(file, obj); err != nil {
+	if bytes, err := readFile(file, obj); err != nil {
 		return nil, err
 	} else {
 		return &SimpleConfig{
@@ -102,7 +102,7 @@ func (simple *SimpleConfig) Set(config interface{}) {
 
 // Reload ...
 func (simple *SimpleConfig) Reload() error {
-	if bytes, err := ReadFile(simple.file, simple.obj); err != nil {
+	if bytes, err := readFile(simple.file, simple.obj); err != nil {
 		return err
 	} else {
 		simple.viper = loadViper(simple.bytes)
@@ -114,7 +114,7 @@ func (simple *SimpleConfig) Reload() error {
 
 // Save ...
 func (simple *SimpleConfig) Save() error {
-	if err := WriteFile(simple.file, simple.obj); err != nil {
+	if err := writeFile(simple.file, simple.obj); err != nil {
 		return err
 	}
 
