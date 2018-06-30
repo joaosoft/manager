@@ -52,7 +52,7 @@
   branch = "master"
   name = "github.com/joaosoft/logger"
   packages = ["."]
-  revision = "dda4b92d8b7248267e5eb48cdd63e9b4ae993127"
+  revision = "38ea563078ac60cc553ec17b0d1d30b82dca2367"
 
 [[projects]]
   branch = "master"
