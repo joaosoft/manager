@@ -22,6 +22,19 @@ func NewSimpleWebEcho(host string) IWeb {
 	}
 }
 
+// AddRoutes ...
+func (web *SimpleWebEcho) AddRoutes(routes ...Route) error {
+	for _, route := range routes {
+		err := web.AddRoute(route.Method, route.Path, route.Handler, route.Middlewares)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // AddRoute ...
 func (web *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
 	web.Add(method, path, handler.(func(echo.Context) error))

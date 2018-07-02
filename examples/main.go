@@ -15,7 +15,7 @@ import (
 	"github.com/nsqio/go-nsq"
 )
 
-var log = log.NewLogDefault("manager", logger.InfoLevel)
+var log = logger.NewLogDefault("manager", logger.InfoLevel)
 
 func dummy_process() error {
 	log.Info("hello, i'm exetuting the dummy process")
@@ -62,12 +62,12 @@ func work_handler(id string, data interface{}) error {
 func main() {
 	//
 	// manager
-	manager := manager.NewManager()
+	m := manager.NewManager()
 
 	//
 	// manager: processes
 	process := manager.NewSimpleProcess(dummy_process)
-	if err := manager.AddProcess("process_1", process); err != nil {
+	if err := m.AddProcess("process_1", process); err != nil {
 		log.Errorf("MAIN: error on processes %s", err)
 	}
 
@@ -75,8 +75,8 @@ func main() {
 	// nsq producer
 	nsqConfigProducer := manager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4150"}, []string{"127.0.0.1:4161"}, 30, 5)
 	nsqProducer, _ := manager.NewSimpleNSQProducer(nsqConfigProducer)
-	manager.AddNSQProducer("nsq_producer_1", nsqProducer)
-	nsqProducer = manager.GetNSQProducer("nsq_producer_1")
+	m.AddNSQProducer("nsq_producer_1", nsqProducer)
+	nsqProducer = m.GetNSQProducer("nsq_producer_1")
 	nsqProducer.Publish("topic_1", []byte("MENSAGEM ENVIADA PARA A NSQ"), 3)
 
 	log.Info("waiting 1 seconds...")
@@ -86,7 +86,7 @@ func main() {
 	// manager: nsq consumer
 	nsqConfigConsumer := manager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4161"}, []string{"127.0.0.1:4150"}, 30, 5)
 	nsqConsumer, _ := manager.NewSimpleNSQConsumer(nsqConfigConsumer, &dummy_nsq_handler{})
-	manager.AddProcess("nsq_consumer_1", nsqConsumer)
+	m.AddProcess("nsq_consumer_1", nsqConsumer)
 
 	//
 	// manager: configuration
@@ -101,8 +101,8 @@ func main() {
 	dir, _ := os.Getwd()
 	obj := &dummy_config{}
 	simpleConfig, _ := manager.NewSimpleConfig(dir+"/examples/data/config.json", obj)
-	manager.AddConfig("config_1", simpleConfig)
-	config := manager.GetConfig("config_1")
+	m.AddConfig("config_1", simpleConfig)
+	config := m.GetConfig("config_1")
 
 	jsonIndent, _ := json.MarshalIndent(config.GetObj(), "", "    ")
 	log.Infof("CONFIGURATION: %s", jsonIndent)
@@ -121,18 +121,18 @@ func main() {
 
 	// web - with http
 	web := manager.NewSimpleWebHttp(":8081")
-	if err := manager.AddWeb("web_http", web); err != nil {
+	if err := m.AddWeb("web_http", web); err != nil {
 		log.Error("error adding web process to manager")
 	}
-	web = manager.GetWeb("web_http")
+	web = m.GetWeb("web_http")
 	web.AddRoute(http.MethodGet, "/web_http", dummy_web_http_handler)
 
 	// web - with echo
 	web = manager.NewSimpleWebEcho(":8082")
-	if err := manager.AddWeb("web_echo", web); err != nil {
+	if err := m.AddWeb("web_echo", web); err != nil {
 		log.Error("error adding web process to manager")
 	}
-	web = manager.GetWeb("web_echo")
+	web = m.GetWeb("web_echo")
 	web.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
 	go web.Start() // starting this because of the gateway
 
@@ -144,8 +144,8 @@ func main() {
 	headers := map[string][]string{"Content-Type": {"application/json"}}
 
 	gateway := manager.NewSimpleGateway()
-	manager.AddGateway("gateway_1", gateway)
-	gateway = manager.GetGateway("gateway_1")
+	m.AddGateway("gateway_1", gateway)
+	gateway = m.GetGateway("gateway_1")
 	status, bytes, err := gateway.Request(http.MethodGet, "http://127.0.0.1:8082", "/web_echo/123", headers, nil)
 	log.Infof("status: %d, response: %s, error? %t", status, string(bytes), err != nil)
 
@@ -155,25 +155,25 @@ func main() {
 	// database - postgres
 	postgresConfig := manager.NewDBConfig("postgres", "postgres://user:password@localhost:7001?sslmode=disable")
 	postgresConn := manager.NewSimpleDB(postgresConfig)
-	manager.AddDB("postgres", postgresConn)
+	m.AddDB("postgres", postgresConn)
 
 	// database - mysql
 	mysqlConfig := manager.NewDBConfig("mysql", "root:password@tcp(127.0.0.1:7002)/mysql")
 	mysqlConn := manager.NewSimpleDB(mysqlConfig)
-	manager.AddDB("mysql", mysqlConn)
+	m.AddDB("mysql", mysqlConn)
 
 	//
 	// manager: redis
 	redisConfig := manager.NewRedisConfig("127.0.0.1", 7100, 0, "")
 	redisConn := manager.NewSimpleRedis(redisConfig)
-	manager.AddRedis("redis", redisConn)
+	m.AddRedis("redis", redisConn)
 
 	//
 	// manager: workqueue
 	workqueueConfig := manager.NewWorkListConfig("queue_001", 1, 2, time.Second*2, manager.FIFO)
 	workqueue := manager.NewSimpleWorkList(workqueueConfig, work_handler)
-	manager.AddWorkList("queue_001", workqueue)
-	workqueue = manager.GetWorkList("queue_001")
+	m.AddWorkList("queue_001", workqueue)
+	workqueue = m.GetWorkList("queue_001")
 	for i := 1; i <= 1000; i++ {
 		workqueue.AddWork(fmt.Sprintf("PROCESS: %d", i), fmt.Sprintf("THIS IS MY MESSAGE %d", i))
 	}
@@ -181,5 +181,5 @@ func main() {
 		log.Errorf("MAIN: error on workqueue %s", err)
 	}
 
-	manager.Start()
+	m.Start()
 }

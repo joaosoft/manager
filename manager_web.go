@@ -2,10 +2,17 @@ package manager
 
 type HandlerFunc interface{}
 type MiddlewareFunc interface{}
+type Route struct {
+	Method      string
+	Path        string
+	Handler     HandlerFunc
+	Middlewares []MiddlewareFunc
+}
 
 // IConfig ...
 type IWeb interface {
 	AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error
+	AddRoutes(routes ...Route) error
 	Start() error
 	Stop() error
 	Started() bool
