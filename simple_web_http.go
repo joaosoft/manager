@@ -21,7 +21,7 @@ func NewSimpleWebHttp(host string) IWeb {
 }
 
 // AddRoutes ...
-func (web *SimpleWebHttp) AddRoutes(routes ...Route) error {
+func (web *SimpleWebHttp) AddRoutes(routes ...*Route) error {
 	for _, route := range routes {
 		err := web.AddRoute(route.Method, route.Path, route.Handler, route.Middlewares)
 

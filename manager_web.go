@@ -9,10 +9,14 @@ type Route struct {
 	Middlewares []MiddlewareFunc
 }
 
+func NewRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) *Route{
+	return &Route{Method: method, Path: path, Handler: handler, Middlewares: middleware}
+}
+
 // IConfig ...
 type IWeb interface {
 	AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error
-	AddRoutes(routes ...Route) error
+	AddRoutes(routes ...*Route) error
 	Start() error
 	Stop() error
 	Started() bool
