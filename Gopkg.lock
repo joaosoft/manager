@@ -52,13 +52,13 @@
   branch = "master"
   name = "github.com/joaosoft/logger"
   packages = ["."]
-  revision = "0f04d8349e325a20bcf83ca8dd52207fe2576290"
+  revision = "0ec4e99bdc800aa035ca640ebc1fcc3d15c185be"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/writers"
   packages = ["."]
-  revision = "396b2787c537307a662dc21dd50084147f0fda22"
+  revision = "771a9b6ea8d80f483b61e182bbc5bd563c8588d5"
 
 [[projects]]
   name = "github.com/labstack/echo"
