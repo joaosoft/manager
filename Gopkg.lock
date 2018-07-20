@@ -52,13 +52,13 @@
   branch = "master"
   name = "github.com/joaosoft/logger"
   packages = ["."]
-  revision = "9da9376690ff3265e2e23e80ea76a945c1f284ed"
+  revision = "0f04d8349e325a20bcf83ca8dd52207fe2576290"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/writers"
   packages = ["."]
-  revision = "f0c935fdc24aa0480363e70a9218aa5064e47d92"
+  revision = "396b2787c537307a662dc21dd50084147f0fda22"
 
 [[projects]]
   name = "github.com/labstack/echo"
@@ -106,7 +106,7 @@
   branch = "master"
   name = "github.com/mitchellh/mapstructure"
   packages = ["."]
-  revision = "bb74f1db0675b241733089d5a1faa5dd8b0ef57b"
+  revision = "f15292f7a699fcc1a38a80977f80a046874ba8ac"
 
 [[projects]]
   name = "github.com/nsqio/go-nsq"
@@ -178,13 +178,13 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
+  revision = "a2144134853fc9a27a7b1e3eb4f19f1a76df13c9"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "7138fd3d9dc8335c567ca206f4333fb75eb05d56"
+  revision = "ac767d655b305d4e9612f5f6e33120b9176c4ad4"
 
 [[projects]]
   name = "golang.org/x/text"
