@@ -52,13 +52,13 @@
   branch = "master"
   name = "github.com/joaosoft/logger"
   packages = ["."]
-  revision = "0ec4e99bdc800aa035ca640ebc1fcc3d15c185be"
+  revision = "8a430a9013e8b02d61068f3124379dec2bdb7302"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/writers"
   packages = ["."]
-  revision = "771a9b6ea8d80f483b61e182bbc5bd563c8588d5"
+  revision = "1bf8fc39ed07431e08f868eb80edbb65ceb33514"
 
 [[projects]]
   name = "github.com/labstack/echo"
@@ -121,10 +121,10 @@
   version = "v1.2.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/satori/go.uuid"
   packages = ["."]
-  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
-  version = "v1.2.0"
+  revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e"
 
 [[projects]]
   name = "github.com/spf13/afero"
