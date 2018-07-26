@@ -46,13 +46,13 @@
   branch = "master"
   name = "github.com/joaosoft/errors"
   packages = ["."]
-  revision = "1d5bd3de67a4e2116faeab177d4a858d6eac3665"
+  revision = "26de174de522922a2e1b7520dba32fe23c6d0fd6"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/logger"
   packages = ["."]
-  revision = "8a430a9013e8b02d61068f3124379dec2bdb7302"
+  revision = "ac1eb19f94cbeff2fb525880b1d496973f91702b"
 
 [[projects]]
   branch = "master"
@@ -178,13 +178,13 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "a2144134853fc9a27a7b1e3eb4f19f1a76df13c9"
+  revision = "c126467f60eb25f8f27e5a981f32a87e3965053f"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "ac767d655b305d4e9612f5f6e33120b9176c4ad4"
+  revision = "e072cadbbdc8dd3d3ffa82b8b4b9304c261d9311"
 
 [[projects]]
   name = "golang.org/x/text"
