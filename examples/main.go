@@ -18,7 +18,7 @@ import (
 var log = logger.NewLogDefault("manager", logger.InfoLevel)
 
 func dummy_process() error {
-	log.Info("hello, i'm exetuting the dummy process")
+	log.Info("hello, i'm executing the dummy process")
 	return nil
 }
 
