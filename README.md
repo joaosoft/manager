@@ -125,6 +125,11 @@ nsqProducer.Publish("topic_1", []byte("MENSAGEM ENVIADA PARA A NSQ"), 3)
 
 >### Rabbitmq Consumers 
 ```go
+func rabbit_consumer_handler(message amqp.Delivery) error {
+	log.Errorf("\nA IMPRIMIR MENSAGEM %s", string(message.Body))
+	return nil
+}
+
 uri := fmt.Sprintf("amqp://%s:%s@%s:%s%s", "root", "password", "localhost", "5673", "/local")
 exchange := "example"
 exchangeType := "direct"
@@ -151,7 +156,7 @@ if err := consumer.Stop(); err != nil {
 }
 ```
 
->### NSQ Producers
+>### Rabbitmq Producers
 ```go
 uri := fmt.Sprintf("amqp://%s:%s@%s:%s%s", "root", "password", "localhost", "5673", "/local")
 exchange := "example"
