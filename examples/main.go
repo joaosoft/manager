@@ -78,7 +78,7 @@ func main() {
 	}
 
 	//
-	// nsq producer
+	// nsq rabbitmqProducer
 	nsqConfigProducer := manager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4150"}, []string{"127.0.0.1:4161"}, 30, 5)
 	nsqProducer, _ := manager.NewSimpleNSQProducer(nsqConfigProducer)
 	m.AddNSQProducer("nsq_producer_1", nsqProducer)
@@ -89,7 +89,7 @@ func main() {
 	<-time.After(time.Duration(1) * time.Second)
 
 	//
-	// manager: nsq consumer
+	// manager: nsq rabbitmqconsumer
 	nsqConfigConsumer := manager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4161"}, []string{"127.0.0.1:4150"}, 30, 5)
 	nsqConsumer, _ := manager.NewSimpleNSQConsumer(nsqConfigConsumer, &dummy_nsq_handler{})
 	m.AddProcess("nsq_consumer_1", nsqConsumer)
@@ -188,54 +188,37 @@ func main() {
 	}
 
 	//
-	// manager: rabbitmq producer
+	// manager: rabbitmq rabbitmqProducer
 	uri := fmt.Sprintf("amqp://%s:%s@%s:%s%s", "root", "password", "localhost", "5673", "/local")
 	exchange := "example"
 	exchangeType := "direct"
 	queue := "test-queue"
 	bindingKey := "test-key"
-	consumerTag := "simple-consumer"
-
+	consumerTag := "simple-rabbitmqconsumer"
 	configRabbitmq := manager.NewRabbitmqConfig(uri, exchange, exchangeType)
 
-	producer, err := manager.NewRabbitmqProducer(configRabbitmq)
+	rabbitmqProducer, err := manager.NewRabbitmqProducer(configRabbitmq)
 	if err != nil {
 		log.Errorf("%s", err)
 	}
 
-	err = producer.Start()
-	if err != nil {
+	if err := rabbitmqProducer.Start(); err != nil {
 		log.Errorf("%s", err)
 	}
+	m.AddRabbitmqProducer("rabbitmq_producer", rabbitmqProducer)
 
-	err = producer.Publish(bindingKey, []byte(`teste do joao`), true)
+	err = rabbitmqProducer.Publish(bindingKey, []byte(`teste do joao`), true)
 	if err != nil {
 		log.Errorf("%s", err)
-	}
-
-	<-time.After(5 * time.Second)
-	log.Info("shutting down producer")
-	if err := producer.Stop(); err != nil {
-		log.Errorf("error during shutdown: %s", err)
 	}
 
 	//
-	// manager: rabbitmq consumer
-	consumer, err := manager.NewRabbitmqConsumer(configRabbitmq, queue, bindingKey, consumerTag, rabbit_consumer_handler)
+	// manager: rabbitmq rabbitmqconsumer
+	rabbitmqconsumer, err := manager.NewRabbitmqConsumer(configRabbitmq, queue, bindingKey, consumerTag, rabbit_consumer_handler)
 	if err != nil {
 		log.Errorf("%s", err)
 	}
-
-	err = consumer.Start()
-	if err != nil {
-		log.Errorf("%s", err)
-	}
-
-	<-time.After(10 * time.Second)
-	log.Info("shutting down consumer")
-	if err := consumer.Stop(); err != nil {
-		log.Errorf("error during shutdown: %s", err)
-	}
+	m.AddRabbitmqConsumer("rabbitmq_consumer", rabbitmqconsumer)
 
 	m.Start()
 }

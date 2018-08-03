@@ -34,16 +34,18 @@ type Manager struct {
 // NewManager ...
 func NewManager(options ...ManagerOption) *Manager {
 	manager := &Manager{
-		processes:    make(map[string]IProcess),
-		configs:      make(map[string]IConfig),
-		redis:        make(map[string]IRedis),
-		nsqProducers: make(map[string]INSQProducer),
-		nsqConsumers: make(map[string]INSQConsumer),
-		dbs:          make(map[string]IDB),
-		webs:         make(map[string]IWeb),
-		gateways:     make(map[string]IGateway),
-		worklist:     make(map[string]IWorkList),
-		quit:         make(chan int),
+		processes:         make(map[string]IProcess),
+		configs:           make(map[string]IConfig),
+		redis:             make(map[string]IRedis),
+		nsqProducers:      make(map[string]INSQProducer),
+		nsqConsumers:      make(map[string]INSQConsumer),
+		rabbitmqProducers: make(map[string]IRabbitmqProducer),
+		rabbitmqConsumers: make(map[string]IRabbitmqConsumer),
+		dbs:               make(map[string]IDB),
+		webs:              make(map[string]IWeb),
+		gateways:          make(map[string]IGateway),
+		worklist:          make(map[string]IWorkList),
+		quit:              make(chan int),
 	}
 
 	manager.Reconfigure(options...)
@@ -88,6 +90,8 @@ func (manager *Manager) Stop() error {
 		executeAction("stop", manager.webs)
 		executeAction("stop", manager.nsqProducers)
 		executeAction("stop", manager.nsqConsumers)
+		executeAction("stop", manager.rabbitmqProducers)
+		executeAction("stop", manager.rabbitmqConsumers)
 		executeAction("stop", manager.dbs)
 		executeAction("stop", manager.redis)
 
@@ -118,6 +122,12 @@ func (manager *Manager) executeStart() error {
 		return err
 	}
 	if err := executeAction("start", manager.nsqConsumers); err != nil {
+		return err
+	}
+	if err := executeAction("start", manager.rabbitmqProducers); err != nil {
+		return err
+	}
+	if err := executeAction("start", manager.rabbitmqConsumers); err != nil {
 		return err
 	}
 	if err := executeAction("start", manager.dbs); err != nil {

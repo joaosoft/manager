@@ -6,7 +6,7 @@ import (
 
 // SimpleWebEcho ...
 type SimpleWebEcho struct {
-	*echo.Echo
+	server  *echo.Echo
 	host    string
 	started bool
 }
@@ -17,8 +17,8 @@ func NewSimpleWebEcho(host string) IWeb {
 	e.HideBanner = true
 
 	return &SimpleWebEcho{
-		Echo: e,
-		host: host,
+		server: e,
+		host:   host,
 	}
 }
 
@@ -37,9 +37,9 @@ func (web *SimpleWebEcho) AddRoutes(routes ...*Route) error {
 
 // AddRoute ...
 func (web *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
-	web.Add(method, path, handler.(func(echo.Context) error))
+	web.server.Add(method, path, handler.(func(echo.Context) error))
 	for _, item := range middleware {
-		web.Group(path, item.(echo.MiddlewareFunc))
+		web.server.Group(path, item.(echo.MiddlewareFunc))
 	}
 	return nil
 }
@@ -47,7 +47,7 @@ func (web *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc, mid
 // Start ...
 func (web *SimpleWebEcho) Start() error {
 	if !web.started {
-		if err := web.Echo.Start(web.host); err != nil {
+		if err := web.server.Start(web.host); err != nil {
 			log.Error(err)
 			return err
 		}
@@ -60,7 +60,7 @@ func (web *SimpleWebEcho) Start() error {
 // Stop ...
 func (web *SimpleWebEcho) Stop() error {
 	if web.started {
-		if err := web.Echo.Close(); err != nil {
+		if err := web.server.Close(); err != nil {
 			return err
 		}
 		web.started = false
@@ -71,4 +71,9 @@ func (web *SimpleWebEcho) Stop() error {
 // Started ...
 func (web *SimpleWebEcho) Started() bool {
 	return web.started
+}
+
+// GetClient ...
+func (web *SimpleWebEcho) GetClient() interface{} {
+	return web.server
 }

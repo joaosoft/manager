@@ -110,6 +110,8 @@ func (consumer *RabbitmqConsumer) Start() error {
 
 	go consumer.handle(deliveries, consumer.done)
 
+	consumer.started = true
+
 	return nil
 }
 
@@ -128,6 +130,8 @@ func (consumer *RabbitmqConsumer) Stop() error {
 	}
 
 	defer log.Infof("AMQP shutdown OK")
+
+	consumer.started = false
 
 	// wait for handle() to exit
 	return <-consumer.done

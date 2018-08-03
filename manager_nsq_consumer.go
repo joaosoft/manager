@@ -16,7 +16,7 @@ type INSQConsumer interface {
 	Started() bool
 }
 
-// AddProcess ...
+// AddNSQConsumer ...
 func (manager *Manager) AddNSQConsumer(key string, nsqConsumer INSQConsumer) error {
 	manager.nsqConsumers[key] = nsqConsumer
 	log.Infof("consumer %s added", key)
@@ -24,7 +24,7 @@ func (manager *Manager) AddNSQConsumer(key string, nsqConsumer INSQConsumer) err
 	return nil
 }
 
-// RemoveProcess ...
+// RemoveNSQConsumer ...
 func (manager *Manager) RemoveNSQConsumer(key string) (INSQConsumer, error) {
 	nsqConsumer := manager.nsqConsumers[key]
 
@@ -34,7 +34,7 @@ func (manager *Manager) RemoveNSQConsumer(key string) (INSQConsumer, error) {
 	return nsqConsumer, nil
 }
 
-// GetProcess ...
+// GetNSQConsumer ...
 func (manager *Manager) GetNSQConsumer(key string) INSQConsumer {
 	if nsqConsumer, exists := manager.nsqConsumers[key]; exists {
 		return nsqConsumer

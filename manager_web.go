@@ -9,7 +9,7 @@ type Route struct {
 	Middlewares []MiddlewareFunc
 }
 
-func NewRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) *Route{
+func NewRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) *Route {
 	return &Route{Method: method, Path: path, Handler: handler, Middlewares: middleware}
 }
 
@@ -20,6 +20,7 @@ type IWeb interface {
 	Start() error
 	Stop() error
 	Started() bool
+	GetClient() interface{}
 }
 
 // AddWeb ...

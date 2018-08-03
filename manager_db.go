@@ -23,7 +23,7 @@ func NewDBConfig(driver, datasource string) *DBConfig {
 	}
 }
 
-// AddWeb ...
+// AddDB ...
 func (manager *Manager) AddDB(key string, db IDB) error {
 	manager.dbs[key] = db
 	log.Infof("database %s added", key)
@@ -31,7 +31,7 @@ func (manager *Manager) AddDB(key string, db IDB) error {
 	return nil
 }
 
-// RemoveWeb ...
+// RemoveDB ...
 func (manager *Manager) RemoveDB(key string) (IDB, error) {
 	db := manager.dbs[key]
 

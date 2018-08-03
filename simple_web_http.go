@@ -6,8 +6,8 @@ import (
 
 // SimpleWebHttp ...
 type SimpleWebHttp struct {
-	*http.Server
-	Handler *HandlerFunc
+	server  *http.Server
+	handler *HandlerFunc
 	host    string
 	started bool
 }
@@ -15,7 +15,7 @@ type SimpleWebHttp struct {
 // NewSimpleWebHttp...
 func NewSimpleWebHttp(host string) IWeb {
 	return &SimpleWebHttp{
-		Server: &http.Server{Addr: host},
+		server: &http.Server{Addr: host},
 		host:   host,
 	}
 }
@@ -55,7 +55,7 @@ func (web *SimpleWebHttp) Start() error {
 // Stop ...
 func (web *SimpleWebHttp) Stop() error {
 	if web.started {
-		if err := web.Server.Close(); err != nil {
+		if err := web.server.Close(); err != nil {
 			return err
 		}
 		web.started = false
@@ -66,4 +66,9 @@ func (web *SimpleWebHttp) Stop() error {
 // Started ...
 func (web *SimpleWebHttp) Started() bool {
 	return web.started
+}
+
+// GetClient ...
+func (web *SimpleWebHttp) GetClient() interface{} {
+	return web.server
 }

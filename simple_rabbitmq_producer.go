@@ -77,6 +77,8 @@ func (producer *RabbitmqProducer) Stop() error {
 
 	defer log.Infof("AMQP shutdown OK")
 
+	producer.started = false
+
 	return nil
 }
 
