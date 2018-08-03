@@ -1,0 +1,2 @@
+http.host: 0.0.0.0
+indices.query.bool.max_clause_count: 4096

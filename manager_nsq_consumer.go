@@ -26,18 +26,18 @@ func (manager *Manager) AddNSQConsumer(key string, nsqConsumer INSQConsumer) err
 
 // RemoveProcess ...
 func (manager *Manager) RemoveNSQConsumer(key string) (INSQConsumer, error) {
-	nsqConsumers := manager.nsqConsumers[key]
+	nsqConsumer := manager.nsqConsumers[key]
 
 	delete(manager.processes, key)
 	log.Infof("consumer %s removed", key)
 
-	return nsqConsumers, nil
+	return nsqConsumer, nil
 }
 
 // GetProcess ...
 func (manager *Manager) GetNSQConsumer(key string) INSQConsumer {
-	if nsqConsumers, exists := manager.nsqConsumers[key]; exists {
-		return nsqConsumers
+	if nsqConsumer, exists := manager.nsqConsumers[key]; exists {
+		return nsqConsumer
 	}
 	log.Infof("consumer %s doesn't exist", key)
 	return nil

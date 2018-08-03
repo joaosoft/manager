@@ -1,28 +1,31 @@
 package manager
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"reflect"
 	"syscall"
+
 	"github.com/joaosoft/logger"
-	"fmt"
 )
 
 // Manager ...
 type Manager struct {
-	processes       map[string]IProcess
-	configs         map[string]IConfig
-	redis           map[string]IRedis
-	nsqProducers    map[string]INSQProducer
-	nsqConsumers    map[string]INSQConsumer
-	dbs             map[string]IDB
-	webs            map[string]IWeb
-	gateways        map[string]IGateway
-	worklist        map[string]IWorkList
-	runInBackground bool
-	config          *ManagerConfig
-	isLogExternal   bool
+	processes         map[string]IProcess
+	configs           map[string]IConfig
+	redis             map[string]IRedis
+	nsqProducers      map[string]INSQProducer
+	nsqConsumers      map[string]INSQConsumer
+	rabbitmqProducers map[string]IRabbitmqProducer
+	rabbitmqConsumers map[string]IRabbitmqConsumer
+	dbs               map[string]IDB
+	webs              map[string]IWeb
+	gateways          map[string]IGateway
+	worklist          map[string]IWorkList
+	runInBackground   bool
+	config            *ManagerConfig
+	isLogExternal     bool
 
 	quit    chan int
 	started bool

@@ -1,5 +1,5 @@
 env:
-	docker-compose up -d postgres mysql nsqd nsqadmin redis
+	docker-compose up -d manager.postgres manager.mysql manager.nsqd manager.nsqadmin manager.redis manager.rabbitmq manager.dynamodb manager.elasticsearch
 run:
 	go run ./bin/launcher/main.go
 

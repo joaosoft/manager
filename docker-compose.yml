@@ -1,56 +1,135 @@
-version: '3.1'
+version: '3.3'
 services:
-  postgres:
+
+  manager.traefik:
+    image: traefik
+    container_name: manager.traefik
+    command: -c /dev/null --web --docker --docker.domain=docker.localhost --logLevel=DEBUG
+    ports:
+      - "8001:80"
+      - "8002:8080"
+    volumes:
+      - "$HOME/docker/traefik/docker.sock:/var/run/docker.sock"
+
+  manager.postgres:
     image: postgres
+    container_name: manager.postgres
     restart: always
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     ports:
       - 7001:5432
+    volumes:
+      - "$HOME/docker/postgres:/var/lib/postgresql/data"
+      - "$HOME/docker/postgres/postgres:/var/log/postgres"
+      - "./config/postgres/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql"
+      - "./config/postgres/postgresql.conf:/postgresql.conf"
+    networks:
+      default:
+        aliases:
+          - postgres
 
-  mysql:
+  manager.mysql:
     image: mysql
+    container_name: manager.mysql
     restart: always
     environment:
       MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: password
     ports:
         - 7002:3306
+    networks:
+      default:
+        aliases:
+          - mysql
 
-  nsqlookup:
+  manager.nsqlookup:
     image: nsqio/nsq
-    container_name: nsqlookup
+    container_name: manager.nsqlookup
     hostname: nsqlookup
     ports:
       - 4160:4160
       - 4161:4161
     command: /nsqlookupd
 
-  nsqd:
+  manager.nsqd:
     image: nsqio/nsq
-    container_name: nsqd
+    container_name: manager.nsqd
     ports:
       - 4150:4150
       - 4151:4151
     links:
-      - nsqlookup:nsqlookup
+      - manager.nsqlookup:nsqlookup
     command: /nsqd --lookupd-tcp-address=nsqlookup:4160
 
-  nsqadmin:
+  manager.nsqadmin:
     image: nsqio/nsq
-    container_name: nsqadmin
+    container_name: manager.nsqadmin
     links:
-      - nsqlookup:nsqlookup
+      - manager.nsqlookup:nsqlookup
     ports:
       - 4171:4171
     command: /nsqadmin --lookupd-http-address=nsqlookup:4161
 
-  redis:
+  manager.redis:
     image: redis:alpine
-    container_name: redis
+    container_name: manager.redis
     ports:
       - 7100:6379
+    volumes:
+      - "$HOME/docker/redis/redis:/var/log/redis"
+      - "./config/redis/redis.conf:/usr/local/etc/redis/redis.conf"
+    networks:
+      default:
+        aliases:
+          - redis
+
+  manager.dynamodb:
+    image: dwmkerr/dynamodb:latest
+    container_name: manager.dynamodb
+    command: -dbPath /opt/dynamodb-storage
+    volumes:
+      - "$HOME/docker/dynamodb:/opt/dynamodb-storage:rw"
+    ports:
+      - 8003:8000
+    networks:
+      default:
+        aliases:
+          - dynamodb
+
+  manager.rabbitmq:
+    image: rabbitmq:3.7.7-management
+    container_name: manager.rabbitmq
+    hostname: rabbitmq
+    environment:
+        RABBITMQ_DEFAULT_VHOST: local
+        RABBITMQ_DEFAULT_USER:  root
+        RABBITMQ_DEFAULT_PASS:  password
+    volumes:
+      - "$HOME/docker/rabbitmq:/var/lib/rabbitmq:rw"
+    ports:
+        - 15673:15672
+        - 5673:5672
+    networks:
+      default:
+        aliases:
+          - rabbitmq
+
+  manager.elasticsearch:
+    image: elasticsearch:latest
+    container_name: manager.elasticsearch
+    environment:
+      ES_JAVA_OPTS: '-Xms1024m -Xmx1024m'
+    volumes:
+      - "$HOME/docker/elastic:/usr/share/elasticsearch/data:rw"
+    ports:
+      - 9201:9200
+      - 9301:9300
+    networks:
+      default:
+        aliases:
+          - elasticsearch
 
 volumes:
   esdata1:

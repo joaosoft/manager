@@ -10,9 +10,10 @@ import (
 
 	"manager"
 
-	logger "github.com/joaosoft/logger"
+	"github.com/joaosoft/logger"
 	"github.com/labstack/echo"
 	"github.com/nsqio/go-nsq"
+	"github.com/streadway/amqp"
 )
 
 var log = logger.NewLogDefault("manager", logger.InfoLevel)
@@ -56,6 +57,11 @@ func dummy_web_echo_handler(ctx echo.Context) error {
 
 func work_handler(id string, data interface{}) error {
 	log.Infof("work with the id %s and data %s done!", id, data.(string))
+	return nil
+}
+
+func rabbit_consumer_handler(message amqp.Delivery) error {
+	log.Errorf("\nA IMPRIMIR MENSAGEM %s", string(message.Body))
 	return nil
 }
 
@@ -179,6 +185,56 @@ func main() {
 	}
 	if err := workqueue.Start(); err != nil {
 		log.Errorf("MAIN: error on workqueue %s", err)
+	}
+
+	//
+	// manager: rabbitmq consumer
+	uri := fmt.Sprintf("amqp://%s:%s@%s:%s%s", "root", "password", "localhost", "5673", "/local")
+	exchange := "example"
+	exchangeType := "direct"
+	queue := "test-queue"
+	bindingKey := "test-key"
+	consumerTag := "simple-consumer"
+
+	configRabbitmq := manager.NewRabbitmqConfig(uri, exchange, exchangeType)
+
+	producer, err := manager.NewRabbitmqProducer(configRabbitmq)
+	if err != nil {
+		log.Errorf("%s", err)
+	}
+
+	err = producer.Start()
+	if err != nil {
+		log.Errorf("%s", err)
+	}
+
+	err = producer.Publish(bindingKey, []byte(`teste do joao`), true)
+	if err != nil {
+		log.Errorf("%s", err)
+	}
+
+	<-time.After(5 * time.Second)
+	log.Info("shutting down producer")
+	if err := producer.Stop(); err != nil {
+		log.Errorf("error during shutdown: %s", err)
+	}
+
+	//
+	// manager: rabbitmq consumer
+	consumer, err := manager.NewRabbitmqConsumer(configRabbitmq, queue, bindingKey, consumerTag, rabbit_consumer_handler)
+	if err != nil {
+		log.Errorf("%s", err)
+	}
+
+	err = consumer.Start()
+	if err != nil {
+		log.Errorf("%s", err)
+	}
+
+	<-time.After(10 * time.Second)
+	log.Info("shutting down consumer")
+	if err := consumer.Stop(); err != nil {
+		log.Errorf("error during shutdown: %s", err)
 	}
 
 	m.Start()

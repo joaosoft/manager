@@ -1,0 +1,25 @@
+{
+  "rabbit_version": "3.7.7",
+  "policies": [
+  ],
+  "queues": [
+    {
+      "name": "example",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "example-exchange-dead",
+        "x-dead-letter-routing-key": "example-routing-dead"
+      }
+    }
+  ],
+  "bindings": [
+    {
+      "source": "example-exchange-dead",
+      "destination": "example-dead-letter",
+      "destination_type": "queue",
+      "routing_key": "example-routing-dead",
+      "arguments": {}
+    }
+  ]
+}
