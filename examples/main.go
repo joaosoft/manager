@@ -188,7 +188,7 @@ func main() {
 	}
 
 	//
-	// manager: rabbitmq consumer
+	// manager: rabbitmq producer
 	uri := fmt.Sprintf("amqp://%s:%s@%s:%s%s", "root", "password", "localhost", "5673", "/local")
 	exchange := "example"
 	exchangeType := "direct"

@@ -11,6 +11,8 @@ After a read of the project https://gitlab.com/mandalore/go-app extracted some c
 * Configurations (with reload and write options)
 * NSQ Consumers
 * NSQ Producers
+* Rabbitmq Consumers
+* Rabbitmq Producers
 * Database Connections
 * Web Servers
 * Gateways
@@ -119,6 +121,61 @@ nsqProducer, _ := manager.NewSimpleNSQProducer(nsqConfigProducer)
 manager.AddNSQProducer("nsq_producer_1", nsqProducer)
 nsqProducer = manager.GetNSQProducer("nsq_producer_1")
 nsqProducer.Publish("topic_1", []byte("MENSAGEM ENVIADA PARA A NSQ"), 3)
+```
+
+>### Rabbitmq Consumers 
+```go
+uri := fmt.Sprintf("amqp://%s:%s@%s:%s%s", "root", "password", "localhost", "5673", "/local")
+exchange := "example"
+exchangeType := "direct"
+queue := "test-queue"
+bindingKey := "test-key"
+consumerTag := "simple-consumer"
+
+configRabbitmq := manager.NewRabbitmqConfig(uri, exchange, exchangeType)
+
+consumer, err := manager.NewRabbitmqConsumer(configRabbitmq, queue, bindingKey, consumerTag, rabbit_consumer_handler)
+if err != nil {
+    log.Errorf("%s", err)
+}
+
+err = consumer.Start()
+if err != nil {
+    log.Errorf("%s", err)
+}
+
+<-time.After(10 * time.Second)
+log.Info("shutting down consumer")
+if err := consumer.Stop(); err != nil {
+    log.Errorf("error during shutdown: %s", err)
+}
+```
+
+>### NSQ Producers
+```go
+uri := fmt.Sprintf("amqp://%s:%s@%s:%s%s", "root", "password", "localhost", "5673", "/local")
+exchange := "example"
+exchangeType := "direct"
+queue := "test-queue"
+bindingKey := "test-key"
+consumerTag := "simple-consumer"
+
+configRabbitmq := manager.NewRabbitmqConfig(uri, exchange, exchangeType)
+
+producer, err := manager.NewRabbitmqProducer(configRabbitmq)
+if err != nil {
+    log.Errorf("%s", err)
+}
+
+err = producer.Start()
+if err != nil {
+    log.Errorf("%s", err)
+}
+
+err = producer.Publish(bindingKey, []byte(`teste do joao`), true)
+if err != nil {
+    log.Errorf("%s", err)
+}
 ```
 
 >### Database Connections
