@@ -1,8 +1,6 @@
 package manager
 
 import (
-	"fmt"
-
 	"time"
 
 	"github.com/streadway/amqp"
@@ -27,24 +25,28 @@ func (producer *RabbitmqProducer) Start() error {
 
 	producer.connection, err = producer.config.Connect()
 	if err != nil {
-		return fmt.Errorf("dial: %s", err)
+		log.Errorf("dial: %s", err).ToError(&err)
+		return err
 	}
 
 	defer func(err error) {
-		if err != nil && producer.connection != nil {
-			producer.connection.Close()
+		if err != nil {
+			if producer.connection != nil {
+				producer.connection.Close()
+			}
+		} else {
+			producer.started = true
 		}
 	}(err)
 
 	log.Infof("got connection, getting channel")
-	producer.channel, err = producer.connection.Channel()
-
-	if err != nil {
-		return fmt.Errorf("channel: %s", err)
+	if producer.channel, err = producer.connection.Channel(); err != nil {
+		log.Errorf("channel: %s", err).ToError(&err)
+		return err
 	}
 
 	log.Infof("got channel, declaring %q exchange (%s)", producer.config.ExchangeType, producer.config.Exchange)
-	if err := producer.channel.ExchangeDeclare(
+	if err = producer.channel.ExchangeDeclare(
 		producer.config.Exchange,     // name
 		producer.config.ExchangeType, // type
 		true,  // durable
@@ -53,10 +55,9 @@ func (producer *RabbitmqProducer) Start() error {
 		false, // noWait
 		nil,   // arguments
 	); err != nil {
-		return fmt.Errorf("exchange declare: %s", err)
+		log.Errorf("exchange declare: %s", err).ToError(&err)
+		return err
 	}
-
-	producer.started = true
 
 	return nil
 }
@@ -68,16 +69,17 @@ func (producer *RabbitmqProducer) Started() bool {
 func (producer *RabbitmqProducer) Stop() error {
 	// will close() the deliveries channel
 	if err := producer.channel.Cancel(producer.tag, true); err != nil {
-		return fmt.Errorf("consumer cancel failed: %s", err)
+		log.Errorf("consumer cancel failed: %s", err).ToError(&err)
+		return err
 	}
 
 	if err := producer.connection.Close(); err != nil {
-		return fmt.Errorf("AMQP connection close error: %s", err)
+		log.Errorf("AMQP connection close error: %s", err).ToError(&err)
+		return err
 	}
 
-	defer log.Infof("AMQP shutdown OK")
-
 	producer.started = false
+	log.Infof("AMQP shutdown OK")
 
 	return nil
 }
@@ -101,7 +103,8 @@ func (producer *RabbitmqProducer) Publish(routingKey string, body []byte, reliab
 		false,                    // immediate
 		msg,
 	); err != nil {
-		return fmt.Errorf("exchange publish: %s", err)
+		log.Errorf("exchange publish: %s", err).ToError(&err)
+		return err
 	}
 
 	return nil

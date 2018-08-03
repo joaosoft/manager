@@ -1,8 +1,6 @@
 package manager
 
 import (
-	"fmt"
-
 	"github.com/streadway/amqp"
 )
 
@@ -38,19 +36,25 @@ func (consumer *RabbitmqConsumer) Start() error {
 
 	consumer.connection, err = consumer.config.Connect()
 	if err != nil {
-		return fmt.Errorf("dial: %s", err)
+		log.Errorf("dial: %s", err).ToError(&err)
+		return err
 	}
 
 	defer func(err error) {
-		if err != nil && consumer.connection != nil {
-			consumer.connection.Close()
+		if err != nil {
+			if consumer.connection != nil {
+				consumer.connection.Close()
+			}
+		} else {
+			consumer.started = true
 		}
 	}(err)
 
 	log.Infof("got connection, getting channel")
 	consumer.channel, err = consumer.connection.Channel()
 	if err != nil {
-		return fmt.Errorf("channel: %s", err)
+		log.Errorf("channel: %s", err).ToError(&err)
+		return err
 	}
 
 	log.Infof("got channel, declaring exchange (%s)", consumer.config.Exchange)
@@ -63,25 +67,25 @@ func (consumer *RabbitmqConsumer) Start() error {
 		false, // noWait
 		nil,   // arguments
 	); err != nil {
-		consumer.connection.Close()
-		return fmt.Errorf("exchange declare: %s", err)
+		log.Errorf("exchange declare: %s", err).ToError(&err)
+		return err
 	}
 
 	log.Infof("declared exchange, declaring queue (%s)", consumer.queue)
-	state, err := consumer.channel.QueueDeclare(
+	var queue amqp.Queue
+	if queue, err = consumer.channel.QueueDeclare(
 		consumer.queue, // name of the queue
 		true,           // durable
 		false,          // delete when usused
 		false,          // exclusive
 		false,          // noWait
 		nil,            // arguments
-	)
-	if err != nil {
-		consumer.connection.Close()
-		return fmt.Errorf("queue declare: %s", err)
+	); err != nil {
+		log.Errorf("queue declare: %s", err).ToError(&err)
+		return err
 	}
 
-	log.Infof("declared queue (%d messages, %d consumers), binding to exchange (bindingKey '%s')", state.Messages, state.Consumers, consumer.bindingKey)
+	log.Infof("declared queue (%d messages, %d consumers), binding to exchange (bindingKey '%s')", queue.Messages, queue.Consumers, consumer.bindingKey)
 
 	if err = consumer.channel.QueueBind(
 		consumer.queue,           // name of the queue
@@ -90,12 +94,13 @@ func (consumer *RabbitmqConsumer) Start() error {
 		false, // noWait
 		nil,   // arguments
 	); err != nil {
-		consumer.connection.Close()
-		return fmt.Errorf("queue bind: %s", err)
+		log.Errorf("queue bind: %s", err).ToError(&err)
+		return err
 	}
 
 	log.Infof("queue bound to exchange, starting consume (consumer tag '%s')", consumer.tag)
-	deliveries, err := consumer.channel.Consume(
+	var deliveries <-chan amqp.Delivery
+	if deliveries, err = consumer.channel.Consume(
 		consumer.queue, // name
 		consumer.tag,   // consumerTag,
 		false,          // noAck
@@ -103,14 +108,12 @@ func (consumer *RabbitmqConsumer) Start() error {
 		false,          // noLocal
 		false,          // noWait
 		nil,            // arguments
-	)
-	if err != nil {
-		return fmt.Errorf("queue consume: %s", err)
+	); err != nil {
+		log.Errorf("queue consume: %s", err).ToError(&err)
+		return err
 	}
 
 	go consumer.handle(deliveries, consumer.done)
-
-	consumer.started = true
 
 	return nil
 }
@@ -122,16 +125,19 @@ func (consumer *RabbitmqConsumer) Started() bool {
 func (consumer *RabbitmqConsumer) Stop() error {
 	// will close() the deliveries channel
 	if err := consumer.channel.Cancel(consumer.tag, true); err != nil {
-		return fmt.Errorf("consumer cancel failed: %s", err)
+		log.Errorf("consumer cancel failed: %s", err).ToError(&err)
+		return err
 	}
 
 	if err := consumer.connection.Close(); err != nil {
-		return fmt.Errorf("AMQP connection close error: %s", err)
+		log.Errorf("AMQP connection close error: %s", err).ToError(&err)
+		return err
 	}
 
-	defer log.Infof("AMQP shutdown OK")
-
-	consumer.started = false
+	defer func() {
+		consumer.started = false
+		log.Infof("AMQP shutdown OK")
+	}()
 
 	// wait for handle() to exit
 	return <-consumer.done
