@@ -11,7 +11,7 @@ type RabbitmqConsumer struct {
 	connection *amqp.Connection
 	channel    *amqp.Channel
 	queue      string
-	key        string
+	bindingKey string
 	tag        string
 	handler    RabbitmqHandler
 	done       chan error
@@ -24,68 +24,76 @@ func NewRabbitmqConsumer(config *RabbitmqConfig, queue, bindingKey, tag string, 
 		connection: nil,
 		channel:    nil,
 		queue:      queue,
-		key:        bindingKey,
+		bindingKey: bindingKey,
 		tag:        tag,
 		handler:    handler,
 		done:       make(chan error),
-	}
-
-	var err error
-
-	log.Infof("dialing %s", config.Uri)
-	consumer.connection, err = amqp.Dial(config.Uri)
-	if err != nil {
-		return nil, fmt.Errorf("dial: %s", err)
-	}
-
-	log.Infof("got connection, getting channel")
-	consumer.channel, err = consumer.connection.Channel()
-	if err != nil {
-		return nil, fmt.Errorf("channel: %s", err)
-	}
-
-	log.Infof("got channel, declaring exchange (%s)", config.Exchange)
-	if err = consumer.channel.ExchangeDeclare(
-		config.Exchange,     // name of the exchange
-		config.ExchangeType, // type
-		true,                // durable
-		false,               // delete when complete
-		false,               // internal
-		false,               // noWait
-		nil,                 // arguments
-	); err != nil {
-		return nil, fmt.Errorf("exchange declare: %s", err)
-	}
-
-	log.Infof("declared exchange, declaring queue (%s)", queue)
-	state, err := consumer.channel.QueueDeclare(
-		queue, // name of the queue
-		true,  // durable
-		false, // delete when usused
-		false, // exclusive
-		false, // noWait
-		nil,   // arguments
-	)
-	if err != nil {
-		return nil, fmt.Errorf("queue declare: %s", err)
-	}
-
-	log.Infof("declared queue (%d messages, %d consumers), binding to exchange (bindingKey '%s')", state.Messages, state.Consumers, bindingKey)
-
-	if err = consumer.channel.QueueBind(
-		queue,           // name of the queue
-		bindingKey,      // bindingKey
-		config.Exchange, // sourceExchange
-		false,           // noWait
-		nil,             // arguments
-	); err != nil {
-		return nil, fmt.Errorf("queue bind: %s", err)
 	}
 
 	return consumer, nil
 }
 
 func (consumer *RabbitmqConsumer) Start() error {
+	var err error
+
+	consumer.connection, err = consumer.config.Connect()
+	if err != nil {
+		return fmt.Errorf("dial: %s", err)
+	}
+
+	defer func(err error) {
+		if err != nil && consumer.connection != nil {
+			consumer.connection.Close()
+		}
+	}(err)
+
+	log.Infof("got connection, getting channel")
+	consumer.channel, err = consumer.connection.Channel()
+	if err != nil {
+		return fmt.Errorf("channel: %s", err)
+	}
+
+	log.Infof("got channel, declaring exchange (%s)", consumer.config.Exchange)
+	if err = consumer.channel.ExchangeDeclare(
+		consumer.config.Exchange,     // name of the exchange
+		consumer.config.ExchangeType, // type
+		true,  // durable
+		false, // delete when complete
+		false, // internal
+		false, // noWait
+		nil,   // arguments
+	); err != nil {
+		consumer.connection.Close()
+		return fmt.Errorf("exchange declare: %s", err)
+	}
+
+	log.Infof("declared exchange, declaring queue (%s)", consumer.queue)
+	state, err := consumer.channel.QueueDeclare(
+		consumer.queue, // name of the queue
+		true,           // durable
+		false,          // delete when usused
+		false,          // exclusive
+		false,          // noWait
+		nil,            // arguments
+	)
+	if err != nil {
+		consumer.connection.Close()
+		return fmt.Errorf("queue declare: %s", err)
+	}
+
+	log.Infof("declared queue (%d messages, %d consumers), binding to exchange (bindingKey '%s')", state.Messages, state.Consumers, consumer.bindingKey)
+
+	if err = consumer.channel.QueueBind(
+		consumer.queue,           // name of the queue
+		consumer.bindingKey,      // bindingKey
+		consumer.config.Exchange, // sourceExchange
+		false, // noWait
+		nil,   // arguments
+	); err != nil {
+		consumer.connection.Close()
+		return fmt.Errorf("queue bind: %s", err)
+	}
+
 	log.Infof("queue bound to exchange, starting consume (consumer tag '%s')", consumer.tag)
 	deliveries, err := consumer.channel.Consume(
 		consumer.queue, // name

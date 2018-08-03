@@ -4,8 +4,11 @@ import (
 	"database/sql"
 	"time"
 
+	"fmt"
+
 	"github.com/alphazero/Go-Redis"
 	"github.com/nsqio/go-nsq"
+	"github.com/streadway/amqp"
 )
 
 // createConnection ...
@@ -31,4 +34,15 @@ func (config *NSQConfig) Connect() (*nsq.Producer, error) {
 
 	log.Infof("connecting nsq with max attempts [ %d ]", config.MaxAttempts)
 	return nsq.NewProducer(config.Lookupd[0], nsqConfig)
+}
+
+// createConnection ...
+func (config *RabbitmqConfig) Connect() (*amqp.Connection, error) {
+	log.Infof("dialing %s", config.Uri)
+	connection, err := amqp.Dial(config.Uri)
+	if err != nil {
+		return nil, fmt.Errorf("dial: %s", err)
+	}
+
+	return connection, nil
 }

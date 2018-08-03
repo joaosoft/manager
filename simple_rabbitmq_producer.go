@@ -17,27 +17,32 @@ type RabbitmqProducer struct {
 }
 
 func NewRabbitmqProducer(config *RabbitmqConfig) (*RabbitmqProducer, error) {
-	log.Infof("dialing %s", config.Uri)
-	connection, err := amqp.Dial(config.Uri)
-	if err != nil {
-		return nil, fmt.Errorf("dial: %s", err)
-	}
-
-	log.Infof("got connection, getting channel")
-	channel, err := connection.Channel()
-	if err != nil {
-		connection.Close()
-		return nil, fmt.Errorf("channel: %s", err)
-	}
-
 	return &RabbitmqProducer{
-		config:     config,
-		connection: connection,
-		channel:    channel,
+		config: config,
 	}, nil
 }
 
 func (producer *RabbitmqProducer) Start() error {
+	var err error
+
+	producer.connection, err = producer.config.Connect()
+	if err != nil {
+		return fmt.Errorf("dial: %s", err)
+	}
+
+	defer func(err error) {
+		if err != nil && producer.connection != nil {
+			producer.connection.Close()
+		}
+	}(err)
+
+	log.Infof("got connection, getting channel")
+	producer.channel, err = producer.connection.Channel()
+
+	if err != nil {
+		return fmt.Errorf("channel: %s", err)
+	}
+
 	log.Infof("got channel, declaring %q exchange (%s)", producer.config.ExchangeType, producer.config.Exchange)
 	if err := producer.channel.ExchangeDeclare(
 		producer.config.Exchange,     // name
@@ -48,7 +53,6 @@ func (producer *RabbitmqProducer) Start() error {
 		false, // noWait
 		nil,   // arguments
 	); err != nil {
-		producer.connection.Close()
 		return fmt.Errorf("exchange declare: %s", err)
 	}
 
