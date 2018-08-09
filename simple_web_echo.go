@@ -38,8 +38,11 @@ func (web *SimpleWebEcho) AddRoutes(routes ...*Route) error {
 // AddRoute ...
 func (web *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
 	web.server.Add(method, path, handler.(func(echo.Context) error))
-	for _, item := range middleware {
-		web.server.Group(path, item.(echo.MiddlewareFunc))
+
+	if middleware != nil {
+		for _, item := range middleware {
+			web.server.Group(path, item.(echo.MiddlewareFunc))
+		}
 	}
 	return nil
 }
