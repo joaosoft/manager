@@ -2,6 +2,7 @@ package manager
 
 import (
 	"net/http"
+	"sync"
 )
 
 // SimpleWebHttp ...
@@ -40,7 +41,10 @@ func (web *SimpleWebHttp) AddRoute(method, path string, handler HandlerFunc, mid
 }
 
 // Start ...
-func (web *SimpleWebHttp) Start() error {
+func (web *SimpleWebHttp) Start(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
+
 	if !web.started {
 		if err := http.ListenAndServe(web.host, nil); err != nil {
 			log.Error(err)
@@ -53,7 +57,10 @@ func (web *SimpleWebHttp) Start() error {
 }
 
 // Stop ...
-func (web *SimpleWebHttp) Stop() error {
+func (web *SimpleWebHttp) Stop(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
+
 	if web.started {
 		if err := web.server.Close(); err != nil {
 			return err

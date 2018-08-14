@@ -1,6 +1,8 @@
 package manager
 
 import (
+	"sync"
+
 	"github.com/streadway/amqp"
 )
 
@@ -31,7 +33,9 @@ func NewRabbitmqConsumer(config *RabbitmqConfig, queue, bindingKey, tag string, 
 	return consumer, nil
 }
 
-func (consumer *RabbitmqConsumer) Start() error {
+func (consumer *RabbitmqConsumer) Start(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
 	var err error
 
 	consumer.connection, err = consumer.config.Connect()
@@ -122,7 +126,10 @@ func (consumer *RabbitmqConsumer) Started() bool {
 	return consumer.started
 }
 
-func (consumer *RabbitmqConsumer) Stop() error {
+func (consumer *RabbitmqConsumer) Stop(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
+
 	// will close() the deliveries channel
 	if err := consumer.channel.Cancel(consumer.tag, true); err != nil {
 		log.Errorf("consumer cancel failed: %s", err).ToError(&err)

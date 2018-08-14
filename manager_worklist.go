@@ -1,10 +1,13 @@
 package manager
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 type IWorkList interface {
-	Start() error
-	Stop() error
+	Start(wg *sync.WaitGroup) error
+	Stop(wg *sync.WaitGroup) error
 	Started() bool
 	AddWork(id string, work interface{})
 }

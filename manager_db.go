@@ -1,11 +1,14 @@
 package manager
 
-import "database/sql"
+import (
+	"database/sql"
+	"sync"
+)
 
 type IDB interface {
 	Get() *sql.DB
-	Start() error
-	Stop() error
+	Start(wg *sync.WaitGroup) error
+	Stop(wg *sync.WaitGroup) error
 	Started() bool
 }
 

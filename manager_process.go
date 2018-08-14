@@ -1,9 +1,11 @@
 package manager
 
+import "sync"
+
 // IProcess ...
 type IProcess interface {
-	Start() error
-	Stop() error
+	Start(wg *sync.WaitGroup) error
+	Stop(wg *sync.WaitGroup) error
 	Started() bool
 }
 

@@ -3,6 +3,8 @@ package manager
 import (
 	"database/sql"
 
+	"sync"
+
 	_ "github.com/go-sql-driver/mysql" // mysql driver
 	_ "github.com/lib/pq"              // postgres driver
 )
@@ -27,7 +29,10 @@ func (db *SimpleDB) Get() *sql.DB {
 }
 
 // Start ...
-func (db *SimpleDB) Start() error {
+func (db *SimpleDB) Start(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
+
 	if !db.started {
 		if conn, err := db.config.Connect(); err != nil {
 			return err
@@ -41,7 +46,10 @@ func (db *SimpleDB) Start() error {
 }
 
 // Stop ...
-func (db *SimpleDB) Stop() error {
+func (db *SimpleDB) Stop(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
+
 	if db.started {
 		if err := db.Close(); err != nil {
 			return err

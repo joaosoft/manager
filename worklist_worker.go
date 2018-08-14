@@ -48,6 +48,7 @@ func NewWorker(id int, config *WorkListConfig, handler WorkHandler, list IList) 
 
 // Start ...
 func (worker *Worker) Start() error {
+
 	go func() error {
 		worker.mux.Lock()
 		worker.started = true

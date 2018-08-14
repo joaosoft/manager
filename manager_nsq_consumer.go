@@ -2,6 +2,7 @@ package manager
 
 import (
 	"github.com/nsqio/go-nsq"
+	"sync"
 )
 
 type INSQHandler interface {
@@ -10,8 +11,8 @@ type INSQHandler interface {
 
 // INSQConsumer ...
 type INSQConsumer interface {
-	Start() error
-	Stop() error
+	Start(wg *sync.WaitGroup) error
+	Stop(wg *sync.WaitGroup) error
 	HandleMessage(message *nsq.Message) error
 	Started() bool
 }

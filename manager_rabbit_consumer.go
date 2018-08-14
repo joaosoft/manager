@@ -2,14 +2,15 @@ package manager
 
 import (
 	"github.com/streadway/amqp"
+	"sync"
 )
 
 type RabbitmqHandler func(message amqp.Delivery) error
 
 // IRabbitmqConsumer ...
 type IRabbitmqConsumer interface {
-	Start() error
-	Stop() error
+	Start(wg *sync.WaitGroup) error
+	Stop(wg *sync.WaitGroup) error
 	Started() bool
 }
 

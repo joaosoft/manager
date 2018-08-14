@@ -2,6 +2,7 @@ package manager
 
 import (
 	"github.com/labstack/echo"
+	"sync"
 )
 
 // SimpleWebEcho ...
@@ -45,7 +46,10 @@ func (web *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc, mid
 }
 
 // Start ...
-func (web *SimpleWebEcho) Start() error {
+func (web *SimpleWebEcho) Start(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
+
 	if !web.started {
 		if err := web.server.Start(web.host); err != nil {
 			log.Error(err)
@@ -58,7 +62,10 @@ func (web *SimpleWebEcho) Start() error {
 }
 
 // Stop ...
-func (web *SimpleWebEcho) Stop() error {
+func (web *SimpleWebEcho) Stop(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
+
 	if web.started {
 		if err := web.server.Close(); err != nil {
 			return err

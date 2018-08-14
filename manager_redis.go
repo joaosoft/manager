@@ -1,8 +1,10 @@
 package manager
 
+import "sync"
+
 type IRedis interface {
-	Start() error
-	Stop() error
+	Start(wg *sync.WaitGroup) error
+	Stop(wg *sync.WaitGroup) error
 	Started() bool
 
 	Action(command string, arguments ...string) error

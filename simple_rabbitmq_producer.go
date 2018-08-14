@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/streadway/amqp"
+	"sync"
 )
 
 type RabbitmqProducer struct {
@@ -20,8 +21,10 @@ func NewRabbitmqProducer(config *RabbitmqConfig) (*RabbitmqProducer, error) {
 	}, nil
 }
 
-func (producer *RabbitmqProducer) Start() error {
+func (producer *RabbitmqProducer) Start(wg *sync.WaitGroup) error {
+	wg.Add(1)
 	var err error
+	defer wg.Done()
 
 	producer.connection, err = producer.config.Connect()
 	if err != nil {
@@ -66,7 +69,10 @@ func (producer *RabbitmqProducer) Started() bool {
 	return producer.started
 }
 
-func (producer *RabbitmqProducer) Stop() error {
+func (producer *RabbitmqProducer) Stop(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
+
 	// will close() the deliveries channel
 	if err := producer.channel.Cancel(producer.tag, true); err != nil {
 		log.Errorf("consumer cancel failed: %s", err).ToError(&err)

@@ -7,6 +7,8 @@ import (
 	"reflect"
 	"syscall"
 
+	"sync"
+
 	"github.com/joaosoft/logger"
 )
 
@@ -71,10 +73,11 @@ func (manager *Manager) Started() bool {
 
 // Start ...
 func (manager *Manager) Start() error {
+	c := make(chan bool)
 	if manager.runInBackground {
-		go manager.executeStart()
+		go manager.executeStart(c)
 	} else {
-		return manager.executeStart()
+		return manager.executeStart(c)
 	}
 
 	return nil
@@ -83,61 +86,58 @@ func (manager *Manager) Start() error {
 // Stop ...
 func (manager *Manager) Stop() error {
 	if manager.started {
-		log.Infof("stopping...")
+		c := make(chan bool)
+		if manager.runInBackground {
+			go manager.executeStop(c)
+		} else {
+			return manager.executeStop(c)
+		}
 
-		executeAction("stop", manager.processes)
-		executeAction("stop", manager.worklist)
-		executeAction("stop", manager.webs)
-		executeAction("stop", manager.nsqProducers)
-		executeAction("stop", manager.nsqConsumers)
-		executeAction("stop", manager.rabbitmqProducers)
-		executeAction("stop", manager.rabbitmqConsumers)
-		executeAction("stop", manager.dbs)
-		executeAction("stop", manager.redis)
-
-		manager.started = false
-		log.Infof("stopped")
+		return nil
 	}
 
 	return nil
 }
 
-func (manager *Manager) executeStart() error {
+func (manager *Manager) executeStart(c chan bool) error {
 	log.Info("starting...")
 
 	// listen for termination signals
 	termChan := make(chan os.Signal, 1)
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
+	var wg sync.WaitGroup
 
-	if err := executeAction("start", manager.processes); err != nil {
+	if err := executeAction("start", manager.processes, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.worklist); err != nil {
+	if err := executeAction("start", manager.worklist, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.webs); err != nil {
+	if err := executeAction("start", manager.webs, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.nsqProducers); err != nil {
+	if err := executeAction("start", manager.nsqProducers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.nsqConsumers); err != nil {
+	if err := executeAction("start", manager.nsqConsumers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.rabbitmqProducers); err != nil {
+	if err := executeAction("start", manager.rabbitmqProducers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.rabbitmqConsumers); err != nil {
+	if err := executeAction("start", manager.rabbitmqConsumers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.dbs); err != nil {
+	if err := executeAction("start", manager.dbs, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.redis); err != nil {
+	if err := executeAction("start", manager.redis, &wg); err != nil {
 		return err
 	}
 
+	wg.Wait()
 	manager.started = true
+	c <- true
 	log.Infof("started")
 
 	select {
@@ -150,10 +150,53 @@ func (manager *Manager) executeStart() error {
 	return manager.Stop()
 }
 
-func executeAction(action string, obj interface{}) error {
+func (manager *Manager) executeStop(c chan bool) error {
+	log.Info("stopping...")
+
+	var wg sync.WaitGroup
+
+	if err := executeAction("stop", manager.processes, &wg); err != nil {
+		return err
+	}
+	if err := executeAction("stop", manager.worklist, &wg); err != nil {
+		return err
+	}
+	if err := executeAction("stop", manager.webs, &wg); err != nil {
+		return err
+	}
+	if err := executeAction("stop", manager.nsqProducers, &wg); err != nil {
+		return err
+	}
+	if err := executeAction("stop", manager.nsqConsumers, &wg); err != nil {
+		return err
+	}
+	if err := executeAction("stop", manager.rabbitmqProducers, &wg); err != nil {
+		return err
+	}
+	if err := executeAction("stop", manager.rabbitmqConsumers, &wg); err != nil {
+		return err
+	}
+	if err := executeAction("stop", manager.dbs, &wg); err != nil {
+		return err
+	}
+	if err := executeAction("stop", manager.redis, &wg); err != nil {
+		return err
+	}
+
+	wg.Wait()
+	manager.started = false
+	c <- true
+	log.Infof("stopped")
+
+	return nil
+}
+
+func executeAction(action string, obj interface{}, wg *sync.WaitGroup) error {
+	wg.Add(1)
 	objMap := reflect.ValueOf(obj)
 
 	if objMap.Kind() == reflect.Map {
+		var wgProcess sync.WaitGroup
 		for _, key := range objMap.MapKeys() {
 			value := objMap.MapIndex(key)
 
@@ -161,17 +204,22 @@ func executeAction(action string, obj interface{}) error {
 			switch action {
 			case "start":
 				if !started.Bool() {
-					go reflect.ValueOf(value.Interface()).MethodByName("Start").Call([]reflect.Value{})
+					wg.Add(1)
+					go reflect.ValueOf(value.Interface()).MethodByName("Start").Call([]reflect.Value{reflect.ValueOf(&wgProcess)})
 					log.Infof("started [ process: %s ]", key)
 				}
 			case "stop":
 				if started.Bool() {
-					go reflect.ValueOf(value.Interface()).MethodByName("Stop").Call([]reflect.Value{})
+					wg.Add(1)
+					go reflect.ValueOf(value.Interface()).MethodByName("Stop").Call([]reflect.Value{reflect.ValueOf(&wgProcess)})
 					log.Infof("stopped [ process: %s ]", key)
 				}
 			}
+			wg.Wait()
 		}
 	}
+
+	wg.Done()
 
 	return nil
 }

@@ -1,5 +1,7 @@
 package manager
 
+import "sync"
+
 // SimpleProcess ...
 type SimpleProcess struct {
 	function func() error
@@ -14,7 +16,10 @@ func NewSimpleProcess(function func() error) IProcess {
 }
 
 // Start ...
-func (process *SimpleProcess) Start() error {
+func (process *SimpleProcess) Start(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
+
 	if !process.started {
 		if err := process.function(); err != nil {
 			return err
@@ -26,7 +31,10 @@ func (process *SimpleProcess) Start() error {
 }
 
 // Stop ...
-func (process *SimpleProcess) Stop() error {
+func (process *SimpleProcess) Stop(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
+
 	if process.started {
 		process.started = false
 	}

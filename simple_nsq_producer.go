@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"sync"
+
 	"github.com/nsqio/go-nsq"
 )
 
@@ -59,7 +61,10 @@ func (producer *SimpleNSQProducer) Publish(topic string, body []byte, maxRetries
 }
 
 // Start ...
-func (producer *SimpleNSQProducer) Start() error {
+func (producer *SimpleNSQProducer) Start(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
+
 	if !producer.started {
 		producer.started = true
 	}
@@ -67,7 +72,10 @@ func (producer *SimpleNSQProducer) Start() error {
 }
 
 // Stop ...
-func (producer *SimpleNSQProducer) Stop() error {
+func (producer *SimpleNSQProducer) Stop(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
+
 	if producer.started {
 		producer.client.Stop()
 		producer.started = false

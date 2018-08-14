@@ -1,5 +1,7 @@
 package manager
 
+import "sync"
+
 // SimpleWorkList ...
 type SimpleWorkList struct {
 	name    string
@@ -21,7 +23,10 @@ func NewSimpleWorkList(config *WorkListConfig, handler WorkHandler) IWorkList {
 }
 
 // Start ...
-func (worklist *SimpleWorkList) Start() error {
+func (worklist *SimpleWorkList) Start(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
+
 	var workers []*Worker
 	for i := 1; i <= worklist.config.MaxWorkers; i++ {
 		log.Infof("starting worker [ %d ]", i)
@@ -36,7 +41,9 @@ func (worklist *SimpleWorkList) Start() error {
 }
 
 // Stop ...
-func (worklist *SimpleWorkList) Stop() error {
+func (worklist *SimpleWorkList) Stop(wg *sync.WaitGroup) error {
+	wg.Add(1)
+	defer wg.Done()
 	for _, worker := range worklist.workers {
 		log.Infof("stopping worker [ %d: %s ]", worker.id, worker.name)
 		worker.Stop()
