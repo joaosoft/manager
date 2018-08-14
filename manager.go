@@ -73,12 +73,13 @@ func (manager *Manager) Started() bool {
 
 // Start ...
 func (manager *Manager) Start() error {
-	c := make(chan bool)
+	c := make(chan bool, 1)
 	if manager.runInBackground {
 		go manager.executeStart(c)
 	} else {
 		return manager.executeStart(c)
 	}
+	log.Infof("all processes started {success:%t}", <-c)
 
 	return nil
 }
@@ -193,6 +194,8 @@ func (manager *Manager) executeStop(c chan bool) error {
 
 func executeAction(action string, obj interface{}, wg *sync.WaitGroup) error {
 	wg.Add(1)
+	defer wg.Done()
+
 	objMap := reflect.ValueOf(obj)
 
 	if objMap.Kind() == reflect.Map {
@@ -204,22 +207,18 @@ func executeAction(action string, obj interface{}, wg *sync.WaitGroup) error {
 			switch action {
 			case "start":
 				if !started.Bool() {
-					wg.Add(1)
 					go reflect.ValueOf(value.Interface()).MethodByName("Start").Call([]reflect.Value{reflect.ValueOf(&wgProcess)})
 					log.Infof("started [ process: %s ]", key)
 				}
 			case "stop":
 				if started.Bool() {
-					wg.Add(1)
 					go reflect.ValueOf(value.Interface()).MethodByName("Stop").Call([]reflect.Value{reflect.ValueOf(&wgProcess)})
 					log.Infof("stopped [ process: %s ]", key)
 				}
 			}
-			wg.Wait()
 		}
+		wgProcess.Wait()
 	}
-
-	wg.Done()
 
 	return nil
 }
