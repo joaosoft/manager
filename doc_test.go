@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	"sync"
+
 	"github.com/labstack/echo"
 	"github.com/nsqio/go-nsq"
 )
@@ -130,7 +132,7 @@ func usage() {
 	}
 	web = manager.GetWeb("web_echo")
 	web.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
-	go web.Start() // starting this because of the gateway
+	go web.Start(&sync.WaitGroup{}) // starting this because of the gateway
 
 	log.Info("waiting 1 seconds...")
 	<-time.After(time.Duration(1) * time.Second)
@@ -173,7 +175,7 @@ func usage() {
 	for i := 1; i <= 1000; i++ {
 		go workqueue.AddWork(fmt.Sprintf("PROCESS: %d", i), fmt.Sprintf("THIS IS MY MESSAGE %d", i))
 	}
-	if err := workqueue.Start(); err != nil {
+	if err := workqueue.Start(&sync.WaitGroup{}); err != nil {
 		log.Errorf("MAIN: error on workqueue %s", err)
 	}
 
