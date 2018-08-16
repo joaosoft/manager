@@ -52,7 +52,7 @@
   branch = "master"
   name = "github.com/joaosoft/logger"
   packages = ["."]
-  revision = "dc30a1f215bdd433e55372ed421620a29471e490"
+  revision = "bbcacc5075f9a5771c25d053960d59161fc9ae5b"
 
 [[projects]]
   branch = "master"
@@ -220,6 +220,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "898be1326c05249f976b4dea84d9766198bb55a6c8dbecb3a361d8c30d39c5db"
+  inputs-digest = "dcfc106048e15a87181344dc14cbc5801e43084279e96965b320692acfcec5de"
   solver-name = "gps-cdcl"
   solver-version = 1
