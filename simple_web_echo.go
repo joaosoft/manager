@@ -1,8 +1,9 @@
 package manager
 
 import (
-	"github.com/labstack/echo"
 	"sync"
+
+	"github.com/labstack/echo"
 )
 
 // SimpleWebEcho ...
@@ -47,7 +48,7 @@ func (web *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc, mid
 
 // Start ...
 func (web *SimpleWebEcho) Start(wg *sync.WaitGroup) error {
-	defer wg.Done()
+	wg.Done()
 
 	if !web.started {
 		if err := web.server.Start(web.host); err != nil {

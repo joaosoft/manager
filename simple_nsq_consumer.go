@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/nsqio/go-nsq"
 	"sync"
+
+	"github.com/nsqio/go-nsq"
 )
 
 // SimpleNSQConsumer ...
@@ -62,8 +63,6 @@ func (consumer *SimpleNSQConsumer) Started() bool {
 
 // Start ...
 func (consumer *SimpleNSQConsumer) Start(wg *sync.WaitGroup) error {
-	defer wg.Done()
-
 	if consumer.handler == nil {
 		return fmt.Errorf("nsq consumer, no handler configured")
 	}
@@ -94,9 +93,10 @@ func (consumer *SimpleNSQConsumer) Start(wg *sync.WaitGroup) error {
 		panic("nsq consumer, failed to start consumer")
 	}
 
-	<-consumer.client.StopChan
+	consumer.started = true
+	wg.Done()
 
-	consumer.started = false
+	<-consumer.client.StopChan
 
 	return nil
 }

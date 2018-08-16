@@ -17,7 +17,8 @@ func NewSimpleProcess(function func() error) IProcess {
 
 // Start ...
 func (process *SimpleProcess) Start(wg *sync.WaitGroup) error {
-	defer wg.Done()
+
+	wg.Done()
 
 	if !process.started {
 		if err := process.function(); err != nil {
