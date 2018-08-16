@@ -42,7 +42,6 @@ func (web *SimpleWebHttp) AddRoute(method, path string, handler HandlerFunc, mid
 
 // Start ...
 func (web *SimpleWebHttp) Start(wg *sync.WaitGroup) error {
-	wg.Add(1)
 	defer wg.Done()
 
 	if !web.started {
@@ -58,7 +57,6 @@ func (web *SimpleWebHttp) Start(wg *sync.WaitGroup) error {
 
 // Stop ...
 func (web *SimpleWebHttp) Stop(wg *sync.WaitGroup) error {
-	wg.Add(1)
 	defer wg.Done()
 
 	if web.started {

@@ -108,7 +108,7 @@ func main() {
 	}
 	dir, _ := os.Getwd()
 	obj := &dummy_config{}
-	simpleConfig, _ := manager.NewSimpleConfig(dir+"/examples/data/config.json", obj)
+	simpleConfig, _ := manager.NewSimpleConfig(dir+"/examples/all/data/config.json", obj)
 	m.AddConfig("config_1", simpleConfig)
 	config := m.GetConfig("config_1")
 
@@ -185,7 +185,9 @@ func main() {
 	for i := 1; i <= 1000; i++ {
 		workqueue.AddWork(fmt.Sprintf("PROCESS: %d", i), fmt.Sprintf("THIS IS MY MESSAGE %d", i))
 	}
-	if err := workqueue.Start(&sync.WaitGroup{}); err != nil {
+	wgQueue := sync.WaitGroup{}
+	wgQueue.Add(1)
+	if err := workqueue.Start(&wgQueue); err != nil {
 		log.Errorf("MAIN: error on workqueue %s", err)
 	}
 
@@ -204,7 +206,9 @@ func main() {
 		log.Errorf("%s", err)
 	}
 
-	if err := rabbitmqProducer.Start(&sync.WaitGroup{}); err != nil {
+	wgRabitMqProducer := sync.WaitGroup{}
+	wgRabitMqProducer.Add(1)
+	if err := rabbitmqProducer.Start(&wgRabitMqProducer); err != nil {
 		log.Errorf("%s", err)
 	}
 	m.AddRabbitmqProducer("rabbitmq_producer", rabbitmqProducer)

@@ -34,7 +34,6 @@ func NewRabbitmqConsumer(config *RabbitmqConfig, queue, bindingKey, tag string, 
 }
 
 func (consumer *RabbitmqConsumer) Start(wg *sync.WaitGroup) error {
-	wg.Add(1)
 	defer wg.Done()
 	var err error
 
@@ -127,7 +126,6 @@ func (consumer *RabbitmqConsumer) Started() bool {
 }
 
 func (consumer *RabbitmqConsumer) Stop(wg *sync.WaitGroup) error {
-	wg.Add(1)
 	defer wg.Done()
 
 	// will close() the deliveries channel

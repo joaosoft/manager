@@ -207,11 +207,13 @@ func executeAction(action string, obj interface{}, wg *sync.WaitGroup) error {
 			switch action {
 			case "start":
 				if !started.Bool() {
+					wgProcess.Add(1)
 					go reflect.ValueOf(value.Interface()).MethodByName("Start").Call([]reflect.Value{reflect.ValueOf(&wgProcess)})
 					log.Infof("started [ process: %s ]", key)
 				}
 			case "stop":
 				if started.Bool() {
+					wgProcess.Add(1)
 					go reflect.ValueOf(value.Interface()).MethodByName("Stop").Call([]reflect.Value{reflect.ValueOf(&wgProcess)})
 					log.Infof("stopped [ process: %s ]", key)
 				}
