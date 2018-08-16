@@ -76,10 +76,10 @@ func (manager *Manager) Start() error {
 	c := make(chan bool, 1)
 	if manager.runInBackground {
 		go manager.executeStart(c)
+		<-c
 	} else {
 		return manager.executeStart(c)
 	}
-	log.Infof("all processes started {success:%t}", <-c)
 
 	return nil
 }
@@ -90,6 +90,7 @@ func (manager *Manager) Stop() error {
 		c := make(chan bool)
 		if manager.runInBackground {
 			go manager.executeStop(c)
+			<-c
 		} else {
 			return manager.executeStop(c)
 		}
@@ -138,7 +139,11 @@ func (manager *Manager) executeStart(c chan bool) error {
 
 	wg.Wait()
 	manager.started = true
-	c <- true
+
+	if manager.runInBackground {
+		c <- true
+	}
+
 	log.Infof("started")
 
 	select {
@@ -186,7 +191,11 @@ func (manager *Manager) executeStop(c chan bool) error {
 
 	wg.Wait()
 	manager.started = false
-	c <- true
+
+	if manager.runInBackground {
+		c <- true
+	}
+
 	log.Infof("stopped")
 
 	return nil
