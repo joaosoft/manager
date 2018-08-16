@@ -3,8 +3,9 @@ package manager
 import (
 	"time"
 
-	"github.com/streadway/amqp"
 	"sync"
+
+	"github.com/streadway/amqp"
 )
 
 type RabbitmqProducer struct {
@@ -27,7 +28,7 @@ func (producer *RabbitmqProducer) Start(wg *sync.WaitGroup) error {
 
 	producer.connection, err = producer.config.Connect()
 	if err != nil {
-		log.Errorf("dial: %s", err).ToError(&err)
+		err = log.Errorf("dial: %s", err).ToError()
 		return err
 	}
 
@@ -43,7 +44,7 @@ func (producer *RabbitmqProducer) Start(wg *sync.WaitGroup) error {
 
 	log.Infof("got connection, getting channel")
 	if producer.channel, err = producer.connection.Channel(); err != nil {
-		log.Errorf("channel: %s", err).ToError(&err)
+		err = log.Errorf("channel: %s", err).ToError()
 		return err
 	}
 
@@ -57,7 +58,7 @@ func (producer *RabbitmqProducer) Start(wg *sync.WaitGroup) error {
 		false, // noWait
 		nil,   // arguments
 	); err != nil {
-		log.Errorf("exchange declare: %s", err).ToError(&err)
+		err = log.Errorf("exchange declare: %s", err).ToError()
 		return err
 	}
 
@@ -73,12 +74,12 @@ func (producer *RabbitmqProducer) Stop(wg *sync.WaitGroup) error {
 
 	// will close() the deliveries channel
 	if err := producer.channel.Cancel(producer.tag, true); err != nil {
-		log.Errorf("consumer cancel failed: %s", err).ToError(&err)
+		err = log.Errorf("consumer cancel failed: %s", err).ToError()
 		return err
 	}
 
 	if err := producer.connection.Close(); err != nil {
-		log.Errorf("AMQP connection close error: %s", err).ToError(&err)
+		err = log.Errorf("AMQP connection close error: %s", err).ToError()
 		return err
 	}
 
@@ -107,7 +108,7 @@ func (producer *RabbitmqProducer) Publish(routingKey string, body []byte, reliab
 		false,                    // immediate
 		msg,
 	); err != nil {
-		log.Errorf("exchange publish: %s", err).ToError(&err)
+		err = log.Errorf("exchange publish: %s", err).ToError()
 		return err
 	}
 

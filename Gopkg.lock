@@ -46,19 +46,19 @@
   branch = "master"
   name = "github.com/joaosoft/errors"
   packages = ["."]
-  revision = "f46e81c553ca6700877861d3020e495d56cc2291"
+  revision = "6bc491374c807a134a35588fc95a3a412cabb14f"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/logger"
   packages = ["."]
-  revision = "edd89dd7dfa181b5d173966fd7d659ab10dee5c3"
+  revision = "dc30a1f215bdd433e55372ed421620a29471e490"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/writers"
   packages = ["."]
-  revision = "1410d81e85d22774561ca575b0d27656ada14a97"
+  revision = "a1cd188c0e3ffca9bb227ea1fea39ed900a867a6"
 
 [[projects]]
   name = "github.com/labstack/echo"
@@ -145,13 +145,13 @@
   branch = "master"
   name = "github.com/spf13/jwalterweatherman"
   packages = ["."]
-  revision = "7c0cea34c8ece3fbeb2b27ab9b59511d360fb394"
+  revision = "14d3d4c518341bea657dd8a226f5121c0ff8c9f2"
 
 [[projects]]
   name = "github.com/spf13/pflag"
   packages = ["."]
-  revision = "583c0c0531f06d5278b7d917446061adc344b5cd"
-  version = "v1.0.1"
+  revision = "9a97c102cda95a86cec2345a6f09f55a939babf5"
+  version = "v1.0.2"
 
 [[projects]]
   name = "github.com/spf13/viper"
@@ -184,13 +184,13 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "f027049dab0ad238e394a753dba2d14753473a04"
+  revision = "de0752318171da717af4ce24d0a2e8626afaeb11"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "acbc56fc7007d2a01796d5bde54f39e3b3e95945"
+  revision = "1c9583448a9c3aa0f9a6a5241bf73c0bd8aafded"
 
 [[projects]]
   name = "golang.org/x/text"

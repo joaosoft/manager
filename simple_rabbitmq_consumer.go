@@ -39,7 +39,7 @@ func (consumer *RabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 
 	consumer.connection, err = consumer.config.Connect()
 	if err != nil {
-		log.Errorf("dial: %s", err).ToError(&err)
+		err = log.Errorf("dial: %s", err).ToError()
 		return err
 	}
 
@@ -56,7 +56,7 @@ func (consumer *RabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 	log.Infof("got connection, getting channel")
 	consumer.channel, err = consumer.connection.Channel()
 	if err != nil {
-		log.Errorf("channel: %s", err).ToError(&err)
+		err = log.Errorf("channel: %s", err).ToError()
 		return err
 	}
 
@@ -70,7 +70,7 @@ func (consumer *RabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 		false, // noWait
 		nil,   // arguments
 	); err != nil {
-		log.Errorf("exchange declare: %s", err).ToError(&err)
+		err = log.Errorf("exchange declare: %s", err).ToError()
 		return err
 	}
 
@@ -84,7 +84,7 @@ func (consumer *RabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 		false,          // noWait
 		nil,            // arguments
 	); err != nil {
-		log.Errorf("queue declare: %s", err).ToError(&err)
+		err = log.Errorf("queue declare: %s", err).ToError()
 		return err
 	}
 
@@ -97,7 +97,7 @@ func (consumer *RabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 		false, // noWait
 		nil,   // arguments
 	); err != nil {
-		log.Errorf("queue bind: %s", err).ToError(&err)
+		err = log.Errorf("queue bind: %s", err).ToError()
 		return err
 	}
 
@@ -112,7 +112,7 @@ func (consumer *RabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 		false,          // noWait
 		nil,            // arguments
 	); err != nil {
-		log.Errorf("queue consume: %s", err).ToError(&err)
+		err = log.Errorf("queue consume: %s", err).ToError()
 		return err
 	}
 
@@ -130,12 +130,12 @@ func (consumer *RabbitmqConsumer) Stop(wg *sync.WaitGroup) error {
 
 	// will close() the deliveries channel
 	if err := consumer.channel.Cancel(consumer.tag, true); err != nil {
-		log.Errorf("consumer cancel failed: %s", err).ToError(&err)
+		err = log.Errorf("consumer cancel failed: %s", err).ToError()
 		return err
 	}
 
 	if err := consumer.connection.Close(); err != nil {
-		log.Errorf("AMQP connection close error: %s", err).ToError(&err)
+		err = log.Errorf("AMQP connection close error: %s", err).ToError()
 		return err
 	}
 
