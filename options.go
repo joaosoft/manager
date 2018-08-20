@@ -33,3 +33,10 @@ func WithLogLevel(level logger.Level) ManagerOption {
 		log.SetLevel(level)
 	}
 }
+
+// WithQuitChannel ...
+func WithQuitChannel(quit chan int) ManagerOption {
+	return func(manager *Manager) {
+		manager.quit = quit
+	}
+}
