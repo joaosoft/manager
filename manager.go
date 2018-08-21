@@ -73,12 +73,15 @@ func (manager *Manager) Started() bool {
 
 // Start ...
 func (manager *Manager) Start() error {
-	c := make(chan bool, 1)
-	if manager.runInBackground {
-		go manager.executeStart(c)
-		<-c
-	} else {
-		return manager.executeStart(c)
+	if !manager.started {
+		manager.started = true
+		c := make(chan bool, 1)
+		if manager.runInBackground {
+			go manager.executeStart(c)
+			<-c
+		} else {
+			return manager.executeStart(c)
+		}
 	}
 
 	return nil
@@ -138,7 +141,6 @@ func (manager *Manager) executeStart(c chan bool) error {
 	}
 
 	wg.Wait()
-	manager.started = true
 
 	if manager.runInBackground {
 		c <- true
