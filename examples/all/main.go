@@ -142,7 +142,9 @@ func main() {
 	}
 	web = m.GetWeb("web_echo")
 	web.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
-	go web.Start(&sync.WaitGroup{}) // starting this because of the gateway
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go web.Start(&wg) // starting this because of the gateway
 
 	log.Info("waiting 1 seconds...")
 	<-time.After(time.Duration(1) * time.Second)
