@@ -10,8 +10,6 @@ import (
 
 	"manager"
 
-	"sync"
-
 	"github.com/joaosoft/logger"
 	"github.com/labstack/echo"
 	"github.com/nsqio/go-nsq"
@@ -142,9 +140,7 @@ func main() {
 	}
 	web = m.GetWeb("web_echo")
 	web.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-	go web.Start(&wg) // starting this because of the gateway
+	go web.Start(nil) // starting this because of the gateway
 
 	log.Info("waiting 1 seconds...")
 	<-time.After(time.Duration(1) * time.Second)
@@ -187,9 +183,7 @@ func main() {
 	for i := 1; i <= 1000; i++ {
 		workqueue.AddWork(fmt.Sprintf("PROCESS: %d", i), fmt.Sprintf("THIS IS MY MESSAGE %d", i))
 	}
-	wgQueue := sync.WaitGroup{}
-	wgQueue.Add(1)
-	if err := workqueue.Start(&wgQueue); err != nil {
+	if err := workqueue.Start(nil); err != nil {
 		log.Errorf("MAIN: error on workqueue %s", err)
 	}
 
@@ -208,9 +202,7 @@ func main() {
 		log.Errorf("%s", err)
 	}
 
-	wgRabitMqProducer := sync.WaitGroup{}
-	wgRabitMqProducer.Add(1)
-	if err := rabbitmqProducer.Start(&wgRabitMqProducer); err != nil {
+	if err := rabbitmqProducer.Start(nil); err != nil {
 		log.Errorf("%s", err)
 	}
 	m.AddRabbitmqProducer("rabbitmq_producer", rabbitmqProducer)

@@ -63,7 +63,9 @@ func (producer *SimpleNSQProducer) Publish(topic string, body []byte, maxRetries
 // Start ...
 func (producer *SimpleNSQProducer) Start(wg *sync.WaitGroup) error {
 	producer.started = true
-	defer wg.Done()
+	if wg != nil {
+		defer wg.Done()
+	}
 
 	return nil
 }
@@ -71,7 +73,9 @@ func (producer *SimpleNSQProducer) Start(wg *sync.WaitGroup) error {
 // Stop ...
 func (producer *SimpleNSQProducer) Stop(wg *sync.WaitGroup) error {
 	producer.started = false
-	defer wg.Done()
+	if wg != nil {
+		defer wg.Done()
+	}
 
 	if producer.started {
 		producer.client.Stop()

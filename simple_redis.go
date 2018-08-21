@@ -28,7 +28,9 @@ func NewSimpleRedis(config *RedisConfig) IRedis {
 // Start ...
 func (redis *SimpleRedis) Start(wg *sync.WaitGroup) error {
 	redis.started = true
-	defer wg.Done()
+	if wg != nil {
+		defer wg.Done()
+	}
 
 	if !redis.started {
 		if conn, err := redis.config.Connect(); err != nil {
@@ -44,7 +46,9 @@ func (redis *SimpleRedis) Start(wg *sync.WaitGroup) error {
 // Stop ...
 func (redis *SimpleRedis) Stop(wg *sync.WaitGroup) error {
 	redis.started = false
-	defer wg.Done()
+	if wg != nil {
+		defer wg.Done()
+	}
 
 	if redis.started {
 		if err := redis.client.Quit(); err != nil {

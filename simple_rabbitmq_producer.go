@@ -24,7 +24,9 @@ func NewRabbitmqProducer(config *RabbitmqConfig) (*RabbitmqProducer, error) {
 
 func (producer *RabbitmqProducer) Start(wg *sync.WaitGroup) error {
 	producer.started = true
-	defer wg.Done()
+	if wg != nil {
+		defer wg.Done()
+	}
 	var err error
 
 	producer.connection, err = producer.config.Connect()
@@ -70,7 +72,9 @@ func (producer *RabbitmqProducer) Started() bool {
 }
 
 func (producer *RabbitmqProducer) Stop(wg *sync.WaitGroup) error {
-	defer wg.Done()
+	if wg != nil {
+		defer wg.Done()
+	}
 
 	// will close() the deliveries channel
 	if err := producer.channel.Cancel(producer.tag, true); err != nil {

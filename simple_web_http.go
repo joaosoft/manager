@@ -43,7 +43,9 @@ func (web *SimpleWebHttp) AddRoute(method, path string, handler HandlerFunc, mid
 // Start ...
 func (web *SimpleWebHttp) Start(wg *sync.WaitGroup) error {
 	web.started = true
-	wg.Done()
+	if wg != nil {
+		defer wg.Done()
+	}
 
 	if !web.started {
 		if err := http.ListenAndServe(web.host, nil); err != nil {
@@ -58,7 +60,9 @@ func (web *SimpleWebHttp) Start(wg *sync.WaitGroup) error {
 // Stop ...
 func (web *SimpleWebHttp) Stop(wg *sync.WaitGroup) error {
 	web.started = false
-	defer wg.Done()
+	if wg != nil {
+		defer wg.Done()
+	}
 
 	if web.started {
 		if err := web.server.Close(); err != nil {
