@@ -34,6 +34,7 @@ func NewRabbitmqConsumer(config *RabbitmqConfig, queue, bindingKey, tag string, 
 }
 
 func (consumer *RabbitmqConsumer) Start(wg *sync.WaitGroup) error {
+	consumer.started = true
 	defer wg.Done()
 	var err error
 
@@ -48,8 +49,6 @@ func (consumer *RabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 			if consumer.connection != nil {
 				consumer.connection.Close()
 			}
-		} else {
-			consumer.started = true
 		}
 	}(err)
 
@@ -126,6 +125,7 @@ func (consumer *RabbitmqConsumer) Started() bool {
 }
 
 func (consumer *RabbitmqConsumer) Stop(wg *sync.WaitGroup) error {
+	consumer.started = false
 	defer wg.Done()
 
 	// will close() the deliveries channel
@@ -139,10 +139,7 @@ func (consumer *RabbitmqConsumer) Stop(wg *sync.WaitGroup) error {
 		return err
 	}
 
-	defer func() {
-		consumer.started = false
-		log.Infof("AMQP shutdown OK")
-	}()
+	log.Infof("AMQP shutdown OK")
 
 	// wait for handle() to exit
 	return <-consumer.done

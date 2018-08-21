@@ -24,6 +24,7 @@ func NewSimpleWorkList(config *WorkListConfig, handler WorkHandler) IWorkList {
 
 // Start ...
 func (worklist *SimpleWorkList) Start(wg *sync.WaitGroup) error {
+	worklist.started = true
 	defer wg.Done()
 
 	var workers []*Worker
@@ -34,13 +35,13 @@ func (worklist *SimpleWorkList) Start(wg *sync.WaitGroup) error {
 		workers = append(workers, worker)
 	}
 	worklist.workers = workers
-	worklist.started = true
 
 	return nil
 }
 
 // Stop ...
 func (worklist *SimpleWorkList) Stop(wg *sync.WaitGroup) error {
+	worklist.started = false
 	defer wg.Done()
 	for _, worker := range worklist.workers {
 		log.Infof("stopping worker [ %d: %s ]", worker.id, worker.name)

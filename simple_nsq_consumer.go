@@ -63,12 +63,12 @@ func (consumer *SimpleNSQConsumer) Started() bool {
 
 // Start ...
 func (consumer *SimpleNSQConsumer) Start(wg *sync.WaitGroup) error {
+	consumer.started = true
 	if consumer.handler == nil {
 		return fmt.Errorf("nsq consumer, no handler configured")
 	}
 
 	if consumer.config.Lookupd != nil && len(consumer.config.Lookupd) > 0 {
-		consumer.started = true
 		for _, addr := range consumer.config.Lookupd {
 			log.Infof("nsq consumer, consumer connecting to %s", addr)
 		}
@@ -79,7 +79,6 @@ func (consumer *SimpleNSQConsumer) Start(wg *sync.WaitGroup) error {
 		}
 	}
 	if consumer.config.Nsqd != nil && len(consumer.config.Nsqd) > 0 {
-		consumer.started = true
 		for _, addr := range consumer.config.Nsqd {
 			log.Infof("nsq consumer, connecting to %s", addr)
 		}
@@ -93,7 +92,6 @@ func (consumer *SimpleNSQConsumer) Start(wg *sync.WaitGroup) error {
 		panic("nsq consumer, failed to start consumer")
 	}
 
-	consumer.started = true
 	wg.Done()
 
 	<-consumer.client.StopChan
@@ -103,11 +101,11 @@ func (consumer *SimpleNSQConsumer) Start(wg *sync.WaitGroup) error {
 
 // Stop ...
 func (consumer *SimpleNSQConsumer) Stop(wg *sync.WaitGroup) error {
+	consumer.started = false
 	defer wg.Done()
 
 	if consumer.started {
 		consumer.client.Stop()
-		consumer.started = false
 	}
 
 	return nil

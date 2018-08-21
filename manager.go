@@ -90,6 +90,7 @@ func (manager *Manager) Start() error {
 // Stop ...
 func (manager *Manager) Stop() error {
 	if manager.started {
+		manager.started = false
 		c := make(chan bool)
 		if manager.runInBackground {
 			go manager.executeStop(c)
@@ -192,7 +193,6 @@ func (manager *Manager) executeStop(c chan bool) error {
 	}
 
 	wg.Wait()
-	manager.started = false
 
 	if manager.runInBackground {
 		c <- true

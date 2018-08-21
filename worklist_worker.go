@@ -48,10 +48,9 @@ func NewWorker(id int, config *WorkListConfig, handler WorkHandler, list IList) 
 
 // Start ...
 func (worker *Worker) Start() error {
-
+	worker.started = true
 	go func() error {
 		worker.mux.Lock()
-		worker.started = true
 		worker.mux.Unlock()
 
 		for {
@@ -78,6 +77,8 @@ func (worker *Worker) Start() error {
 
 // Stop ...
 func (worker *Worker) Stop() error {
+	worker.started = false
+
 	worker.mux.Lock()
 	defer worker.mux.Unlock()
 

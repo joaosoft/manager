@@ -23,8 +23,9 @@ func NewRabbitmqProducer(config *RabbitmqConfig) (*RabbitmqProducer, error) {
 }
 
 func (producer *RabbitmqProducer) Start(wg *sync.WaitGroup) error {
-	var err error
+	producer.started = true
 	defer wg.Done()
+	var err error
 
 	producer.connection, err = producer.config.Connect()
 	if err != nil {
@@ -37,8 +38,6 @@ func (producer *RabbitmqProducer) Start(wg *sync.WaitGroup) error {
 			if producer.connection != nil {
 				producer.connection.Close()
 			}
-		} else {
-			producer.started = true
 		}
 	}(err)
 
@@ -66,6 +65,7 @@ func (producer *RabbitmqProducer) Start(wg *sync.WaitGroup) error {
 }
 
 func (producer *RabbitmqProducer) Started() bool {
+	producer.started = false
 	return producer.started
 }
 
@@ -83,7 +83,6 @@ func (producer *RabbitmqProducer) Stop(wg *sync.WaitGroup) error {
 		return err
 	}
 
-	producer.started = false
 	log.Infof("AMQP shutdown OK")
 
 	return nil

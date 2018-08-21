@@ -6,8 +6,9 @@ import (
 
 	"strings"
 
-	"github.com/alphazero/Go-Redis"
 	"sync"
+
+	"github.com/alphazero/Go-Redis"
 )
 
 // SimpleRedis ...
@@ -26,6 +27,7 @@ func NewSimpleRedis(config *RedisConfig) IRedis {
 
 // Start ...
 func (redis *SimpleRedis) Start(wg *sync.WaitGroup) error {
+	redis.started = true
 	defer wg.Done()
 
 	if !redis.started {
@@ -35,20 +37,19 @@ func (redis *SimpleRedis) Start(wg *sync.WaitGroup) error {
 		} else {
 			redis.client = conn
 		}
-		redis.started = true
 	}
 	return nil
 }
 
 // Stop ...
 func (redis *SimpleRedis) Stop(wg *sync.WaitGroup) error {
+	redis.started = false
 	defer wg.Done()
 
 	if redis.started {
 		if err := redis.client.Quit(); err != nil {
 			return err
 		}
-		redis.started = false
 	}
 	return nil
 }
