@@ -23,12 +23,16 @@ func NewRabbitmqProducer(config *RabbitmqConfig) (*RabbitmqProducer, error) {
 }
 
 func (producer *RabbitmqProducer) Start(wg *sync.WaitGroup) error {
-	producer.started = true
 	if wg != nil {
 		defer wg.Done()
 	}
-	var err error
 
+	if producer.started {
+		return nil
+	}
+
+	producer.started = true
+	var err error
 	producer.connection, err = producer.config.Connect()
 	if err != nil {
 		err = log.Errorf("dial: %s", err).ToError()
@@ -76,6 +80,11 @@ func (producer *RabbitmqProducer) Stop(wg *sync.WaitGroup) error {
 		defer wg.Done()
 	}
 
+	if !producer.started {
+		return nil
+	}
+
+	producer.started = false
 	// will close() the deliveries channel
 	if err := producer.channel.Cancel(producer.tag, true); err != nil {
 		err = log.Errorf("consumer cancel failed: %s", err).ToError()

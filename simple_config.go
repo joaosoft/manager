@@ -100,7 +100,7 @@ func (simple *SimpleConfig) Set(config interface{}) {
 	simple.obj = simple
 }
 
-// Reload ...
+// Update ...
 func (simple *SimpleConfig) Reload() error {
 	if bytes, err := readFile(simple.file, simple.obj); err != nil {
 		return err

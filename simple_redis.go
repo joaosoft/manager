@@ -27,33 +27,37 @@ func NewSimpleRedis(config *RedisConfig) IRedis {
 
 // Start ...
 func (redis *SimpleRedis) Start(wg *sync.WaitGroup) error {
-	redis.started = true
 	if wg != nil {
 		defer wg.Done()
 	}
 
-	if !redis.started {
-		if conn, err := redis.config.Connect(); err != nil {
-			log.Error(err)
-			return err
-		} else {
-			redis.client = conn
-		}
+	if redis.started {
+		return nil
+	}
+
+	redis.started = true
+	if conn, err := redis.config.Connect(); err != nil {
+		log.Error(err)
+		return err
+	} else {
+		redis.client = conn
 	}
 	return nil
 }
 
 // Stop ...
 func (redis *SimpleRedis) Stop(wg *sync.WaitGroup) error {
-	redis.started = false
 	if wg != nil {
 		defer wg.Done()
 	}
 
-	if redis.started {
-		if err := redis.client.Quit(); err != nil {
-			return err
-		}
+	if !redis.started {
+		return nil
+	}
+
+	redis.started = false
+	if err := redis.client.Quit(); err != nil {
+		return err
 	}
 	return nil
 }

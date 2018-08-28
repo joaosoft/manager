@@ -48,16 +48,18 @@ func (web *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc, mid
 
 // Start ...
 func (web *SimpleWebEcho) Start(wg *sync.WaitGroup) error {
-	web.started = true
 	if wg != nil {
 		defer wg.Done()
 	}
 
-	if !web.started {
-		if err := web.server.Start(web.host); err != nil {
-			log.Error(err)
-			return err
-		}
+	if web.started {
+		return nil
+	}
+
+	web.started = true
+	if err := web.server.Start(web.host); err != nil {
+		log.Error(err)
+		return err
 	}
 
 	return nil
@@ -65,15 +67,17 @@ func (web *SimpleWebEcho) Start(wg *sync.WaitGroup) error {
 
 // Stop ...
 func (web *SimpleWebEcho) Stop(wg *sync.WaitGroup) error {
-	web.started = false
 	if wg != nil {
 		defer wg.Done()
 	}
 
-	if web.started {
-		if err := web.server.Close(); err != nil {
-			return err
-		}
+	if !web.started {
+		return nil
+	}
+
+	web.started = false
+	if err := web.server.Close(); err != nil {
+		return err
 	}
 	return nil
 }

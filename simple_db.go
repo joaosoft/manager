@@ -30,17 +30,19 @@ func (db *SimpleDB) Get() *sql.DB {
 
 // Start ...
 func (db *SimpleDB) Start(wg *sync.WaitGroup) error {
-	db.started = true
 	if wg != nil {
 		defer wg.Done()
 	}
 
-	if !db.started {
-		if conn, err := db.config.Connect(); err != nil {
-			return err
-		} else {
-			db.DB = conn
-		}
+	if db.started {
+		return nil
+	}
+
+	db.started = true
+	if conn, err := db.config.Connect(); err != nil {
+		return err
+	} else {
+		db.DB = conn
 	}
 
 	return nil
@@ -48,15 +50,17 @@ func (db *SimpleDB) Start(wg *sync.WaitGroup) error {
 
 // Stop ...
 func (db *SimpleDB) Stop(wg *sync.WaitGroup) error {
-	db.started = false
 	if wg != nil {
 		defer wg.Done()
 	}
 
-	if db.started {
-		if err := db.Close(); err != nil {
-			return err
-		}
+	if !db.started {
+		return nil
+	}
+
+	db.started = false
+	if err := db.Close(); err != nil {
+		return err
 	}
 
 	return nil

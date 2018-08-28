@@ -34,12 +34,16 @@ func NewRabbitmqConsumer(config *RabbitmqConfig, queue, bindingKey, tag string, 
 }
 
 func (consumer *RabbitmqConsumer) Start(wg *sync.WaitGroup) error {
-	consumer.started = true
 	if wg != nil {
 		defer wg.Done()
 	}
-	var err error
 
+	if consumer.started {
+		return nil
+	}
+
+	consumer.started = true
+	var err error
 	consumer.connection, err = consumer.config.Connect()
 	if err != nil {
 		err = log.Errorf("dial: %s", err).ToError()
@@ -127,11 +131,15 @@ func (consumer *RabbitmqConsumer) Started() bool {
 }
 
 func (consumer *RabbitmqConsumer) Stop(wg *sync.WaitGroup) error {
-	consumer.started = false
 	if wg != nil {
 		defer wg.Done()
 	}
 
+	if !consumer.started {
+		return nil
+	}
+
+	consumer.started = false
 	// will close() the deliveries channel
 	if err := consumer.channel.Cancel(consumer.tag, true); err != nil {
 		err = log.Errorf("consumer cancel failed: %s", err).ToError()
