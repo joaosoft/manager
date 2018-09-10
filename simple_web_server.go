@@ -24,12 +24,7 @@ func NewSimpleWebServer(host string) IWeb {
 // AddRoutes ...
 func (web *SimpleWebServer) AddRoutes(routes ...*Route) error {
 	for _, route := range routes {
-		middlewares := make([]webserver.MiddlewareFunc, 0)
-		for _, m := range route.Middlewares {
-			middlewares = append(middlewares, m.(webserver.MiddlewareFunc))
-		}
-
-		err := web.AddRoute(route.Method, route.Path, route.Handler, middlewares)
+		err := web.AddRoute(route.Method, route.Path, route.Handler, route.Middlewares...)
 
 		if err != nil {
 			return err
