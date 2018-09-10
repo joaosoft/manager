@@ -46,31 +46,25 @@
   branch = "master"
   name = "github.com/joaosoft/errors"
   packages = ["."]
-  revision = "35a9ecf62784a4615d1f0d68de7e8bc6029e6767"
+  revision = "3ebf6983bd704eae5217e69e4371dd3f13834572"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/logger"
   packages = ["."]
-  revision = "40a6f080d1c21b2e54f6ab9048996c87156afb35"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/joaosoft/manager"
-  packages = ["."]
-  revision = "446babbcee6f69fd12224d84b222e6ef75e55bac"
+  revision = "8018ec71ba9060c1af16497e3cf9f96dc44a1dfb"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/webserver"
   packages = ["."]
-  revision = "faac5756a6a5dc0d90feb95ef826881d1d935c8c"
+  revision = "10007e4c4e46ecb5b9f8fa81fe85061919cb4cf9"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/writers"
   packages = ["."]
-  revision = "a1cd188c0e3ffca9bb227ea1fea39ed900a867a6"
+  revision = "97aea5d1a3ec5b6907403c1dfea21cbcf8369d89"
 
 [[projects]]
   name = "github.com/labstack/echo"
@@ -111,8 +105,8 @@
 [[projects]]
   name = "github.com/mattn/go-isatty"
   packages = ["."]
-  revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
-  version = "v0.0.3"
+  revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
+  version = "v0.0.4"
 
 [[projects]]
   name = "github.com/mitchellh/mapstructure"
@@ -144,8 +138,8 @@
     ".",
     "mem"
   ]
-  revision = "787d034dfe70e44075ccc060d346146ef53270ad"
-  version = "v1.1.1"
+  revision = "d40851caa0d747393da1ffb28f7f9d8b4eeffebd"
+  version = "v1.1.2"
 
 [[projects]]
   name = "github.com/spf13/cast"
@@ -154,10 +148,10 @@
   version = "v1.2.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/spf13/jwalterweatherman"
   packages = ["."]
-  revision = "14d3d4c518341bea657dd8a226f5121c0ff8c9f2"
+  revision = "4a4406e478ca629068e7768fc33f3f044173c0a6"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/spf13/pflag"
@@ -168,8 +162,8 @@
 [[projects]]
   name = "github.com/spf13/viper"
   packages = ["."]
-  revision = "907c19d40d9a6c9bb55f040ff4ae45271a4754b9"
-  version = "v1.1.0"
+  revision = "8fb642006536c8d3760c99d4fa2389f5e2205631"
+  version = "v1.2.0"
 
 [[projects]]
   branch = "master"
@@ -178,10 +172,10 @@
   revision = "70e15c650864f4fc47f5d3c82ea117285480895d"
 
 [[projects]]
-  branch = "master"
   name = "github.com/valyala/bytebufferpool"
   packages = ["."]
   revision = "e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -196,13 +190,13 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "182538f80094b6a8efaade63a8fd8e0d9d5843dd"
+  revision = "0709b304e793a5edb4a2c0145f281ecdc20838a4"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "49385e6e15226593f68b26af201feec29d5bba22"
+  revision = "d0be0721c37eeb5299f245a996a483160fc36940"
 
 [[projects]]
   name = "golang.org/x/text"
