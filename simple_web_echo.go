@@ -60,10 +60,7 @@ func (web *SimpleWebEcho) Start(wg *sync.WaitGroup) error {
 	}
 
 	web.started = true
-	if err := web.server.Start(web.host); err != nil {
-		log.Error(err)
-		return err
-	}
+	go web.server.Start(web.host)
 
 	return nil
 }

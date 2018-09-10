@@ -54,10 +54,7 @@ func (web *SimpleWebHttp) Start(wg *sync.WaitGroup) error {
 	}
 
 	web.started = true
-	if err := http.ListenAndServe(web.host, nil); err != nil {
-		log.Error(err)
-		return err
-	}
+	go http.ListenAndServe(web.host, nil)
 
 	return nil
 }

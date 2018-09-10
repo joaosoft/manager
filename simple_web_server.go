@@ -58,10 +58,7 @@ func (web *SimpleWebServer) Start(wg *sync.WaitGroup) error {
 	}
 
 	web.started = true
-	if err := web.server.Start(); err != nil {
-		log.Error(err)
-		return err
-	}
+	go web.server.Start()
 
 	return nil
 }
