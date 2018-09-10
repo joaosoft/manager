@@ -48,9 +48,12 @@ func (web *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc, mid
 
 // Start ...
 func (web *SimpleWebEcho) Start(wg *sync.WaitGroup) error {
-	if wg != nil {
-		defer wg.Done()
+	if wg == nil {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
 	}
+
+	defer wg.Done()
 
 	if web.started {
 		return nil
@@ -67,9 +70,12 @@ func (web *SimpleWebEcho) Start(wg *sync.WaitGroup) error {
 
 // Stop ...
 func (web *SimpleWebEcho) Stop(wg *sync.WaitGroup) error {
-	if wg != nil {
-		defer wg.Done()
+	if wg == nil {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
 	}
+
+	defer wg.Done()
 
 	if !web.started {
 		return nil

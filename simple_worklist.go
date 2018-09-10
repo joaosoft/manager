@@ -24,9 +24,12 @@ func NewSimpleWorkList(config *WorkListConfig, handler WorkHandler) IWorkList {
 
 // Start ...
 func (worklist *SimpleWorkList) Start(wg *sync.WaitGroup) error {
-	if wg != nil {
-		defer wg.Done()
+	if wg == nil {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
 	}
+
+	defer wg.Done()
 
 	if worklist.started {
 		return nil
@@ -47,9 +50,12 @@ func (worklist *SimpleWorkList) Start(wg *sync.WaitGroup) error {
 
 // Stop ...
 func (worklist *SimpleWorkList) Stop(wg *sync.WaitGroup) error {
-	if wg != nil {
-		defer wg.Done()
+	if wg == nil {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
 	}
+
+	defer wg.Done()
 
 	if !worklist.started {
 		return nil

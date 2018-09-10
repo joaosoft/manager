@@ -17,9 +17,12 @@ func NewSimpleProcess(function func() error) IProcess {
 
 // Start ...
 func (process *SimpleProcess) Start(wg *sync.WaitGroup) error {
-	if wg != nil {
-		defer wg.Done()
+	if wg == nil {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
 	}
+
+	defer wg.Done()
 
 	if process.started {
 		return nil
@@ -35,9 +38,12 @@ func (process *SimpleProcess) Start(wg *sync.WaitGroup) error {
 
 // Stop ...
 func (process *SimpleProcess) Stop(wg *sync.WaitGroup) error {
-	if wg != nil {
-		defer wg.Done()
+	if wg == nil {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
 	}
+
+	defer wg.Done()
 
 	if !process.started {
 		return nil

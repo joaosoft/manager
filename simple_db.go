@@ -30,9 +30,12 @@ func (db *SimpleDB) Get() *sql.DB {
 
 // Start ...
 func (db *SimpleDB) Start(wg *sync.WaitGroup) error {
-	if wg != nil {
-		defer wg.Done()
+	if wg == nil {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
 	}
+
+	defer wg.Done()
 
 	if db.started {
 		return nil
@@ -50,9 +53,12 @@ func (db *SimpleDB) Start(wg *sync.WaitGroup) error {
 
 // Stop ...
 func (db *SimpleDB) Stop(wg *sync.WaitGroup) error {
-	if wg != nil {
-		defer wg.Done()
+	if wg == nil {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
 	}
+
+	defer wg.Done()
 
 	if !db.started {
 		return nil

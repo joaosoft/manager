@@ -23,9 +23,12 @@ func NewRabbitmqProducer(config *RabbitmqConfig) (*RabbitmqProducer, error) {
 }
 
 func (producer *RabbitmqProducer) Start(wg *sync.WaitGroup) error {
-	if wg != nil {
-		defer wg.Done()
+	if wg == nil {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
 	}
+
+	defer wg.Done()
 
 	if producer.started {
 		return nil
@@ -76,9 +79,12 @@ func (producer *RabbitmqProducer) Started() bool {
 }
 
 func (producer *RabbitmqProducer) Stop(wg *sync.WaitGroup) error {
-	if wg != nil {
-		defer wg.Done()
+	if wg == nil {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
 	}
+
+	defer wg.Done()
 
 	if !producer.started {
 		return nil

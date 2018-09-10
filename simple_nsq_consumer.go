@@ -63,9 +63,12 @@ func (consumer *SimpleNSQConsumer) Started() bool {
 
 // Start ...
 func (consumer *SimpleNSQConsumer) Start(wg *sync.WaitGroup) error {
-	if wg != nil {
-		defer wg.Done()
+	if wg == nil {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
 	}
+
+	defer wg.Done()
 
 	if consumer.started {
 		return nil
@@ -107,9 +110,12 @@ func (consumer *SimpleNSQConsumer) Start(wg *sync.WaitGroup) error {
 
 // Stop ...
 func (consumer *SimpleNSQConsumer) Stop(wg *sync.WaitGroup) error {
-	if wg != nil {
-		defer wg.Done()
+	if wg == nil {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
 	}
+
+	defer wg.Done()
 
 	if !consumer.started {
 		return nil
