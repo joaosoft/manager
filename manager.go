@@ -113,13 +113,7 @@ func (manager *Manager) executeStart(c chan bool) error {
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
 	var wg sync.WaitGroup
 
-	if err := executeAction("start", manager.processes, &wg); err != nil {
-		return err
-	}
-	if err := executeAction("start", manager.worklist, &wg); err != nil {
-		return err
-	}
-	if err := executeAction("start", manager.webs, &wg); err != nil {
+	if err := executeAction("start", manager.dbs, &wg); err != nil {
 		return err
 	}
 	if err := executeAction("start", manager.nsqProducers, &wg); err != nil {
@@ -134,10 +128,16 @@ func (manager *Manager) executeStart(c chan bool) error {
 	if err := executeAction("start", manager.rabbitmqConsumers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.dbs, &wg); err != nil {
+	if err := executeAction("start", manager.redis, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.redis, &wg); err != nil {
+	if err := executeAction("start", manager.worklist, &wg); err != nil {
+		return err
+	}
+	if err := executeAction("start", manager.processes, &wg); err != nil {
+		return err
+	}
+	if err := executeAction("start", manager.webs, &wg); err != nil {
 		return err
 	}
 
@@ -185,10 +185,10 @@ func (manager *Manager) executeStop(c chan bool) error {
 	if err := executeAction("stop", manager.rabbitmqConsumers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("stop", manager.dbs, &wg); err != nil {
+	if err := executeAction("stop", manager.redis, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("stop", manager.redis, &wg); err != nil {
+	if err := executeAction("stop", manager.dbs, &wg); err != nil {
 		return err
 	}
 
