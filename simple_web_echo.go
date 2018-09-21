@@ -25,9 +25,9 @@ func NewSimpleWebEcho(host string) IWeb {
 }
 
 // AddRoutes ...
-func (web *SimpleWebEcho) AddRoutes(routes ...*Route) error {
+func (w *SimpleWebEcho) AddRoutes(routes ...*Route) error {
 	for _, route := range routes {
-		err := web.AddRoute(route.Method, route.Path, route.Handler, route.Middlewares...)
+		err := w.AddRoute(route.Method, route.Path, route.Handler, route.Middlewares...)
 
 		if err != nil {
 			return err
@@ -38,16 +38,16 @@ func (web *SimpleWebEcho) AddRoutes(routes ...*Route) error {
 }
 
 // AddRoute ...
-func (web *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
-	web.server.Add(method, path, handler.(func(echo.Context) error))
+func (w *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
+	w.server.Add(method, path, handler.(func(echo.Context) error))
 	for _, item := range middleware {
-		web.server.Group(path, item.(echo.MiddlewareFunc))
+		w.server.Group(path, item.(echo.MiddlewareFunc))
 	}
 	return nil
 }
 
 // Start ...
-func (web *SimpleWebEcho) Start(wg *sync.WaitGroup) error {
+func (w *SimpleWebEcho) Start(wg *sync.WaitGroup) error {
 	if wg == nil {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
@@ -55,18 +55,18 @@ func (web *SimpleWebEcho) Start(wg *sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	if web.started {
+	if w.started {
 		return nil
 	}
 
-	web.started = true
-	go web.server.Start(web.host)
+	w.started = true
+	go w.server.Start(w.host)
 
 	return nil
 }
 
 // Stop ...
-func (web *SimpleWebEcho) Stop(wg *sync.WaitGroup) error {
+func (w *SimpleWebEcho) Stop(wg *sync.WaitGroup) error {
 	if wg == nil {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
@@ -74,23 +74,23 @@ func (web *SimpleWebEcho) Stop(wg *sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	if !web.started {
+	if !w.started {
 		return nil
 	}
 
-	web.started = false
-	if err := web.server.Close(); err != nil {
+	w.started = false
+	if err := w.server.Close(); err != nil {
 		return err
 	}
 	return nil
 }
 
 // Started ...
-func (web *SimpleWebEcho) Started() bool {
-	return web.started
+func (w *SimpleWebEcho) Started() bool {
+	return w.started
 }
 
 // GetClient ...
-func (web *SimpleWebEcho) GetClient() interface{} {
-	return web.server
+func (w *SimpleWebEcho) GetClient() interface{} {
+	return w.server
 }

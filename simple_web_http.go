@@ -22,9 +22,9 @@ func NewSimpleWebHttp(host string) IWeb {
 }
 
 // AddRoutes ...
-func (web *SimpleWebHttp) AddRoutes(routes ...*Route) error {
+func (w *SimpleWebHttp) AddRoutes(routes ...*Route) error {
 	for _, route := range routes {
-		err := web.AddRoute(route.Method, route.Path, route.Handler, route.Middlewares...)
+		err := w.AddRoute(route.Method, route.Path, route.Handler, route.Middlewares...)
 
 		if err != nil {
 			return err
@@ -35,13 +35,13 @@ func (web *SimpleWebHttp) AddRoutes(routes ...*Route) error {
 }
 
 // AddRoute ...
-func (web *SimpleWebHttp) AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
+func (w *SimpleWebHttp) AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
 	http.HandleFunc(path, handler.(func(http.ResponseWriter, *http.Request)))
 	return nil
 }
 
 // Start ...
-func (web *SimpleWebHttp) Start(wg *sync.WaitGroup) error {
+func (w *SimpleWebHttp) Start(wg *sync.WaitGroup) error {
 	if wg == nil {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
@@ -49,18 +49,18 @@ func (web *SimpleWebHttp) Start(wg *sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	if web.started {
+	if w.started {
 		return nil
 	}
 
-	web.started = true
-	go http.ListenAndServe(web.host, nil)
+	w.started = true
+	go http.ListenAndServe(w.host, nil)
 
 	return nil
 }
 
 // Stop ...
-func (web *SimpleWebHttp) Stop(wg *sync.WaitGroup) error {
+func (w *SimpleWebHttp) Stop(wg *sync.WaitGroup) error {
 	if wg == nil {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
@@ -68,23 +68,23 @@ func (web *SimpleWebHttp) Stop(wg *sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	if !web.started {
+	if !w.started {
 		return nil
 	}
 
-	web.started = false
-	if err := web.server.Close(); err != nil {
+	w.started = false
+	if err := w.server.Close(); err != nil {
 		return err
 	}
 	return nil
 }
 
 // Started ...
-func (web *SimpleWebHttp) Started() bool {
-	return web.started
+func (w *SimpleWebHttp) Started() bool {
+	return w.started
 }
 
 // GetClient ...
-func (web *SimpleWebHttp) GetClient() interface{} {
-	return web.server
+func (w *SimpleWebHttp) GetClient() interface{} {
+	return w.server
 }

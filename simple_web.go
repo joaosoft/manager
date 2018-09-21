@@ -3,30 +3,28 @@ package manager
 import (
 	"sync"
 
-	"web/common"
-
-	"github.com/joaosoft/web/server"
+	"github.com/joaosoft/web"
 )
 
 // SimpleWebServer ...
 type SimpleWebServer struct {
-	server  *server.Server
+	server  *web.Server
 	host    string
 	started bool
 }
 
 // NewSimpleWebServer...
 func NewSimpleWebServer(host string) IWeb {
-	server, _ := server.NewServer(server.WithAddress(host))
+	server, _ := web.NewServer(web.WithServerAddress(host))
 	return &SimpleWebServer{
 		server: server,
 	}
 }
 
 // AddRoutes ...
-func (web *SimpleWebServer) AddRoutes(routes ...*Route) error {
+func (w *SimpleWebServer) AddRoutes(routes ...*Route) error {
 	for _, route := range routes {
-		err := web.AddRoute(route.Method, route.Path, route.Handler, route.Middlewares...)
+		err := w.AddRoute(route.Method, route.Path, route.Handler, route.Middlewares...)
 
 		if err != nil {
 			return err
@@ -37,17 +35,17 @@ func (web *SimpleWebServer) AddRoutes(routes ...*Route) error {
 }
 
 // AddRoute ...
-func (web *SimpleWebServer) AddRoute(method string, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
-	middlewares := make([]server.MiddlewareFunc, 0)
+func (w *SimpleWebServer) AddRoute(method string, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
+	middlewares := make([]web.MiddlewareFunc, 0)
 	for _, m := range middleware {
-		middlewares = append(middlewares, m.(server.MiddlewareFunc))
+		middlewares = append(middlewares, m.(web.MiddlewareFunc))
 	}
 
-	return web.server.AddRoute(common.Method(method), path, handler.(func(*server.Context) error), middlewares...)
+	return w.server.AddRoute(web.Method(method), path, handler.(func(*web.Context) error), middlewares...)
 }
 
 // Start ...
-func (web *SimpleWebServer) Start(wg *sync.WaitGroup) error {
+func (w *SimpleWebServer) Start(wg *sync.WaitGroup) error {
 	if wg == nil {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
@@ -55,18 +53,18 @@ func (web *SimpleWebServer) Start(wg *sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	if web.started {
+	if w.started {
 		return nil
 	}
 
-	web.started = true
-	go web.server.Start()
+	w.started = true
+	go w.server.Start()
 
 	return nil
 }
 
 // Stop ...
-func (web *SimpleWebServer) Stop(wg *sync.WaitGroup) error {
+func (w *SimpleWebServer) Stop(wg *sync.WaitGroup) error {
 	if wg == nil {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
@@ -74,23 +72,23 @@ func (web *SimpleWebServer) Stop(wg *sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	if !web.started {
+	if !w.started {
 		return nil
 	}
 
-	web.started = false
-	if err := web.server.Stop(); err != nil {
+	w.started = false
+	if err := w.server.Stop(); err != nil {
 		return err
 	}
 	return nil
 }
 
 // Started ...
-func (web *SimpleWebServer) Started() bool {
-	return web.started
+func (w *SimpleWebServer) Started() bool {
+	return w.started
 }
 
 // GetClient ...
-func (web *SimpleWebServer) GetClient() interface{} {
-	return web.server
+func (w *SimpleWebServer) GetClient() interface{} {
+	return w.server
 }

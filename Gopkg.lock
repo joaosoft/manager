@@ -63,11 +63,8 @@
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/web"
-  packages = [
-    "common",
-    "server"
-  ]
-  revision = "ac67d2dd1cd136abecf176710b9fdde32b879f7c"
+  packages = ["."]
+  revision = "66a3c5b4fb215def4d26a4f740b8350815b68ac2"
 
 [[projects]]
   branch = "master"
@@ -235,6 +232,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0e6c6e6737d25446a378771b5f121b63303cf3ffcaf1e44b1f7a31a0e89996f5"
+  inputs-digest = "0f6b80507e7b99334649819b5e16ae8d1d094befd9de566c61f85cf9ad87f4ee"
   solver-name = "gps-cdcl"
   solver-version = 1
