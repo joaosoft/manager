@@ -3,19 +3,21 @@ package manager
 import (
 	"sync"
 
-	"github.com/joaosoft/webserver"
+	"web/common"
+
+	"github.com/joaosoft/web/server"
 )
 
 // SimpleWebServer ...
 type SimpleWebServer struct {
-	server  *webserver.WebServer
+	server  *server.Server
 	host    string
 	started bool
 }
 
 // NewSimpleWebServer...
 func NewSimpleWebServer(host string) IWeb {
-	server, _ := webserver.NewWebServer(webserver.WithAddress(host))
+	server, _ := server.NewServer(server.WithAddress(host))
 	return &SimpleWebServer{
 		server: server,
 	}
@@ -35,13 +37,13 @@ func (web *SimpleWebServer) AddRoutes(routes ...*Route) error {
 }
 
 // AddRoute ...
-func (web *SimpleWebServer) AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
-	middlewares := make([]webserver.MiddlewareFunc, 0)
+func (web *SimpleWebServer) AddRoute(method string, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
+	middlewares := make([]server.MiddlewareFunc, 0)
 	for _, m := range middleware {
-		middlewares = append(middlewares, m.(webserver.MiddlewareFunc))
+		middlewares = append(middlewares, m.(server.MiddlewareFunc))
 	}
 
-	return web.server.AddRoute(webserver.Method(method), path, handler.(func(*webserver.Context) error), middlewares...)
+	return web.server.AddRoute(common.Method(method), path, handler.(func(*server.Context) error), middlewares...)
 }
 
 // Start ...

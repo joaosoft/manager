@@ -44,6 +44,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/joaosoft/color"
+  packages = ["."]
+  revision = "17caec6046388cea5751f441ef6b06a7a572abf2"
+
+[[projects]]
+  branch = "master"
   name = "github.com/joaosoft/errors"
   packages = ["."]
   revision = "3ebf6983bd704eae5217e69e4371dd3f13834572"
@@ -56,9 +62,12 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/joaosoft/webserver"
-  packages = ["."]
-  revision = "2be656afdcaf7d73b1855dfb1d548e1291dca0f7"
+  name = "github.com/joaosoft/web"
+  packages = [
+    "common",
+    "server"
+  ]
+  revision = "ac67d2dd1cd136abecf176710b9fdde32b879f7c"
 
 [[projects]]
   branch = "master"
@@ -69,8 +78,8 @@
 [[projects]]
   name = "github.com/labstack/echo"
   packages = ["."]
-  revision = "6d227dfea4d2e52cb76856120b3c17f758139b4e"
-  version = "3.3.5"
+  revision = "1abaa3049251d17932e4313c2d6165073fd07fd8"
+  version = "v3.3.6"
 
 [[projects]]
   name = "github.com/labstack/gommon"
@@ -78,8 +87,8 @@
     "color",
     "log"
   ]
-  revision = "d6898124de917583f5ff5592ef931d1dfe0ddc05"
-  version = "0.2.6"
+  revision = "2a618302b929cc20862dda3aa6f02f64dbe740dd"
+  version = "v0.2.7"
 
 [[projects]]
   name = "github.com/lib/pq"
@@ -190,13 +199,13 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "0709b304e793a5edb4a2c0145f281ecdc20838a4"
+  revision = "0e37d006457bf46f9e6692014ba72ef82c33022c"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "d0be0721c37eeb5299f245a996a483160fc36940"
+  revision = "d641721ec2dead6fe5ca284096fe4b1fcd49e427"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -214,8 +223,8 @@
 [[projects]]
   name = "google.golang.org/appengine"
   packages = ["cloudsql"]
-  revision = "b1f26356af11148e710935ed1ac8a7f5702c7612"
-  version = "v1.1.0"
+  revision = "ae0ab99deb4dc413a2b4bd6c8bdd0eb67f1e4d06"
+  version = "v1.2.0"
 
 [[projects]]
   name = "gopkg.in/yaml.v2"
@@ -226,6 +235,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "cea78c02d05e754dfa08c65449abb8dbfa67c78eca599c7d4d8ddb3099daed70"
+  inputs-digest = "0e6c6e6737d25446a378771b5f121b63303cf3ffcaf1e44b1f7a31a0e89996f5"
   solver-name = "gps-cdcl"
   solver-version = 1

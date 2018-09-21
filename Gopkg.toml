@@ -38,12 +38,16 @@
   name = "github.com/joaosoft/logger"
 
 [[constraint]]
-  name = "github.com/labstack/echo"
-  version = "3.3.5"
+  branch = "master"
+  name = "github.com/joaosoft/web"
 
 [[constraint]]
-  branch = "master"
+  name = "github.com/labstack/echo"
+  version = "3.3.6"
+
+[[constraint]]
   name = "github.com/lib/pq"
+  version = "1.0.0"
 
 [[constraint]]
   name = "github.com/nsqio/go-nsq"
@@ -51,7 +55,7 @@
 
 [[constraint]]
   name = "github.com/spf13/viper"
-  version = "1.1.0"
+  version = "1.2.0"
 
 [[constraint]]
   branch = "master"
@@ -64,7 +68,3 @@
 [prune]
   go-tests = true
   unused-packages = true
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/joaosoft/webserver"
