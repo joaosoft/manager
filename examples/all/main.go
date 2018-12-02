@@ -197,7 +197,7 @@ func main() {
 	consumerTag := "simple-rabbitmqconsumer"
 	configRabbitmq := manager.NewRabbitmqConfig(uri, exchange, exchangeType)
 
-	rabbitmqProducer, err := manager.NewRabbitmqProducer(configRabbitmq)
+	rabbitmqProducer, err := manager.NewSimpleRabbitmqProducer(configRabbitmq)
 	if err != nil {
 		log.Errorf("%s", err)
 	}
@@ -214,7 +214,7 @@ func main() {
 
 	//
 	// manager: rabbitmq rabbitmqconsumer
-	rabbitmqconsumer, err := manager.NewRabbitmqConsumer(configRabbitmq, queue, bindingKey, consumerTag, rabbit_consumer_handler)
+	rabbitmqconsumer, err := manager.NewSimpleRabbitmqConsumer(configRabbitmq, queue, bindingKey, consumerTag, rabbit_consumer_handler)
 	if err != nil {
 		log.Errorf("%s", err)
 	}

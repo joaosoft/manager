@@ -6,7 +6,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type RabbitmqConsumer struct {
+type SimpleRabbitmqConsumer struct {
 	config     *RabbitmqConfig
 	connection *amqp.Connection
 	channel    *amqp.Channel
@@ -18,8 +18,8 @@ type RabbitmqConsumer struct {
 	started    bool
 }
 
-func NewRabbitmqConsumer(config *RabbitmqConfig, queue, bindingKey, tag string, handler RabbitmqHandler) (*RabbitmqConsumer, error) {
-	consumer := &RabbitmqConsumer{
+func NewSimpleRabbitmqConsumer(config *RabbitmqConfig, queue, bindingKey, tag string, handler RabbitmqHandler) (*SimpleRabbitmqConsumer, error) {
+	consumer := &SimpleRabbitmqConsumer{
 		config:     config,
 		connection: nil,
 		channel:    nil,
@@ -33,7 +33,7 @@ func NewRabbitmqConsumer(config *RabbitmqConfig, queue, bindingKey, tag string, 
 	return consumer, nil
 }
 
-func (consumer *RabbitmqConsumer) Start(wg *sync.WaitGroup) error {
+func (consumer *SimpleRabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 	if wg == nil {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
@@ -129,11 +129,11 @@ func (consumer *RabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 	return nil
 }
 
-func (consumer *RabbitmqConsumer) Started() bool {
+func (consumer *SimpleRabbitmqConsumer) Started() bool {
 	return consumer.started
 }
 
-func (consumer *RabbitmqConsumer) Stop(wg *sync.WaitGroup) error {
+func (consumer *SimpleRabbitmqConsumer) Stop(wg *sync.WaitGroup) error {
 	if wg == nil {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
@@ -163,7 +163,7 @@ func (consumer *RabbitmqConsumer) Stop(wg *sync.WaitGroup) error {
 	return <-consumer.done
 }
 
-func (consumer *RabbitmqConsumer) handle(deliveries <-chan amqp.Delivery, done chan error) {
+func (consumer *SimpleRabbitmqConsumer) handle(deliveries <-chan amqp.Delivery, done chan error) {
 	for delivery := range deliveries {
 		if err := consumer.handler(delivery); err != nil {
 			delivery.Ack(false)

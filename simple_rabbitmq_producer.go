@@ -8,7 +8,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type RabbitmqProducer struct {
+type SimpleRabbitmqProducer struct {
 	config     *RabbitmqConfig
 	connection *amqp.Connection
 	channel    *amqp.Channel
@@ -16,13 +16,13 @@ type RabbitmqProducer struct {
 	started    bool
 }
 
-func NewRabbitmqProducer(config *RabbitmqConfig) (*RabbitmqProducer, error) {
-	return &RabbitmqProducer{
+func NewSimpleRabbitmqProducer(config *RabbitmqConfig) (*SimpleRabbitmqProducer, error) {
+	return &SimpleRabbitmqProducer{
 		config: config,
 	}, nil
 }
 
-func (producer *RabbitmqProducer) Start(wg *sync.WaitGroup) error {
+func (producer *SimpleRabbitmqProducer) Start(wg *sync.WaitGroup) error {
 	if wg == nil {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
@@ -73,12 +73,12 @@ func (producer *RabbitmqProducer) Start(wg *sync.WaitGroup) error {
 	return nil
 }
 
-func (producer *RabbitmqProducer) Started() bool {
+func (producer *SimpleRabbitmqProducer) Started() bool {
 	producer.started = false
 	return producer.started
 }
 
-func (producer *RabbitmqProducer) Stop(wg *sync.WaitGroup) error {
+func (producer *SimpleRabbitmqProducer) Stop(wg *sync.WaitGroup) error {
 	if wg == nil {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
@@ -107,7 +107,7 @@ func (producer *RabbitmqProducer) Stop(wg *sync.WaitGroup) error {
 	return nil
 }
 
-func (producer *RabbitmqProducer) Publish(routingKey string, body []byte, reliable bool) error {
+func (producer *SimpleRabbitmqProducer) Publish(routingKey string, body []byte, reliable bool) error {
 	msg := amqp.Publishing{
 		DeliveryMode:    amqp.Persistent,
 		Timestamp:       time.Now(),
