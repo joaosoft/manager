@@ -35,7 +35,6 @@ func (worklist *SimpleWorkList) Start(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	worklist.started = true
 	var workers []*Worker
 	for i := 1; i <= worklist.config.MaxWorkers; i++ {
 		log.Infof("starting worker [ %d ]", i)
@@ -44,6 +43,8 @@ func (worklist *SimpleWorkList) Start(wg *sync.WaitGroup) error {
 		workers = append(workers, worker)
 	}
 	worklist.workers = workers
+
+	worklist.started = true
 
 	return nil
 }
@@ -61,11 +62,13 @@ func (worklist *SimpleWorkList) Stop(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	worklist.started = false
 	for _, worker := range worklist.workers {
 		log.Infof("stopping worker [ %d: %s ]", worker.id, worker.name)
 		worker.Stop()
 	}
+
+	worklist.started = false
+
 	return nil
 }
 

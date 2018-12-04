@@ -38,12 +38,12 @@ func (redis *SimpleRedis) Start(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	redis.started = true
 	if conn, err := redis.config.Connect(); err != nil {
 		log.Error(err)
 		return err
 	} else {
 		redis.client = conn
+		redis.started = true
 	}
 	return nil
 }
@@ -61,10 +61,12 @@ func (redis *SimpleRedis) Stop(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	redis.started = false
 	if err := redis.client.Quit(); err != nil {
 		return err
 	}
+
+	redis.started = false
+
 	return nil
 }
 

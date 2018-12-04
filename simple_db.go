@@ -41,11 +41,11 @@ func (db *SimpleDB) Start(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	db.started = true
 	if conn, err := db.config.Connect(); err != nil {
 		return err
 	} else {
 		db.DB = conn
+		db.started = true
 	}
 
 	return nil
@@ -64,10 +64,10 @@ func (db *SimpleDB) Stop(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	db.started = false
 	if err := db.Close(); err != nil {
 		return err
 	}
+	db.started = false
 
 	return nil
 }

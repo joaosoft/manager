@@ -28,10 +28,11 @@ func (process *SimpleProcess) Start(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	process.started = true
 	if err := process.function(); err != nil {
 		return err
 	}
+
+	process.started = true
 
 	return nil
 }

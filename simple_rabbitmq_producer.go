@@ -34,7 +34,6 @@ func (producer *SimpleRabbitmqProducer) Start(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	producer.started = true
 	var err error
 	producer.connection, err = producer.config.Connect()
 	if err != nil {
@@ -70,6 +69,8 @@ func (producer *SimpleRabbitmqProducer) Start(wg *sync.WaitGroup) error {
 		return err
 	}
 
+	producer.started = true
+
 	return nil
 }
 
@@ -90,7 +91,6 @@ func (producer *SimpleRabbitmqProducer) Stop(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	producer.started = false
 	// will close() the deliveries channel
 	if err := producer.channel.Cancel(producer.tag, true); err != nil {
 		err = log.Errorf("consumer cancel failed: %s", err).ToError()
@@ -103,6 +103,7 @@ func (producer *SimpleRabbitmqProducer) Stop(wg *sync.WaitGroup) error {
 	}
 
 	log.Infof("AMQP shutdown OK")
+	producer.started = false
 
 	return nil
 }

@@ -57,8 +57,8 @@ func (w *SimpleWebServer) Start(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	w.started = true
 	go w.server.Start()
+	w.started = true
 
 	return nil
 }
@@ -76,10 +76,12 @@ func (w *SimpleWebServer) Stop(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	w.started = false
 	if err := w.server.Stop(); err != nil {
 		return err
 	}
+
+	w.started = false
+
 	return nil
 }
 

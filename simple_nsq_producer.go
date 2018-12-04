@@ -91,8 +91,8 @@ func (producer *SimpleNSQProducer) Stop(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	producer.started = false
 	producer.client.Stop()
+	producer.started = false
 
 	return nil
 }

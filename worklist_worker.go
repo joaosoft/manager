@@ -48,7 +48,6 @@ func NewWorker(id int, config *WorkListConfig, handler WorkHandler, list IList) 
 
 // Start ...
 func (worker *Worker) Start() error {
-	worker.started = true
 	go func() error {
 		worker.mux.Lock()
 		worker.mux.Unlock()
@@ -72,12 +71,13 @@ func (worker *Worker) Start() error {
 		}
 	}()
 
+	worker.started = true
+
 	return nil
 }
 
 // Stop ...
 func (worker *Worker) Stop() error {
-	worker.started = false
 
 	worker.mux.Lock()
 	defer worker.mux.Unlock()
@@ -86,6 +86,8 @@ func (worker *Worker) Stop() error {
 		log.Infof("stopping worker with tasks in the list [ list size: %d ]", worker.list.Size())
 	}
 	worker.quit <- true
+
+	worker.started = false
 
 	return nil
 }

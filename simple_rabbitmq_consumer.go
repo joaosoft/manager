@@ -45,7 +45,6 @@ func (consumer *SimpleRabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	consumer.started = true
 	var err error
 	consumer.connection, err = consumer.config.Connect()
 	if err != nil {
@@ -126,6 +125,8 @@ func (consumer *SimpleRabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 
 	go consumer.handle(deliveries, consumer.done)
 
+	consumer.started = true
+
 	return nil
 }
 
@@ -145,7 +146,6 @@ func (consumer *SimpleRabbitmqConsumer) Stop(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	consumer.started = false
 	// will close() the deliveries channel
 	if err := consumer.channel.Cancel(consumer.tag, true); err != nil {
 		err = log.Errorf("consumer cancel failed: %s", err).ToError()
@@ -159,8 +159,11 @@ func (consumer *SimpleRabbitmqConsumer) Stop(wg *sync.WaitGroup) error {
 
 	log.Infof("AMQP shutdown OK")
 
+	consumer.started = false
+
 	// wait for handle() to exit
 	return <-consumer.done
+
 }
 
 func (consumer *SimpleRabbitmqConsumer) handle(deliveries <-chan amqp.Delivery, done chan error) {

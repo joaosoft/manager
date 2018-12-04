@@ -53,8 +53,9 @@ func (w *SimpleWebHttp) Start(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	w.started = true
 	go http.ListenAndServe(w.host, nil)
+
+	w.started = true
 
 	return nil
 }
@@ -72,10 +73,12 @@ func (w *SimpleWebHttp) Stop(wg *sync.WaitGroup) error {
 		return nil
 	}
 
-	w.started = false
 	if err := w.server.Close(); err != nil {
 		return err
 	}
+
+	w.started = false
+
 	return nil
 }
 
