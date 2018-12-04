@@ -16,8 +16,8 @@
 [[projects]]
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
-  revision = "d523deb1b23d913de5bdada721a6071e71283618"
-  version = "v1.4.0"
+  revision = "72cd26f257d44c1114970e19afddcd812016007e"
+  version = "v1.4.1"
 
 [[projects]]
   branch = "master"
@@ -58,13 +58,13 @@
   branch = "master"
   name = "github.com/joaosoft/logger"
   packages = ["."]
-  revision = "8018ec71ba9060c1af16497e3cf9f96dc44a1dfb"
+  revision = "5dbae6961bbbc65c8be766e065787c71c37dbe99"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/web"
   packages = ["."]
-  revision = "66a3c5b4fb215def4d26a4f740b8350815b68ac2"
+  revision = "1ad38e022dd804b2575fbee94b3f441b2efcfa46"
 
 [[projects]]
   branch = "master"
@@ -75,8 +75,8 @@
 [[projects]]
   name = "github.com/labstack/echo"
   packages = ["."]
-  revision = "1abaa3049251d17932e4313c2d6165073fd07fd8"
-  version = "v3.3.6"
+  revision = "c7eb8da9ec73e78c4f38413f3f835e0cd52c7d72"
+  version = "v3.3.8"
 
 [[projects]]
   name = "github.com/labstack/gommon"
@@ -84,8 +84,8 @@
     "color",
     "log"
   ]
-  revision = "2a618302b929cc20862dda3aa6f02f64dbe740dd"
-  version = "v0.2.7"
+  revision = "7fd9f68ece0bcb1a905fac8f1549f0083f71c51b"
+  version = "v0.2.8"
 
 [[projects]]
   name = "github.com/lib/pq"
@@ -117,8 +117,8 @@
 [[projects]]
   name = "github.com/mitchellh/mapstructure"
   packages = ["."]
-  revision = "fa473d140ef3c6adf42d6b391fe76707f1f243c8"
-  version = "v1.0.0"
+  revision = "3536a929edddb9a5b34bd6861dc4a9647cb459fe"
+  version = "v1.1.2"
 
 [[projects]]
   name = "github.com/nsqio/go-nsq"
@@ -136,7 +136,7 @@
   branch = "master"
   name = "github.com/satori/go.uuid"
   packages = ["."]
-  revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e"
+  revision = "b2ce2384e17bbe0c6d34077efa39dbab3e09123b"
 
 [[projects]]
   name = "github.com/spf13/afero"
@@ -150,8 +150,8 @@
 [[projects]]
   name = "github.com/spf13/cast"
   packages = ["."]
-  revision = "8965335b8c7107321228e3e3702cab9832751bac"
-  version = "v1.2.0"
+  revision = "8c9545af88b134710ab1cd196795e7f2388358d7"
+  version = "v1.3.0"
 
 [[projects]]
   name = "github.com/spf13/jwalterweatherman"
@@ -162,20 +162,20 @@
 [[projects]]
   name = "github.com/spf13/pflag"
   packages = ["."]
-  revision = "9a97c102cda95a86cec2345a6f09f55a939babf5"
-  version = "v1.0.2"
+  revision = "298182f68c66c05229eb03ac171abe6e309ee79a"
+  version = "v1.0.3"
 
 [[projects]]
   name = "github.com/spf13/viper"
   packages = ["."]
-  revision = "8fb642006536c8d3760c99d4fa2389f5e2205631"
-  version = "v1.2.0"
+  revision = "2c12c60302a5a0e62ee102ca9bc996277c2f64f5"
+  version = "v1.2.1"
 
 [[projects]]
   branch = "master"
   name = "github.com/streadway/amqp"
   packages = ["."]
-  revision = "70e15c650864f4fc47f5d3c82ea117285480895d"
+  revision = "27835f1a64e97101d95306211f03c0620ffa295d"
 
 [[projects]]
   name = "github.com/valyala/bytebufferpool"
@@ -196,13 +196,13 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "0e37d006457bf46f9e6692014ba72ef82c33022c"
+  revision = "505ab145d0a99da450461ae2c1a9f6cd10d1f447"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "d641721ec2dead6fe5ca284096fe4b1fcd49e427"
+  revision = "4ed8d59d0b35e1e29334a206d1b3f38b1e5dfb31"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -220,14 +220,14 @@
 [[projects]]
   name = "google.golang.org/appengine"
   packages = ["cloudsql"]
-  revision = "ae0ab99deb4dc413a2b4bd6c8bdd0eb67f1e4d06"
-  version = "v1.2.0"
+  revision = "4a4468ece617fc8205e99368fa2200e9d1fad421"
+  version = "v1.3.0"
 
 [[projects]]
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
-  version = "v2.2.1"
+  revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
+  version = "v2.2.2"
 
 [solve-meta]
   analyzer-name = "dep"
