@@ -6,7 +6,7 @@ Processes
 Configurations (with reload and write options)
 NSQ Consumers
 NSQ Producers
-Database Connections
+database Connections
 Web Servers
 Gateways
 Redis Connections
