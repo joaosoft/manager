@@ -56,12 +56,12 @@ func NewManager(options ...ManagerOption) *Manager {
 	configApp := &AppConfig{}
 	if _, err := readFile(fmt.Sprintf("/config/app.%s.json", getEnv()), configApp); err != nil {
 		log.Error(err)
-	} else {
+	} else if configApp.manager != nil {
 		level, _ := logger.ParseLevel(configApp.manager.Log.Level)
 		log.Debugf("setting logger level to %s", level)
 		log.Reconfigure(logger.WithLevel(level))
 	}
-	manager.config = &configApp.manager
+	manager.config = configApp.manager
 
 	return manager
 }

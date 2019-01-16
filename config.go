@@ -2,7 +2,7 @@ package manager
 
 // AppConfig ...
 type AppConfig struct {
-	manager ManagerConfig `json:"manager"`
+	manager *ManagerConfig `json:"manager"`
 }
 
 // ManagerConfig ...
