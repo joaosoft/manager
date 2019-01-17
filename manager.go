@@ -48,9 +48,8 @@ func NewManager(options ...ManagerOption) *Manager {
 		gateways:          make(map[string]IGateway),
 		worklist:          make(map[string]IWorkList),
 		quit:              make(chan int),
+		config:            &ManagerConfig{},
 	}
-
-	manager.Reconfigure(options...)
 
 	// load configuration file
 	configApp := &AppConfig{}
@@ -60,8 +59,10 @@ func NewManager(options ...ManagerOption) *Manager {
 		level, _ := logger.ParseLevel(configApp.manager.Log.Level)
 		log.Debugf("setting logger level to %s", level)
 		log.Reconfigure(logger.WithLevel(level))
+		manager.config = configApp.manager
 	}
-	manager.config = configApp.manager
+
+	manager.Reconfigure(options...)
 
 	return manager
 }
