@@ -53,7 +53,7 @@ func NewManager(options ...ManagerOption) *Manager {
 
 	// load configuration file
 	configApp := &AppConfig{}
-	if _, err := readFile(fmt.Sprintf("/config/app.%s.json", getEnv()), configApp); err != nil {
+	if _, err := ReadFile(fmt.Sprintf("/config/app.%s.json", GetEnv()), configApp); err != nil {
 		log.Error(err)
 	} else if configApp.manager != nil {
 		level, _ := logger.ParseLevel(configApp.manager.Log.Level)
