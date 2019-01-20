@@ -4,7 +4,7 @@ import "fmt"
 
 // AppConfig ...
 type AppConfig struct {
-	Manager *ManagerConfig `json:"Manager"`
+	Manager ManagerConfig `json:"Manager"`
 }
 
 // ManagerConfig ...
@@ -15,13 +15,13 @@ type ManagerConfig struct {
 }
 
 // NewConfig ...
-func NewConfig() (*ManagerConfig, error) {
+func NewConfig() (*AppConfig, IConfig, error) {
 	appConfig := &AppConfig{}
-	if _, err := NewSimpleConfig(fmt.Sprintf("/config/app.%s.json", GetEnv()), appConfig); err != nil {
-		log.Error(err.Error())
+	simpleConfig, err := NewSimpleConfig(fmt.Sprintf("/config/app.%s.json", GetEnv()), appConfig)
 
-		return &ManagerConfig{}, err
+	if err != nil {
+		log.Error(err.Error())
 	}
 
-	return appConfig.Manager, nil
+	return appConfig, simpleConfig, err
 }

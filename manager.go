@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
 	"reflect"
@@ -35,6 +34,7 @@ type Manager struct {
 
 // NewManager ...
 func NewManager(options ...ManagerOption) *Manager {
+	config, _, err := NewConfig()
 	manager := &Manager{
 		processes:         make(map[string]IProcess),
 		configs:           make(map[string]IConfig),
@@ -48,18 +48,13 @@ func NewManager(options ...ManagerOption) *Manager {
 		gateways:          make(map[string]IGateway),
 		worklist:          make(map[string]IWorkList),
 		quit:              make(chan int),
-		config:            &ManagerConfig{},
+		config:            &config.Manager,
 	}
 
-	// load configuration file
-	configApp := &AppConfig{}
-	if _, err := ReadFile(fmt.Sprintf("/config/app.%s.json", GetEnv()), configApp); err != nil {
-		log.Error(err)
-	} else if configApp.Manager != nil {
-		level, _ := logger.ParseLevel(configApp.Manager.Log.Level)
-		log.Debugf("setting logger level to %s", level)
+	if err == nil {
+		level, _ := logger.ParseLevel(config.Manager.Log.Level)
+		log.Debugf("setting log level to %s", level)
 		log.Reconfigure(logger.WithLevel(level))
-		manager.config = configApp.Manager
 	}
 
 	manager.Reconfigure(options...)
