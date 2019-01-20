@@ -3,6 +3,8 @@ package manager
 import (
 	"time"
 
+	"github.com/joaosoft/logger"
+
 	"bytes"
 
 	"github.com/spf13/viper"
@@ -10,22 +12,24 @@ import (
 
 // SimpleConfig ...
 type SimpleConfig struct {
-	file  string
-	obj   interface{}
-	bytes []byte
-	viper *viper.Viper
+	file   string
+	obj    interface{}
+	bytes  []byte
+	viper  *viper.Viper
+	logger logger.ILogger
 }
 
 // NewSimpleConfig...
-func NewSimpleConfig(file string, obj interface{}) (IConfig, error) {
+func (manager *Manager) NewSimpleConfig(file string, obj interface{}) (IConfig, error) {
 	if bytes, err := ReadFile(file, obj); err != nil {
 		return nil, err
 	} else {
 		return &SimpleConfig{
-			file:  file,
-			obj:   obj,
-			bytes: bytes,
-			viper: loadViper(bytes),
+			file:   file,
+			obj:    obj,
+			bytes:  bytes,
+			viper:  loadViper(bytes),
+			logger: manager.logger,
 		}, err
 	}
 }

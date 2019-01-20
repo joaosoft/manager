@@ -35,7 +35,7 @@ func NewWorkListConfig(name string, maxWorkers, maxRetries int, sleepTime time.D
 // AddWorkList ...
 func (manager *Manager) AddWorkList(key string, worklist IWorkList) error {
 	manager.worklist[key] = worklist
-	log.Infof("work list %s added", key)
+	manager.logger.Infof("work list %s added", key)
 
 	return nil
 }
@@ -45,7 +45,7 @@ func (manager *Manager) RemoveWorkList(key string) (IWorkList, error) {
 	list := manager.worklist[key]
 
 	delete(manager.worklist, key)
-	log.Infof("work list %s removed", key)
+	manager.logger.Infof("work list %s removed", key)
 
 	return list, nil
 }
@@ -55,6 +55,6 @@ func (manager *Manager) GetWorkList(key string) IWorkList {
 	if list, exists := manager.worklist[key]; exists {
 		return list
 	}
-	log.Infof("work list %s doesn't exist", key)
+	manager.logger.Infof("work list %s doesn't exist", key)
 	return nil
 }

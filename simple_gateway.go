@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/joaosoft/logger"
+
 	"bytes"
 	"fmt"
 )
@@ -14,12 +16,14 @@ type Headers map[string][]string
 // SimpleGateway ...
 type SimpleGateway struct {
 	client *http.Client
+	logger logger.ILogger
 }
 
 // NewSimpleGateway ...
-func NewSimpleGateway() IGateway {
+func (manager *Manager) NewSimpleGateway() IGateway {
 	return &SimpleGateway{
 		client: &http.Client{},
+		logger: manager.logger,
 	}
 }
 
@@ -33,7 +37,7 @@ func (gateway *SimpleGateway) Request(method, host, endpoint string, headers map
 
 	if headers != nil {
 		for key, value := range headers {
-			log.Infof("adding header with [ name: %s, value: %s ]", key, value)
+			gateway.logger.Infof("adding header with [ name: %s, value: %s ]", key, value)
 			req.Header.Set(key, value[0])
 		}
 	}

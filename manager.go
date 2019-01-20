@@ -26,6 +26,7 @@ type Manager struct {
 	worklist          map[string]IWorkList
 	runInBackground   bool
 	config            *ManagerConfig
+	logger            logger.ILogger
 	isLogExternal     bool
 
 	quit    chan int
@@ -35,7 +36,9 @@ type Manager struct {
 // NewManager ...
 func NewManager(options ...ManagerOption) *Manager {
 	config, _, err := NewConfig()
-	manager := &Manager{
+	log := logger.NewLogDefault("manager", logger.DebugLevel)
+
+	service := &Manager{
 		processes:         make(map[string]IProcess),
 		configs:           make(map[string]IConfig),
 		redis:             make(map[string]IRedis),
@@ -48,18 +51,21 @@ func NewManager(options ...ManagerOption) *Manager {
 		gateways:          make(map[string]IGateway),
 		worklist:          make(map[string]IWorkList),
 		quit:              make(chan int),
+		logger:            log,
 		config:            &config.Manager,
 	}
 
-	if err == nil {
+	if err != nil {
+		service.logger.Error(err.Error())
+	} else {
 		level, _ := logger.ParseLevel(config.Manager.Log.Level)
-		log.Debugf("setting log level to %s", level)
-		log.Reconfigure(logger.WithLevel(level))
+		service.logger.Debugf("setting log level to %s", level)
+		service.logger.Reconfigure(logger.WithLevel(level))
 	}
 
-	manager.Reconfigure(options...)
+	service.Reconfigure(options...)
 
-	return manager
+	return service
 }
 
 // Started ...
@@ -102,38 +108,38 @@ func (manager *Manager) Stop() error {
 }
 
 func (manager *Manager) executeStart(c chan bool) error {
-	log.Info("starting...")
+	manager.logger.Info("starting...")
 
 	// listen for termination signals
 	termChan := make(chan os.Signal, 1)
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
 	var wg sync.WaitGroup
 
-	if err := executeAction("start", manager.dbs, &wg); err != nil {
+	if err := manager.executeAction("start", manager.dbs, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.nsqProducers, &wg); err != nil {
+	if err := manager.executeAction("start", manager.nsqProducers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.nsqConsumers, &wg); err != nil {
+	if err := manager.executeAction("start", manager.nsqConsumers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.rabbitmqProducers, &wg); err != nil {
+	if err := manager.executeAction("start", manager.rabbitmqProducers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.rabbitmqConsumers, &wg); err != nil {
+	if err := manager.executeAction("start", manager.rabbitmqConsumers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.redis, &wg); err != nil {
+	if err := manager.executeAction("start", manager.redis, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.worklist, &wg); err != nil {
+	if err := manager.executeAction("start", manager.worklist, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.processes, &wg); err != nil {
+	if err := manager.executeAction("start", manager.processes, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("start", manager.webs, &wg); err != nil {
+	if err := manager.executeAction("start", manager.webs, &wg); err != nil {
 		return err
 	}
 
@@ -143,48 +149,48 @@ func (manager *Manager) executeStart(c chan bool) error {
 		c <- true
 	}
 
-	log.Infof("started")
+	manager.logger.Infof("started")
 
 	select {
 	case <-termChan:
-		log.Infof("received term signal")
+		manager.logger.Infof("received term signal")
 	case <-manager.quit:
-		log.Infof("received shutdown signal")
+		manager.logger.Infof("received shutdown signal")
 	}
 
 	return manager.Stop()
 }
 
 func (manager *Manager) executeStop(c chan bool) error {
-	log.Info("stopping...")
+	manager.logger.Info("stopping...")
 
 	var wg sync.WaitGroup
 
-	if err := executeAction("stop", manager.processes, &wg); err != nil {
+	if err := manager.executeAction("stop", manager.processes, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("stop", manager.worklist, &wg); err != nil {
+	if err := manager.executeAction("stop", manager.worklist, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("stop", manager.webs, &wg); err != nil {
+	if err := manager.executeAction("stop", manager.webs, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("stop", manager.nsqProducers, &wg); err != nil {
+	if err := manager.executeAction("stop", manager.nsqProducers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("stop", manager.nsqConsumers, &wg); err != nil {
+	if err := manager.executeAction("stop", manager.nsqConsumers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("stop", manager.rabbitmqProducers, &wg); err != nil {
+	if err := manager.executeAction("stop", manager.rabbitmqProducers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("stop", manager.rabbitmqConsumers, &wg); err != nil {
+	if err := manager.executeAction("stop", manager.rabbitmqConsumers, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("stop", manager.redis, &wg); err != nil {
+	if err := manager.executeAction("stop", manager.redis, &wg); err != nil {
 		return err
 	}
-	if err := executeAction("stop", manager.dbs, &wg); err != nil {
+	if err := manager.executeAction("stop", manager.dbs, &wg); err != nil {
 		return err
 	}
 
@@ -194,12 +200,12 @@ func (manager *Manager) executeStop(c chan bool) error {
 		c <- true
 	}
 
-	log.Infof("stopped")
+	manager.logger.Infof("stopped")
 
 	return nil
 }
 
-func executeAction(action string, obj interface{}, wg *sync.WaitGroup) error {
+func (manager *Manager) executeAction(action string, obj interface{}, wg *sync.WaitGroup) error {
 	wg.Add(1)
 	defer wg.Done()
 
@@ -216,13 +222,13 @@ func executeAction(action string, obj interface{}, wg *sync.WaitGroup) error {
 				if !started.Bool() {
 					wgProcess.Add(1)
 					go reflect.ValueOf(value.Interface()).MethodByName("Start").Call([]reflect.Value{reflect.ValueOf(&wgProcess)})
-					log.Infof("started [ process: %s ]", key)
+					manager.logger.Infof("started [ process: %s ]", key)
 				}
 			case "stop":
 				if started.Bool() {
 					wgProcess.Add(1)
 					go reflect.ValueOf(value.Interface()).MethodByName("Stop").Call([]reflect.Value{reflect.ValueOf(&wgProcess)})
-					log.Infof("stopped [ process: %s ]", key)
+					manager.logger.Infof("stopped [ process: %s ]", key)
 				}
 			}
 		}

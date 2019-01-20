@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"github.com/joaosoft/logger"
 	"sync"
 
 	"github.com/streadway/amqp"
@@ -14,11 +15,12 @@ type SimpleRabbitmqConsumer struct {
 	bindingKey string
 	tag        string
 	handler    RabbitmqHandler
+	logger logger.ILogger
 	done       chan error
 	started    bool
 }
 
-func NewSimpleRabbitmqConsumer(config *RabbitmqConfig, queue, bindingKey, tag string, handler RabbitmqHandler) (*SimpleRabbitmqConsumer, error) {
+func (manager *Manager) NewSimpleRabbitmqConsumer(config *RabbitmqConfig, queue, bindingKey, tag string, handler RabbitmqHandler) (*SimpleRabbitmqConsumer, error) {
 	consumer := &SimpleRabbitmqConsumer{
 		config:     config,
 		connection: nil,
@@ -27,6 +29,7 @@ func NewSimpleRabbitmqConsumer(config *RabbitmqConfig, queue, bindingKey, tag st
 		bindingKey: bindingKey,
 		tag:        tag,
 		handler:    handler,
+		logger: manager.logger,
 		done:       make(chan error),
 	}
 
@@ -48,7 +51,7 @@ func (consumer *SimpleRabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 	var err error
 	consumer.connection, err = consumer.config.Connect()
 	if err != nil {
-		err = log.Errorf("dial: %s", err).ToError()
+		err = consumer.logger.Errorf("dial: %s", err).ToError()
 		return err
 	}
 
@@ -60,14 +63,14 @@ func (consumer *SimpleRabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 		}
 	}(err)
 
-	log.Infof("got connection, getting channel")
+	consumer.logger.Infof("got connection, getting channel")
 	consumer.channel, err = consumer.connection.Channel()
 	if err != nil {
-		err = log.Errorf("channel: %s", err).ToError()
+		err = consumer.logger.Errorf("channel: %s", err).ToError()
 		return err
 	}
 
-	log.Infof("got channel, declaring exchange (%s)", consumer.config.Exchange)
+	consumer.logger.Infof("got channel, declaring exchange (%s)", consumer.config.Exchange)
 	if err = consumer.channel.ExchangeDeclare(
 		consumer.config.Exchange,     // name of the exchange
 		consumer.config.ExchangeType, // type
@@ -77,11 +80,11 @@ func (consumer *SimpleRabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 		false, // noWait
 		nil,   // arguments
 	); err != nil {
-		err = log.Errorf("exchange declare: %s", err).ToError()
+		err = consumer.logger.Errorf("exchange declare: %s", err).ToError()
 		return err
 	}
 
-	log.Infof("declared exchange, declaring queue (%s)", consumer.queue)
+	consumer.logger.Infof("declared exchange, declaring queue (%s)", consumer.queue)
 	var queue amqp.Queue
 	if queue, err = consumer.channel.QueueDeclare(
 		consumer.queue, // name of the queue
@@ -91,11 +94,11 @@ func (consumer *SimpleRabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 		false,          // noWait
 		nil,            // arguments
 	); err != nil {
-		err = log.Errorf("queue declare: %s", err).ToError()
+		err = consumer.logger.Errorf("queue declare: %s", err).ToError()
 		return err
 	}
 
-	log.Infof("declared queue (%d messages, %d consumers), binding to exchange (bindingKey '%s')", queue.Messages, queue.Consumers, consumer.bindingKey)
+	consumer.logger.Infof("declared queue (%d messages, %d consumers), binding to exchange (bindingKey '%s')", queue.Messages, queue.Consumers, consumer.bindingKey)
 
 	if err = consumer.channel.QueueBind(
 		consumer.queue,           // name of the queue
@@ -104,11 +107,11 @@ func (consumer *SimpleRabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 		false, // noWait
 		nil,   // arguments
 	); err != nil {
-		err = log.Errorf("queue bind: %s", err).ToError()
+		err = consumer.logger.Errorf("queue bind: %s", err).ToError()
 		return err
 	}
 
-	log.Infof("queue bound to exchange, starting consume (consumer tag '%s')", consumer.tag)
+	consumer.logger.Infof("queue bound to exchange, starting consume (consumer tag '%s')", consumer.tag)
 	var deliveries <-chan amqp.Delivery
 	if deliveries, err = consumer.channel.Consume(
 		consumer.queue, // name
@@ -119,7 +122,7 @@ func (consumer *SimpleRabbitmqConsumer) Start(wg *sync.WaitGroup) error {
 		false,          // noWait
 		nil,            // arguments
 	); err != nil {
-		err = log.Errorf("queue consume: %s", err).ToError()
+		err = consumer.logger.Errorf("queue consume: %s", err).ToError()
 		return err
 	}
 
@@ -148,16 +151,16 @@ func (consumer *SimpleRabbitmqConsumer) Stop(wg *sync.WaitGroup) error {
 
 	// will close() the deliveries channel
 	if err := consumer.channel.Cancel(consumer.tag, true); err != nil {
-		err = log.Errorf("consumer cancel failed: %s", err).ToError()
+		err = consumer.logger.Errorf("consumer cancel failed: %s", err).ToError()
 		return err
 	}
 
 	if err := consumer.connection.Close(); err != nil {
-		err = log.Errorf("AMQP connection close error: %s", err).ToError()
+		err = consumer.logger.Errorf("AMQP connection close error: %s", err).ToError()
 		return err
 	}
 
-	log.Infof("AMQP shutdown OK")
+	consumer.logger.Infof("AMQP shutdown OK")
 
 	consumer.started = false
 
@@ -173,9 +176,9 @@ func (consumer *SimpleRabbitmqConsumer) handle(deliveries <-chan amqp.Delivery, 
 		} else {
 			delivery.Ack(false)
 		}
-		log.Infof("got %dB delivery: [%v] %s", len(delivery.Body), delivery.DeliveryTag, delivery.Body)
+		consumer.logger.Infof("got %dB delivery: [%v] %s", len(delivery.Body), delivery.DeliveryTag, delivery.Body)
 	}
 
-	log.Infof("handle: deliveries channel closed")
+	consumer.logger.Infof("handle: deliveries channel closed")
 	done <- nil
 }

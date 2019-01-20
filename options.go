@@ -22,7 +22,7 @@ func WithRunInBackground(runInBackground bool) ManagerOption {
 // WithLogger ...
 func WithLogger(logger logger.ILogger) ManagerOption {
 	return func(manager *Manager) {
-		logger = logger
+		manager.logger = logger
 		manager.isLogExternal = true
 	}
 }
@@ -30,7 +30,7 @@ func WithLogger(logger logger.ILogger) ManagerOption {
 // WithLogLevel ...
 func WithLogLevel(level logger.Level) ManagerOption {
 	return func(manager *Manager) {
-		log.SetLevel(level)
+		manager.logger.SetLevel(level)
 	}
 }
 

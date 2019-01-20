@@ -2,6 +2,7 @@ package manager
 
 import (
 	"fmt"
+	"github.com/joaosoft/logger"
 	"time"
 
 	"sync"
@@ -12,12 +13,13 @@ import (
 // Producer ...
 type SimpleNSQProducer struct {
 	client  *nsq.Producer
+	logger logger.ILogger
 	config  *NSQConfig
 	started bool
 }
 
 // NewSimpleNSQProducer ...
-func NewSimpleNSQProducer(config *NSQConfig) (INSQProducer, error) {
+func (manager *Manager) NewSimpleNSQProducer(config *NSQConfig) (INSQProducer, error) {
 	var addr string
 
 	// nsq configuration
@@ -33,7 +35,7 @@ func NewSimpleNSQProducer(config *NSQConfig) (INSQProducer, error) {
 		return nil, fmt.Errorf("nsq producer hasn't the address to Connect")
 	}
 
-	log.Infof("connecting nsq producer to %s", addr)
+	manager.logger.Infof("connecting nsq producer to %s", addr)
 	nsqProducer, err := nsq.NewProducer(addr, nsqConfig)
 	if err != nil {
 		panic(err)
@@ -42,6 +44,7 @@ func NewSimpleNSQProducer(config *NSQConfig) (INSQProducer, error) {
 	producer := &SimpleNSQProducer{
 		client: nsqProducer,
 		config: config,
+		logger: manager.logger,
 	}
 
 	return producer, nil

@@ -3,6 +3,8 @@ package manager
 import (
 	"sync"
 
+	"github.com/joaosoft/logger"
+
 	"github.com/labstack/echo"
 )
 
@@ -10,17 +12,19 @@ import (
 type SimpleWebEcho struct {
 	server  *echo.Echo
 	host    string
+	logger  logger.ILogger
 	started bool
 }
 
 // NewSimpleWebEcho...
-func NewSimpleWebEcho(host string) IWeb {
+func (manager *Manager) NewSimpleWebEcho(host string) IWeb {
 	e := echo.New()
 	e.HideBanner = true
 
 	return &SimpleWebEcho{
 		server: e,
 		host:   host,
+		logger: manager.logger,
 	}
 }
 

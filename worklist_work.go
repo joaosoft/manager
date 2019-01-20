@@ -1,6 +1,10 @@
 package manager
 
-import "time"
+import (
+	"time"
+
+	"github.com/joaosoft/logger"
+)
 
 // Work ...
 type Work struct {
@@ -10,14 +14,16 @@ type Work struct {
 	createdAt   time.Time
 	elapsedTime time.Time
 	endedAt     time.Time
+	logger      logger.ILogger
 }
 
 // NewWork ...
-func NewWork(id string, data interface{}) *Work {
+func NewWork(id string, data interface{}, logger logger.ILogger) *Work {
 	return &Work{
 		id:        id,
 		data:      data,
 		createdAt: time.Now(),
+		logger:    logger,
 	}
 }
 

@@ -29,7 +29,7 @@ func NewDBConfig(driver, datasource string) *DBConfig {
 // AddDB ...
 func (manager *Manager) AddDB(key string, db IDB) error {
 	manager.dbs[key] = db
-	log.Infof("database %s added", key)
+	manager.logger.Infof("database %s added", key)
 
 	return nil
 }
@@ -39,7 +39,7 @@ func (manager *Manager) RemoveDB(key string) (IDB, error) {
 	db := manager.dbs[key]
 
 	delete(manager.dbs, key)
-	log.Infof("database %s removed", key)
+	manager.logger.Infof("database %s removed", key)
 
 	return db, nil
 }
@@ -49,6 +49,6 @@ func (manager *Manager) GetDB(key string) IDB {
 	if db, exists := manager.dbs[key]; exists {
 		return db
 	}
-	log.Infof("database %s doesn't exist", key)
+	manager.logger.Infof("database %s doesn't exist", key)
 	return nil
 }

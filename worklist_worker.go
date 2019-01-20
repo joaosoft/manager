@@ -3,6 +3,10 @@ package manager
 import (
 	"sync"
 	"time"
+
+	"github.com/joaosoft/logger"
+
+	"github.com/labstack/gommon/log"
 )
 
 // IList ...
@@ -27,11 +31,12 @@ type Worker struct {
 	sleepTime  time.Duration
 	quit       chan bool
 	mux        *sync.Mutex
+	logger     logger.ILogger
 	started    bool
 }
 
 // NewWorker ...
-func NewWorker(id int, config *WorkListConfig, handler WorkHandler, list IList) *Worker {
+func NewWorker(id int, config *WorkListConfig, handler WorkHandler, list IList, logger logger.ILogger) *Worker {
 	worker := &Worker{
 		id:         id,
 		name:       config.Name,
@@ -41,6 +46,7 @@ func NewWorker(id int, config *WorkListConfig, handler WorkHandler, list IList) 
 		list:       list,
 		quit:       make(chan bool),
 		mux:        &sync.Mutex{},
+		logger:     logger,
 	}
 
 	return worker
@@ -94,7 +100,7 @@ func (worker *Worker) Stop() error {
 
 // AddWork ...
 func (worker *Worker) AddWork(id string, data interface{}) error {
-	work := NewWork(id, data)
+	work := NewWork(id, data, worker.logger)
 	return worker.list.Add(id, work)
 }
 

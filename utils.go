@@ -12,7 +12,6 @@ func GetEnv() string {
 	if env == "" {
 		env = "local"
 	}
-	log.Infof("environment: %s", env)
 
 	return env
 }
@@ -33,7 +32,6 @@ func ReadFile(fileName string, obj interface{}) ([]byte, error) {
 		fileName = global[path_key].(string) + fileName
 	}
 
-	log.Infof("loading file [ %s ]", fileName)
 	file, err := os.Open(fileName)
 	if err != nil {
 		return nil, err
@@ -45,7 +43,6 @@ func ReadFile(fileName string, obj interface{}) ([]byte, error) {
 	}
 
 	if obj != nil {
-		log.Infof("unmarshalling file [ %s ] to struct", fileName)
 		if err := json.Unmarshal(data, obj); err != nil {
 			return nil, err
 		}
@@ -61,7 +58,6 @@ func ReadFileLines(fileName string) ([]string, error) {
 		fileName = global[path_key].(string) + fileName
 	}
 
-	log.Infof("loading file [ %s ]", fileName)
 	file, err := os.Open(fileName)
 	if err != nil {
 		return nil, err
@@ -85,7 +81,6 @@ func WriteFile(fileName string, obj interface{}) error {
 		fileName = global[path_key].(string) + fileName
 	}
 
-	log.Infof("writing file [ %s ]", fileName)
 	jsonBytes, _ := json.MarshalIndent(obj, "", "    ")
 	if err := ioutil.WriteFile(fileName, jsonBytes, 0644); err != nil {
 		return err

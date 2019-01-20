@@ -3,6 +3,8 @@ package manager
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/joaosoft/logger"
+	"github.com/labstack/gommon/log"
 	"sync"
 )
 
@@ -32,13 +34,15 @@ type Queue struct {
 	maxSize int
 	mux     *sync.Mutex
 	ids     map[string]*Node
+	logger logger.ILogger
 }
 
 // NewQueue ...
-func NewQueue(options ...QueueOption) IList {
+func (manager *Manager) NewQueue(options ...QueueOption) IList {
 	queue := &Queue{
 		ids: make(map[string]*Node),
 		mux: &sync.Mutex{},
+		logger: manager.logger,
 	}
 	queue.Reconfigure(options...)
 

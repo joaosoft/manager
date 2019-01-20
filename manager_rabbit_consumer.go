@@ -17,7 +17,7 @@ type IRabbitmqConsumer interface {
 // AddRabbitmqConsumer ...
 func (manager *Manager) AddRabbitmqConsumer(key string, rabbitmqConsumer IRabbitmqConsumer) error {
 	manager.rabbitmqConsumers[key] = rabbitmqConsumer
-	log.Infof("consumer %s added", key)
+	manager.logger.Infof("consumer %s added", key)
 
 	return nil
 }
@@ -27,7 +27,7 @@ func (manager *Manager) RemoveRabbitmqConsumer(key string) (IRabbitmqConsumer, e
 	rabbitmqConsumer := manager.rabbitmqConsumers[key]
 
 	delete(manager.processes, key)
-	log.Infof("consumer %s removed", key)
+	manager.logger.Infof("consumer %s removed", key)
 
 	return rabbitmqConsumer, nil
 }
@@ -37,6 +37,6 @@ func (manager *Manager) GetRabbitmqConsumer(key string) IRabbitmqConsumer {
 	if rabbitmqConsumer, exists := manager.rabbitmqConsumers[key]; exists {
 		return rabbitmqConsumer
 	}
-	log.Infof("consumer %s doesn't exist", key)
+	manager.logger.Infof("consumer %s doesn't exist", key)
 	return nil
 }

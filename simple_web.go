@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"github.com/joaosoft/logger"
 	"sync"
 
 	"github.com/joaosoft/web"
@@ -10,14 +11,16 @@ import (
 type SimpleWebServer struct {
 	server  *web.Server
 	host    string
+	logger logger.ILogger
 	started bool
 }
 
 // NewSimpleWebServer...
-func NewSimpleWebServer(host string) IWeb {
+func (manager *Manager) NewSimpleWebServer(host string) IWeb {
 	server, _ := web.NewServer(web.WithServerAddress(host))
 	return &SimpleWebServer{
 		server: server,
+		logger: manager.logger,
 	}
 }
 

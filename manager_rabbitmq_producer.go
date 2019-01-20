@@ -13,7 +13,7 @@ type IRabbitmqProducer interface {
 // AddRabbitmqProducer ...
 func (manager *Manager) AddRabbitmqProducer(key string, nsqProducer IRabbitmqProducer) error {
 	manager.rabbitmqProducers[key] = nsqProducer
-	log.Infof("nsq producer %s added", key)
+	manager.logger.Infof("nsq producer %s added", key)
 
 	return nil
 }
@@ -23,7 +23,7 @@ func (manager *Manager) RemoveRabbitmqProducer(key string) (IRabbitmqProducer, e
 	process := manager.rabbitmqProducers[key]
 
 	delete(manager.processes, key)
-	log.Infof("nsq producer %s removed", key)
+	manager.logger.Infof("nsq producer %s removed", key)
 
 	return process, nil
 }
@@ -33,6 +33,6 @@ func (manager *Manager) GetRabbitmqProducer(key string) IRabbitmqProducer {
 	if process, exists := manager.rabbitmqProducers[key]; exists {
 		return process
 	}
-	log.Infof("nsq producer %s doesn't exist", key)
+	manager.logger.Infof("nsq producer %s doesn't exist", key)
 	return nil
 }

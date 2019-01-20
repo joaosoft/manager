@@ -14,7 +14,7 @@ func main() {
 	m := manager.NewManager(manager.WithRunInBackground(false))
 
 	postgresConfig := manager.NewDBConfig("postgres", "postgres://postgres:postgres@localhost:5432?sslmode=disable")
-	postgresConn := manager.NewSimpleDB(postgresConfig)
+	postgresConn := m.NewSimpleDB(postgresConfig)
 	m.AddDB("postgres", postgresConn)
 	m.Start()
 }

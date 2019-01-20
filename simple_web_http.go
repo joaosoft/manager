@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"github.com/joaosoft/logger"
 	"net/http"
 	"sync"
 )
@@ -10,14 +11,16 @@ type SimpleWebHttp struct {
 	server  *http.Server
 	handler *HandlerFunc
 	host    string
+	logger logger.ILogger
 	started bool
 }
 
 // NewSimpleWebHttp...
-func NewSimpleWebHttp(host string) IWeb {
+func (manager *Manager) NewSimpleWebHttp(host string) IWeb {
 	return &SimpleWebHttp{
 		server: &http.Server{Addr: host},
 		host:   host,
+		logger: manager.logger,
 	}
 }
 

@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"github.com/joaosoft/logger"
 	"time"
 
 	"sync"
@@ -13,12 +14,14 @@ type SimpleRabbitmqProducer struct {
 	connection *amqp.Connection
 	channel    *amqp.Channel
 	tag        string
+	logger logger.ILogger
 	started    bool
 }
 
-func NewSimpleRabbitmqProducer(config *RabbitmqConfig) (*SimpleRabbitmqProducer, error) {
+func (manager *Manager) NewSimpleRabbitmqProducer(config *RabbitmqConfig) (*SimpleRabbitmqProducer, error) {
 	return &SimpleRabbitmqProducer{
 		config: config,
+		logger: manager.logger,
 	}, nil
 }
 
@@ -37,7 +40,7 @@ func (producer *SimpleRabbitmqProducer) Start(wg *sync.WaitGroup) error {
 	var err error
 	producer.connection, err = producer.config.Connect()
 	if err != nil {
-		err = log.Errorf("dial: %s", err).ToError()
+		err = producer.logger.Errorf("dial: %s", err).ToError()
 		return err
 	}
 
@@ -49,13 +52,13 @@ func (producer *SimpleRabbitmqProducer) Start(wg *sync.WaitGroup) error {
 		}
 	}(err)
 
-	log.Infof("got connection, getting channel")
+	producer.logger.Infof("got connection, getting channel")
 	if producer.channel, err = producer.connection.Channel(); err != nil {
-		err = log.Errorf("channel: %s", err).ToError()
+		err = producer.logger.Errorf("channel: %s", err).ToError()
 		return err
 	}
 
-	log.Infof("got channel, declaring %q exchange (%s)", producer.config.ExchangeType, producer.config.Exchange)
+	producer.logger.Infof("got channel, declaring %q exchange (%s)", producer.config.ExchangeType, producer.config.Exchange)
 	if err = producer.channel.ExchangeDeclare(
 		producer.config.Exchange,     // name
 		producer.config.ExchangeType, // type
@@ -65,7 +68,7 @@ func (producer *SimpleRabbitmqProducer) Start(wg *sync.WaitGroup) error {
 		false, // noWait
 		nil,   // arguments
 	); err != nil {
-		err = log.Errorf("exchange declare: %s", err).ToError()
+		err = producer.logger.Errorf("exchange declare: %s", err).ToError()
 		return err
 	}
 
@@ -93,16 +96,16 @@ func (producer *SimpleRabbitmqProducer) Stop(wg *sync.WaitGroup) error {
 
 	// will close() the deliveries channel
 	if err := producer.channel.Cancel(producer.tag, true); err != nil {
-		err = log.Errorf("consumer cancel failed: %s", err).ToError()
+		err = producer.logger.Errorf("consumer cancel failed: %s", err).ToError()
 		return err
 	}
 
 	if err := producer.connection.Close(); err != nil {
-		err = log.Errorf("AMQP connection close error: %s", err).ToError()
+		err = producer.logger.Errorf("AMQP connection close error: %s", err).ToError()
 		return err
 	}
 
-	log.Infof("AMQP shutdown OK")
+	producer.logger.Infof("AMQP shutdown OK")
 	producer.started = false
 
 	return nil
@@ -119,7 +122,7 @@ func (producer *SimpleRabbitmqProducer) Publish(routingKey string, body []byte, 
 		Priority:        0, // 0-9
 	}
 
-	log.Infof("declared exchange, publishing %dB body (%s)", len(body), body)
+	producer.logger.Infof("declared exchange, publishing %dB body (%s)", len(body), body)
 	if err := producer.channel.Publish(
 		producer.config.Exchange, // publish to an exchange
 		routingKey,               // routing to 0 or more queues
@@ -127,7 +130,7 @@ func (producer *SimpleRabbitmqProducer) Publish(routingKey string, body []byte, 
 		false,                    // immediate
 		msg,
 	); err != nil {
-		err = log.Errorf("exchange publish: %s", err).ToError()
+		err = producer.logger.Errorf("exchange publish: %s", err).ToError()
 		return err
 	}
 

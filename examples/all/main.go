@@ -72,7 +72,7 @@ func main() {
 
 	//
 	// manager: processes
-	process := manager.NewSimpleProcess(dummy_process)
+	process := m.NewSimpleProcess(dummy_process)
 	if err := m.AddProcess("process_1", process); err != nil {
 		log.Errorf("MAIN: error on processes %s", err)
 	}
@@ -80,7 +80,7 @@ func main() {
 	//
 	// nsq rabbitmqProducer
 	nsqConfigProducer := manager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4150"}, []string{"127.0.0.1:4161"}, 30, 5)
-	nsqProducer, _ := manager.NewSimpleNSQProducer(nsqConfigProducer)
+	nsqProducer, _ := m.NewSimpleNSQProducer(nsqConfigProducer)
 	m.AddNSQProducer("nsq_producer_1", nsqProducer)
 	nsqProducer = m.GetNSQProducer("nsq_producer_1")
 	nsqProducer.Publish("topic_1", []byte("MENSAGEM ENVIADA PARA A NSQ"), 3)
@@ -91,7 +91,7 @@ func main() {
 	//
 	// manager: nsq rabbitmqconsumer
 	nsqConfigConsumer := manager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4161"}, []string{"127.0.0.1:4150"}, 30, 5)
-	nsqConsumer, _ := manager.NewSimpleNSQConsumer(nsqConfigConsumer, &dummy_nsq_handler{})
+	nsqConsumer, _ := m.NewSimpleNSQConsumer(nsqConfigConsumer, &dummy_nsq_handler{})
 	m.AddProcess("nsq_consumer_1", nsqConsumer)
 
 	//
@@ -106,7 +106,7 @@ func main() {
 	}
 	dir, _ := os.Getwd()
 	obj := &dummy_config{}
-	simpleConfig, _ := manager.NewSimpleConfig(dir+"/examples/all/data/config.json", obj)
+	simpleConfig, _ := m.NewSimpleConfig(dir+"/examples/all/data/config.json", obj)
 	m.AddConfig("config_1", simpleConfig)
 	config := m.GetConfig("config_1")
 
@@ -126,7 +126,7 @@ func main() {
 	// manager: web
 
 	// web - with http
-	web := manager.NewSimpleWebHttp(":8081")
+	web := m.NewSimpleWebHttp(":8081")
 	if err := m.AddWeb("web_http", web); err != nil {
 		log.Error("error adding web process to manager")
 	}
@@ -134,7 +134,7 @@ func main() {
 	web.AddRoute(http.MethodGet, "/web_http", dummy_web_http_handler)
 
 	// web - with echo
-	web = manager.NewSimpleWebEcho(":8082")
+	web = m.NewSimpleWebEcho(":8082")
 	if err := m.AddWeb("web_echo", web); err != nil {
 		log.Error("error adding web process to manager")
 	}
@@ -149,7 +149,7 @@ func main() {
 	// manager: gateway
 	headers := map[string][]string{"Content-Type": {"application/json"}}
 
-	gateway := manager.NewSimpleGateway()
+	gateway := m.NewSimpleGateway()
 	m.AddGateway("gateway_1", gateway)
 	gateway = m.GetGateway("gateway_1")
 	status, bytes, err := gateway.Request(http.MethodGet, "http://127.0.0.1:8082", "/web_echo/123", headers, nil)
@@ -160,24 +160,24 @@ func main() {
 
 	// database - postgres
 	postgresConfig := manager.NewDBConfig("postgres", "postgres://user:password@localhost:7001?sslmode=disable")
-	postgresConn := manager.NewSimpleDB(postgresConfig)
+	postgresConn := m.NewSimpleDB(postgresConfig)
 	m.AddDB("postgres", postgresConn)
 
 	// database - mysql
 	mysqlConfig := manager.NewDBConfig("mysql", "root:password@tcp(127.0.0.1:7002)/mysql")
-	mysqlConn := manager.NewSimpleDB(mysqlConfig)
+	mysqlConn := m.NewSimpleDB(mysqlConfig)
 	m.AddDB("mysql", mysqlConn)
 
 	//
 	// manager: redis
 	redisConfig := manager.NewRedisConfig("127.0.0.1", 7100, 0, "")
-	redisConn := manager.NewSimpleRedis(redisConfig)
+	redisConn := m.NewSimpleRedis(redisConfig)
 	m.AddRedis("redis", redisConn)
 
 	//
 	// manager: workqueue
 	workqueueConfig := manager.NewWorkListConfig("queue_001", 1, 2, time.Second*2, manager.FIFO)
-	workqueue := manager.NewSimpleWorkList(workqueueConfig, work_handler)
+	workqueue := m.NewSimpleWorkList(workqueueConfig, work_handler)
 	m.AddWorkList("queue_001", workqueue)
 	workqueue = m.GetWorkList("queue_001")
 	for i := 1; i <= 1000; i++ {
@@ -197,7 +197,7 @@ func main() {
 	consumerTag := "simple-rabbitmqconsumer"
 	configRabbitmq := manager.NewRabbitmqConfig(uri, exchange, exchangeType)
 
-	rabbitmqProducer, err := manager.NewSimpleRabbitmqProducer(configRabbitmq)
+	rabbitmqProducer, err := m.NewSimpleRabbitmqProducer(configRabbitmq)
 	if err != nil {
 		log.Errorf("%s", err)
 	}
@@ -214,7 +214,7 @@ func main() {
 
 	//
 	// manager: rabbitmq rabbitmqconsumer
-	rabbitmqconsumer, err := manager.NewSimpleRabbitmqConsumer(configRabbitmq, queue, bindingKey, consumerTag, rabbit_consumer_handler)
+	rabbitmqconsumer, err := m.NewSimpleRabbitmqConsumer(configRabbitmq, queue, bindingKey, consumerTag, rabbit_consumer_handler)
 	if err != nil {
 		log.Errorf("%s", err)
 	}

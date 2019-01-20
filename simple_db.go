@@ -2,6 +2,7 @@ package manager
 
 import (
 	"database/sql"
+	"github.com/joaosoft/logger"
 
 	"sync"
 
@@ -12,14 +13,16 @@ import (
 // SimpleDB ...
 type SimpleDB struct {
 	*sql.DB
+	logger logger.ILogger
 	config  *DBConfig
 	started bool
 }
 
 // NewSimpleDB ...
-func NewSimpleDB(config *DBConfig) IDB {
+func (manager *Manager) NewSimpleDB(config *DBConfig) IDB {
 	return &SimpleDB{
 		config: config,
+		logger: manager.logger,
 	}
 }
 

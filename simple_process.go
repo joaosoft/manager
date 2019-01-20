@@ -1,17 +1,22 @@
 package manager
 
-import "sync"
+import (
+	"github.com/joaosoft/logger"
+	"sync"
+)
 
 // SimpleProcess ...
 type SimpleProcess struct {
 	function func() error
+	logger logger.ILogger
 	started  bool
 }
 
 // NewSimpleProcess...
-func NewSimpleProcess(function func() error) IProcess {
+func (manager *Manager) NewSimpleProcess(function func() error) IProcess {
 	return &SimpleProcess{
 		function: function,
+		logger: manager.logger,
 	}
 }
 

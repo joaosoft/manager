@@ -1,6 +1,9 @@
 package manager
 
-import "sync"
+import (
+	"github.com/joaosoft/logger"
+	"sync"
+)
 
 // SimpleWorkList ...
 type SimpleWorkList struct {
@@ -9,16 +12,18 @@ type SimpleWorkList struct {
 	handler WorkHandler
 	list    IList
 	workers []*Worker
+	logger logger.ILogger
 	started bool
 }
 
 // NewSimpleWorkList ...
-func NewSimpleWorkList(config *WorkListConfig, handler WorkHandler) IWorkList {
+func (manager *Manager) NewSimpleWorkList(config *WorkListConfig, handler WorkHandler) IWorkList {
 	return &SimpleWorkList{
 		name:    config.Name,
 		list:    NewQueue(WithMode(config.Mode)),
 		config:  config,
 		handler: handler,
+		logger: manager.logger,
 	}
 }
 
@@ -37,7 +42,7 @@ func (worklist *SimpleWorkList) Start(wg *sync.WaitGroup) error {
 
 	var workers []*Worker
 	for i := 1; i <= worklist.config.MaxWorkers; i++ {
-		log.Infof("starting worker [ %d ]", i)
+		worklist.logger.Infof("starting worker [ %d ]", i)
 		worker := NewWorker(i, worklist.config, worklist.handler, worklist.list)
 		worker.Start()
 		workers = append(workers, worker)
@@ -63,7 +68,7 @@ func (worklist *SimpleWorkList) Stop(wg *sync.WaitGroup) error {
 	}
 
 	for _, worker := range worklist.workers {
-		log.Infof("stopping worker [ %d: %s ]", worker.id, worker.name)
+		worklist.logger.Infof("stopping worker [ %d: %s ]", worker.id, worker.name)
 		worker.Stop()
 	}
 
@@ -79,7 +84,7 @@ func (worklist *SimpleWorkList) Started() bool {
 
 // AddWork ...
 func (worklist *SimpleWorkList) AddWork(id string, data interface{}) {
-	log.Infof("adding work to the list [ name: %s ]", worklist.name)
+	worklist.logger.Infof("adding work to the list [ name: %s ]", worklist.name)
 	work := NewWork(id, data)
 	worklist.list.Add(id, work)
 }

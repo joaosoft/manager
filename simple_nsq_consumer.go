@@ -2,6 +2,7 @@ package manager
 
 import (
 	"fmt"
+	"github.com/joaosoft/logger"
 	"time"
 
 	"sync"
@@ -13,13 +14,14 @@ import (
 type SimpleNSQConsumer struct {
 	client  *nsq.Consumer
 	handler INSQHandler
+	logger logger.ILogger
 	config  *NSQConfig
 	started bool
 }
 
 // NewSimpleNSQConsumer ...
-func NewSimpleNSQConsumer(config *NSQConfig, handler INSQHandler) (INSQConsumer, error) {
-	log.Infof("nsq consumer, creating consumer [ topic: %s, channel: %s ]", config.Topic, config.Channel)
+func (manager *Manager) NewSimpleNSQConsumer(config *NSQConfig, handler INSQHandler) (INSQConsumer, error) {
+	manager.logger.Infof("nsq consumer, creating consumer [ topic: %s, channel: %s ]", config.Topic, config.Channel)
 
 	// Creating nsq configuration
 	nsqConfig := nsq.NewConfig()
@@ -40,7 +42,7 @@ func NewSimpleNSQConsumer(config *NSQConfig, handler INSQHandler) (INSQConsumer,
 		handler: handler,
 	}
 
-	log.Infof("nsq consumer, consumer [ topic: %s, channel: %s ] created", config.Topic, config.Channel)
+	manager.logger.Infof("nsq consumer, consumer [ topic: %s, channel: %s ] created", config.Topic, config.Channel)
 
 	return consumer, nil
 }
@@ -80,20 +82,20 @@ func (consumer *SimpleNSQConsumer) Start(wg *sync.WaitGroup) error {
 
 	if consumer.config.Lookupd != nil && len(consumer.config.Lookupd) > 0 {
 		for _, addr := range consumer.config.Lookupd {
-			log.Infof("nsq consumer, consumer connecting to %s", addr)
+			consumer.logger.Infof("nsq consumer, consumer connecting to %s", addr)
 		}
 		if err := consumer.client.ConnectToNSQLookupds(consumer.config.Lookupd); err != nil {
-			log.Infof("nsq consumer, error connecting to loookupd %s", consumer.config.Nsqd)
-			log.Error(err)
+			consumer.logger.Infof("nsq consumer, error connecting to loookupd %s", consumer.config.Nsqd)
+			consumer.logger.Error(err)
 			return err
 		}
 	}
 	if consumer.config.Nsqd != nil && len(consumer.config.Nsqd) > 0 {
 		for _, addr := range consumer.config.Nsqd {
-			log.Infof("nsq consumer, connecting to %s", addr)
+			consumer.logger.Infof("nsq consumer, connecting to %s", addr)
 		}
 		if err := consumer.client.ConnectToNSQDs(consumer.config.Nsqd); err != nil {
-			log.Infof("nsq consumer, error connecting to nsqd %s", consumer.config.Nsqd)
+			consumer.logger.Infof("nsq consumer, error connecting to nsqd %s", consumer.config.Nsqd)
 			return err
 		}
 	}

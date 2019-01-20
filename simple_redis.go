@@ -2,6 +2,7 @@ package manager
 
 import (
 	"fmt"
+	"github.com/joaosoft/logger"
 	"reflect"
 
 	"strings"
@@ -15,13 +16,15 @@ import (
 type SimpleRedis struct {
 	client  redis.Client
 	config  *RedisConfig
+	logger logger.ILogger
 	started bool
 }
 
 // NewSimpleRedis ...
-func NewSimpleRedis(config *RedisConfig) IRedis {
+func (manager *Manager) NewSimpleRedis(config *RedisConfig) IRedis {
 	return &SimpleRedis{
 		config: config,
+		logger:manager.logger,
 	}
 }
 
@@ -39,7 +42,7 @@ func (redis *SimpleRedis) Start(wg *sync.WaitGroup) error {
 	}
 
 	if conn, err := redis.config.Connect(); err != nil {
-		log.Error(err)
+		redis.logger.Error(err)
 		return err
 	} else {
 		redis.client = conn
