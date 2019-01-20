@@ -19,6 +19,20 @@ type SimpleConfig struct {
 	logger logger.ILogger
 }
 
+func NewSimpleConfig(file string, obj interface{}) (IConfig, error) {
+	if bytes, err := ReadFile(file, obj); err != nil {
+		return nil, err
+	} else {
+		return &SimpleConfig{
+			file:   file,
+			obj:    obj,
+			bytes:  bytes,
+			viper:  loadViper(bytes),
+			logger: logger.Instance,
+		}, err
+	}
+}
+
 // NewSimpleConfig...
 func (manager *Manager) NewSimpleConfig(file string, obj interface{}) (IConfig, error) {
 	if bytes, err := ReadFile(file, obj); err != nil {
