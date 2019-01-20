@@ -59,11 +59,11 @@ func work_handler(id string, data interface{}) error {
 
 func usage() {
 	//
-	// manager
+	// Manager
 	manager := NewManager()
 
 	//
-	// manager: processes
+	// Manager: processes
 	process := NewSimpleProcess(dummy_process)
 	if err := manager.AddProcess("process_1", process); err != nil {
 		log.Errorf("MAIN: error on processes %s", err)
@@ -81,13 +81,13 @@ func usage() {
 	<-time.After(time.Duration(1) * time.Second)
 
 	//
-	// manager: nsq consumer
+	// Manager: nsq consumer
 	nsqConfigConsumer := NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4161"}, []string{"127.0.0.1:4150"}, 30, 5)
 	nsqConsumer, _ := NewSimpleNSQConsumer(nsqConfigConsumer, &dummy_nsq_handler{})
 	manager.AddProcess("nsq_consumer_1", nsqConsumer)
 
 	//
-	// manager: configuration
+	// Manager: configuration
 	type dummy_config struct {
 		App  string `json:"app"`
 		User struct {
@@ -115,12 +115,12 @@ func usage() {
 	}
 
 	//
-	// manager: web
+	// Manager: web
 
 	// web - with http
 	web := NewSimpleWebHttp(":8081")
 	if err := manager.AddWeb("web_http", web); err != nil {
-		log.Error("error adding web process to manager")
+		log.Error("error adding web process to Manager")
 	}
 	web = manager.GetWeb("web_http")
 	web.AddRoute(http.MethodGet, "/web_http", dummy_web_http_handler)
@@ -128,7 +128,7 @@ func usage() {
 	// web - with echo
 	web = NewSimpleWebEcho(":8082")
 	if err := manager.AddWeb("web_echo", web); err != nil {
-		log.Error("error adding web process to manager")
+		log.Error("error adding web process to Manager")
 	}
 	web = manager.GetWeb("web_echo")
 	web.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
@@ -138,7 +138,7 @@ func usage() {
 	<-time.After(time.Duration(1) * time.Second)
 
 	//
-	// manager: gateway
+	// Manager: gateway
 	headers := map[string][]string{"Content-Type": {"application/json"}}
 
 	gateway := NewSimpleGateway()
@@ -148,7 +148,7 @@ func usage() {
 	log.Infof("status: %d, response: %s, error? %t", status, string(bytes), err != nil)
 
 	//
-	// manager: database
+	// Manager: database
 
 	// database - postgres
 	postgresConfig := NewDBConfig("postgres", "postgres://user:password@localhost:7001?sslmode=disable")
@@ -161,13 +161,13 @@ func usage() {
 	manager.AddDB("mysql", mysqlConn)
 
 	//
-	// manager: redis
+	// Manager: redis
 	redisConfig := NewRedisConfig("127.0.0.1", 7100, 0, "")
 	redisConn := NewSimpleRedis(redisConfig)
 	manager.AddRedis("redis", redisConn)
 
 	//
-	// manager: workqueue
+	// Manager: workqueue
 	workqueueConfig := NewWorkListConfig("queue_001", 1, 2, time.Second*2, FIFO)
 	workqueue := NewSimpleWorkList(workqueueConfig, work_handler)
 	manager.AddWorkList("queue_001", workqueue)

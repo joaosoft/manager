@@ -5,7 +5,7 @@ import (
 )
 
 var global = make(map[string]interface{})
-var log = logger.NewLogDefault("manager", logger.InfoLevel)
+var log = logger.NewLogDefault("Manager", logger.InfoLevel)
 
 func init() {
 	global[path_key] = defaultPath

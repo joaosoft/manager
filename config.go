@@ -4,7 +4,7 @@ import "fmt"
 
 // AppConfig ...
 type AppConfig struct {
-	manager *ManagerConfig `json:"manager"`
+	Manager *ManagerConfig `json:"Manager"`
 }
 
 // ManagerConfig ...
@@ -23,5 +23,5 @@ func NewConfig() (*ManagerConfig, error) {
 		return &ManagerConfig{}, err
 	}
 
-	return appConfig.manager, nil
+	return appConfig.Manager, nil
 }
