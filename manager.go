@@ -36,7 +36,7 @@ type Manager struct {
 // NewManager ...
 func NewManager(options ...ManagerOption) *Manager {
 	config, _, err := NewConfig()
-	log := logger.NewLogDefault("manager", logger.DebugLevel)
+	log := logger.NewLogDefault("manager", logger.WarnLevel)
 
 	service := &Manager{
 		processes:         make(map[string]IProcess),
