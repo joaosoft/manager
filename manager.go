@@ -52,12 +52,12 @@ func NewManager(options ...ManagerOption) *Manager {
 		worklist:          make(map[string]IWorkList),
 		quit:              make(chan int),
 		logger:            log,
-		config:            &config.Manager,
+		config:            config.Manager,
 	}
 
 	if err != nil {
 		service.logger.Error(err.Error())
-	} else {
+	} else if config.Manager != nil {
 		level, _ := logger.ParseLevel(config.Manager.Log.Level)
 		service.logger.Debugf("setting log level to %s", level)
 		service.logger.Reconfigure(logger.WithLevel(level))
