@@ -20,10 +20,10 @@
   version = "v1.4.1"
 
 [[projects]]
-  branch = "master"
   name = "github.com/golang/snappy"
   packages = ["."]
-  revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
+  revision = "2a8bb927dd31d8daada140a5d09578521ce5c36a"
+  version = "v0.0.1"
 
 [[projects]]
   name = "github.com/hashicorp/hcl"
@@ -44,6 +44,15 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/joaosoft/auth-types"
+  packages = [
+    "basic",
+    "jwt"
+  ]
+  revision = "3cbc735f7e25c37fa572263975599a98c2f5f66c"
+
+[[projects]]
+  branch = "master"
   name = "github.com/joaosoft/color"
   packages = ["."]
   revision = "17caec6046388cea5751f441ef6b06a7a572abf2"
@@ -52,31 +61,31 @@
   branch = "master"
   name = "github.com/joaosoft/errors"
   packages = ["."]
-  revision = "fdf3056873e72340b59c5b286ca94b07ae6fcf37"
+  revision = "dd98851e0d4f418b451d921259cfee63f93864dc"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/logger"
   packages = ["."]
-  revision = "b245b1fd47dcf07bfac383551078de3c1d890de0"
+  revision = "3cb37169f05a408eca80c27e648861849c1d8449"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/web"
   packages = ["."]
-  revision = "e35184df0822c622df91f8fca56cd32ba1eabd20"
+  revision = "e18ca496fb4c1faadacbd2e3bdd08bf289be2780"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/writers"
   packages = ["."]
-  revision = "97aea5d1a3ec5b6907403c1dfea21cbcf8369d89"
+  revision = "e7f81b49284c35354b23b3ce8fe113dd9552a0b7"
 
 [[projects]]
   name = "github.com/labstack/echo"
   packages = ["."]
-  revision = "c7eb8da9ec73e78c4f38413f3f835e0cd52c7d72"
-  version = "v3.3.8"
+  revision = "38772c686c76b501f94bd6cd5b77f5842e93b559"
+  version = "v3.3.10"
 
 [[projects]]
   name = "github.com/labstack/gommon"
@@ -105,14 +114,14 @@
 [[projects]]
   name = "github.com/mattn/go-colorable"
   packages = ["."]
-  revision = "167de6bfdfba052fa6b2d3664c8f5272e23c9072"
-  version = "v0.0.9"
+  revision = "3a70a971f94a22f2fa562ffcc7a0eb45f5daf045"
+  version = "v0.1.1"
 
 [[projects]]
   name = "github.com/mattn/go-isatty"
   packages = ["."]
-  revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
-  version = "v0.0.4"
+  revision = "369ecd8cea9851e459abb67eb171853e3986591e"
+  version = "v0.0.6"
 
 [[projects]]
   name = "github.com/mitchellh/mapstructure"
@@ -144,8 +153,8 @@
     ".",
     "mem"
   ]
-  revision = "a5d6946387efe7d64d09dcba68cdd523dc1273a3"
-  version = "v1.2.0"
+  revision = "f4711e4db9e9a1d3887343acb72b2bbfc2f686f5"
+  version = "v1.2.1"
 
 [[projects]]
   name = "github.com/spf13/cast"
@@ -156,8 +165,8 @@
 [[projects]]
   name = "github.com/spf13/jwalterweatherman"
   packages = ["."]
-  revision = "4a4406e478ca629068e7768fc33f3f044173c0a6"
-  version = "v1.0.0"
+  revision = "94f6ae3ed3bceceafa716478c5fbf8d29ca601a1"
+  version = "v1.1.0"
 
 [[projects]]
   name = "github.com/spf13/pflag"
@@ -175,7 +184,7 @@
   branch = "master"
   name = "github.com/streadway/amqp"
   packages = ["."]
-  revision = "a314942b2fd9dde7a3f70ba3f1062848ce6eb392"
+  revision = "30f8ed68076eedf14990dafc696f469f58fc1342"
 
 [[projects]]
   name = "github.com/valyala/bytebufferpool"
@@ -196,13 +205,13 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "ff983b9c42bc9fbf91556e191cc8efb585c16908"
+  revision = "8dd112bcdc25174059e45e07517d9fc663123347"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "82a175fd1598e8a172e58ebdf5ed262bb29129e5"
+  revision = "c2f5717e611cf8e89a852a41081355194d80c943"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -232,6 +241,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0f6b80507e7b99334649819b5e16ae8d1d094befd9de566c61f85cf9ad87f4ee"
+  inputs-digest = "553390094a9aee2572a8b644f97a81b0f61d0b08e59788fd26c4444bedae7f8a"
   solver-name = "gps-cdcl"
   solver-version = 1
