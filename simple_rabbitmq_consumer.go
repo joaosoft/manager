@@ -36,10 +36,14 @@ func (manager *Manager) NewSimpleRabbitmqConsumer(config *RabbitmqConfig, queue,
 	return consumer, nil
 }
 
-func (consumer *SimpleRabbitmqConsumer) Start(wg *sync.WaitGroup) error {
-	if wg == nil {
+func (consumer *SimpleRabbitmqConsumer) Start(waitGroup ...*sync.WaitGroup) error {
+	var wg *sync.WaitGroup
+
+	if len(waitGroup) == 0 {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
+	} else {
+		wg = waitGroup[0]
 	}
 
 	defer wg.Done()

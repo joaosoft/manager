@@ -29,10 +29,14 @@ func (manager *Manager) NewSimpleWorkList(config *WorkListConfig, handler WorkHa
 }
 
 // Start ...
-func (worklist *SimpleWorkList) Start(wg *sync.WaitGroup) error {
-	if wg == nil {
+func (worklist *SimpleWorkList) Start(waitGroup ...*sync.WaitGroup) error {
+	var wg *sync.WaitGroup
+
+	if len(waitGroup) == 0 {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
+	} else {
+		wg = waitGroup[0]
 	}
 
 	defer wg.Done()

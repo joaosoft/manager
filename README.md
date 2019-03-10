@@ -144,7 +144,7 @@ if err != nil {
     log.Errorf("%s", err)
 }
 
-err = consumer.Start(nil)
+err = consumer.Start()
 if err != nil {
     log.Errorf("%s", err)
 }
@@ -172,7 +172,7 @@ if err != nil {
     log.Errorf("%s", err)
 }
 
-err = producer.Start(nil)
+err = producer.Start()
 if err != nil {
     log.Errorf("%s", err)
 }

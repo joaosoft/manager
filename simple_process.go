@@ -21,10 +21,14 @@ func (manager *Manager) NewSimpleProcess(function func() error) IProcess {
 }
 
 // Start ...
-func (process *SimpleProcess) Start(wg *sync.WaitGroup) error {
-	if wg == nil {
+func (process *SimpleProcess) Start(waitGroup ...*sync.WaitGroup) error {
+	var wg *sync.WaitGroup
+
+	if len(waitGroup) == 0 {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
+	} else {
+		wg = waitGroup[0]
 	}
 
 	defer wg.Done()

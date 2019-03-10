@@ -140,7 +140,7 @@ func main() {
 	}
 	web = m.GetWeb("web_echo")
 	web.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
-	go web.Start(nil) // starting this because of the gateway
+	go web.Start() // starting this because of the gateway
 
 	log.Info("waiting 1 seconds...")
 	<-time.After(time.Duration(1) * time.Second)
@@ -183,7 +183,7 @@ func main() {
 	for i := 1; i <= 1000; i++ {
 		workqueue.AddWork(fmt.Sprintf("PROCESS: %d", i), fmt.Sprintf("THIS IS MY MESSAGE %d", i))
 	}
-	if err := workqueue.Start(nil); err != nil {
+	if err := workqueue.Start(); err != nil {
 		log.Errorf("MAIN: error on workqueue %s", err)
 	}
 
@@ -202,7 +202,7 @@ func main() {
 		log.Errorf("%s", err)
 	}
 
-	if err := rabbitmqProducer.Start(nil); err != nil {
+	if err := rabbitmqProducer.Start(); err != nil {
 		log.Errorf("%s", err)
 	}
 	m.AddRabbitmqProducer("rabbitmq_producer", rabbitmqProducer)

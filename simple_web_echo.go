@@ -51,10 +51,14 @@ func (w *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc, middl
 }
 
 // Start ...
-func (w *SimpleWebEcho) Start(wg *sync.WaitGroup) error {
-	if wg == nil {
+func (w *SimpleWebEcho) Start(waitGroup ...*sync.WaitGroup) error {
+	var wg *sync.WaitGroup
+
+	if len(waitGroup) == 0 {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
+	} else {
+		wg = waitGroup[0]
 	}
 
 	defer wg.Done()

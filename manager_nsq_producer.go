@@ -4,7 +4,7 @@ import "sync"
 
 // INSQProducer ...
 type INSQProducer interface {
-	Start(wg *sync.WaitGroup) error
+	Start(waitGroup ...*sync.WaitGroup) error
 	Stop(wg *sync.WaitGroup) error
 	Publish(topic string, body []byte, maxRetries int) error
 	Ping() error

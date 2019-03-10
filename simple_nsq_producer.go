@@ -64,10 +64,14 @@ func (producer *SimpleNSQProducer) Publish(topic string, body []byte, maxRetries
 }
 
 // Start ...
-func (producer *SimpleNSQProducer) Start(wg *sync.WaitGroup) error {
-	if wg == nil {
+func (producer *SimpleNSQProducer) Start(waitGroup ...*sync.WaitGroup) error {
+	var wg *sync.WaitGroup
+
+	if len(waitGroup) == 0 {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
+	} else {
+		wg = waitGroup[0]
 	}
 
 	defer wg.Done()

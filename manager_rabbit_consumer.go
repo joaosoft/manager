@@ -9,7 +9,7 @@ type RabbitmqHandler func(message amqp.Delivery) error
 
 // IRabbitmqConsumer ...
 type IRabbitmqConsumer interface {
-	Start(wg *sync.WaitGroup) error
+	Start(waitGroup ...*sync.WaitGroup) error
 	Stop(wg *sync.WaitGroup) error
 	Started() bool
 }

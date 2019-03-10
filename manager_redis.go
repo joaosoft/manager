@@ -3,7 +3,7 @@ package manager
 import "sync"
 
 type IRedis interface {
-	Start(wg *sync.WaitGroup) error
+	Start(waitGroup ...*sync.WaitGroup) error
 	Stop(wg *sync.WaitGroup) error
 	Started() bool
 

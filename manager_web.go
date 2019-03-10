@@ -19,7 +19,7 @@ func NewRoute(method, path string, handler HandlerFunc, middleware ...Middleware
 type IWeb interface {
 	AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error
 	AddRoutes(routes ...*Route) error
-	Start(wg *sync.WaitGroup) error
+	Start(waitGroup ...*sync.WaitGroup) error
 	Stop(wg *sync.WaitGroup) error
 	Started() bool
 	GetClient() interface{}
