@@ -56,10 +56,14 @@ func (redis *SimpleRedis) Start(waitGroup ...*sync.WaitGroup) error {
 }
 
 // Stop ...
-func (redis *SimpleRedis) Stop(wg *sync.WaitGroup) error {
-	if wg == nil {
+func (redis *SimpleRedis) Stop(waitGroup ...*sync.WaitGroup) error {
+	var wg *sync.WaitGroup
+
+	if len(waitGroup) == 0 {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
+	} else {
+		wg = waitGroup[0]
 	}
 
 	defer wg.Done()

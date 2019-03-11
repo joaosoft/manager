@@ -60,10 +60,14 @@ func (worklist *SimpleWorkList) Start(waitGroup ...*sync.WaitGroup) error {
 }
 
 // Stop ...
-func (worklist *SimpleWorkList) Stop(wg *sync.WaitGroup) error {
-	if wg == nil {
+func (worklist *SimpleWorkList) Stop(waitGroup ...*sync.WaitGroup) error {
+	var wg *sync.WaitGroup
+
+	if len(waitGroup) == 0 {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
+	} else {
+		wg = waitGroup[0]
 	}
 
 	defer wg.Done()

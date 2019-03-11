@@ -8,7 +8,7 @@ import (
 type IDB interface {
 	Get() *sql.DB
 	Start(waitGroup ...*sync.WaitGroup) error
-	Stop(wg *sync.WaitGroup) error
+	Stop(waitGroup ...*sync.WaitGroup) error
 	Started() bool
 }
 

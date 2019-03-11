@@ -47,10 +47,14 @@ func (process *SimpleProcess) Start(waitGroup ...*sync.WaitGroup) error {
 }
 
 // Stop ...
-func (process *SimpleProcess) Stop(wg *sync.WaitGroup) error {
-	if wg == nil {
+func (process *SimpleProcess) Stop(waitGroup ...*sync.WaitGroup) error {
+	var wg *sync.WaitGroup
+
+	if len(waitGroup) == 0 {
 		wg = &sync.WaitGroup{}
 		wg.Add(1)
+	} else {
+		wg = waitGroup[0]
 	}
 
 	defer wg.Done()

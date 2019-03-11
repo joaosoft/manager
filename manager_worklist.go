@@ -7,7 +7,7 @@ import (
 
 type IWorkList interface {
 	Start(waitGroup ...*sync.WaitGroup) error
-	Stop(wg *sync.WaitGroup) error
+	Stop(waitGroup ...*sync.WaitGroup) error
 	Started() bool
 	AddWork(id string, work interface{})
 }

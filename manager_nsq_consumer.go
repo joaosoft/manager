@@ -12,7 +12,7 @@ type INSQHandler interface {
 // INSQConsumer ...
 type INSQConsumer interface {
 	Start(waitGroup ...*sync.WaitGroup) error
-	Stop(wg *sync.WaitGroup) error
+	Stop(waitGroup ...*sync.WaitGroup) error
 	HandleMessage(message *nsq.Message) error
 	Started() bool
 }

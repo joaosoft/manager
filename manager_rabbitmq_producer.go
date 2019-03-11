@@ -5,7 +5,7 @@ import "sync"
 // IRabbitmqProducer ...
 type IRabbitmqProducer interface {
 	Start(waitGroup ...*sync.WaitGroup) error
-	Stop(wg *sync.WaitGroup) error
+	Stop(waitGroup ...*sync.WaitGroup) error
 	Publish(routingKey string, body []byte, reliable bool) error
 	Started() bool
 }

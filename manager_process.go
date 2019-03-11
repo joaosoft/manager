@@ -5,7 +5,7 @@ import "sync"
 // IProcess ...
 type IProcess interface {
 	Start(waitGroup ...*sync.WaitGroup) error
-	Stop(wg *sync.WaitGroup) error
+	Stop(waitGroup ...*sync.WaitGroup) error
 	Started() bool
 }
 
