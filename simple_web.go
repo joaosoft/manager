@@ -1,8 +1,9 @@
 package manager
 
 import (
-	"github.com/joaosoft/logger"
 	"sync"
+
+	"github.com/joaosoft/logger"
 
 	"github.com/joaosoft/web"
 )
@@ -11,7 +12,7 @@ import (
 type SimpleWebServer struct {
 	server  *web.Server
 	host    string
-	logger logger.ILogger
+	logger  logger.ILogger
 	started bool
 }
 
@@ -45,6 +46,36 @@ func (w *SimpleWebServer) AddRoute(method string, path string, handler HandlerFu
 	}
 
 	return w.server.AddRoute(web.Method(method), path, handler.(func(*web.Context) error), middlewares...)
+}
+
+// AddNamespace ...
+func (w *SimpleWebServer) AddNamespace(path string, middleware []MiddlewareFunc, routes ...*Route) error {
+
+	middlewares := make([]web.MiddlewareFunc, 0)
+	for _, m := range middleware {
+		middlewares = append(middlewares, m.(web.MiddlewareFunc))
+	}
+
+	namespace := w.server.AddNamespace(path, middlewares...)
+
+	for _, route := range routes {
+		err := w.AddRoute(route.Method, route.Path, route.Handler, route.Middlewares...)
+
+		if err != nil {
+			return err
+		}
+
+		middlewares := make([]web.MiddlewareFunc, 0)
+		for _, m := range route.Middlewares {
+			middlewares = append(middlewares, m.(web.MiddlewareFunc))
+		}
+
+		if err = namespace.AddRoute(web.Method(route.Method), route.Path, route.Handler.(func(*web.Context) error), middlewares...); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // Start ...

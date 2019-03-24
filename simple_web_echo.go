@@ -50,6 +50,26 @@ func (w *SimpleWebEcho) AddRoute(method, path string, handler HandlerFunc, middl
 	return nil
 }
 
+// AddNamespace ...
+func (w *SimpleWebEcho) AddNamespace(path string, middleware []MiddlewareFunc, routes ...*Route) error {
+
+	middlewares := make([]echo.MiddlewareFunc, 0)
+	for _, m := range middleware {
+		middlewares = append(middlewares, m.(echo.MiddlewareFunc))
+	}
+
+	echoGroup := w.server.Group(path, middlewares...)
+
+	for _, route := range routes {
+		echoGroup.Add(route.Method, route.Path, route.Handler.(func(echo.Context) error))
+		for _, item := range route.Middlewares {
+			w.server.Group(path, item.(echo.MiddlewareFunc))
+		}
+	}
+
+	return nil
+}
+
 // Start ...
 func (w *SimpleWebEcho) Start(waitGroup ...*sync.WaitGroup) error {
 	var wg *sync.WaitGroup

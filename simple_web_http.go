@@ -1,9 +1,10 @@
 package manager
 
 import (
-	"github.com/joaosoft/logger"
 	"net/http"
 	"sync"
+
+	"github.com/joaosoft/logger"
 )
 
 // SimpleWebHttp ...
@@ -11,7 +12,7 @@ type SimpleWebHttp struct {
 	server  *http.Server
 	handler *HandlerFunc
 	host    string
-	logger logger.ILogger
+	logger  logger.ILogger
 	started bool
 }
 
@@ -40,6 +41,11 @@ func (w *SimpleWebHttp) AddRoutes(routes ...*Route) error {
 // AddRoute ...
 func (w *SimpleWebHttp) AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
 	http.HandleFunc(path, handler.(func(http.ResponseWriter, *http.Request)))
+	return nil
+}
+
+// AddNamespace ...
+func (w *SimpleWebHttp) AddNamespace(path string, middleware []MiddlewareFunc, routes ...*Route) error {
 	return nil
 }
 

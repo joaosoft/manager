@@ -49,7 +49,7 @@
     "basic",
     "jwt"
   ]
-  revision = "3cbc735f7e25c37fa572263975599a98c2f5f66c"
+  revision = "c69fd62ab4415c9c103eb2173d7eccb44c6b20fb"
 
 [[projects]]
   branch = "master"
@@ -61,25 +61,25 @@
   branch = "master"
   name = "github.com/joaosoft/errors"
   packages = ["."]
-  revision = "dd98851e0d4f418b451d921259cfee63f93864dc"
+  revision = "595507b0a4a675ff2b92ad6f8884f74a36a07df2"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/logger"
   packages = ["."]
-  revision = "3cb37169f05a408eca80c27e648861849c1d8449"
+  revision = "41e546494f5da9d20ab6c107d779d0458a3b6f8e"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/web"
   packages = ["."]
-  revision = "e62ba757311ce5227e7d63b2f5170df0574e010e"
+  revision = "2915f01acd7ffecdeade3f7b6f37b10db0f9679a"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/writers"
   packages = ["."]
-  revision = "e7f81b49284c35354b23b3ce8fe113dd9552a0b7"
+  revision = "310c8522699ddd9cbcaac2d0eca833c2afc1c037"
 
 [[projects]]
   name = "github.com/labstack/echo"
@@ -120,8 +120,8 @@
 [[projects]]
   name = "github.com/mattn/go-isatty"
   packages = ["."]
-  revision = "369ecd8cea9851e459abb67eb171853e3986591e"
-  version = "v0.0.6"
+  revision = "c2a7a6ca930a4cd0bc33a3f298eb71960732a3a7"
+  version = "v0.0.7"
 
 [[projects]]
   name = "github.com/mitchellh/mapstructure"
@@ -177,14 +177,14 @@
 [[projects]]
   name = "github.com/spf13/viper"
   packages = ["."]
-  revision = "6d33b5a963d922d182c91e8a1c88d81fd150cfd4"
-  version = "v1.3.1"
+  revision = "9e56dacc08fbbf8c9ee2dbc717553c758ce42bc9"
+  version = "v1.3.2"
 
 [[projects]]
   branch = "master"
   name = "github.com/streadway/amqp"
   packages = ["."]
-  revision = "30f8ed68076eedf14990dafc696f469f58fc1342"
+  revision = "14f78b41ce6da3d698c2ef2cc8c0ea7ce9e26688"
 
 [[projects]]
   name = "github.com/valyala/bytebufferpool"
@@ -193,10 +193,10 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/valyala/fasttemplate"
   packages = ["."]
-  revision = "dcecefd839c4193db0d35b88ec65b4c12d360ab0"
+  revision = "8b5e4e491ab636663841c42ea3c5a9adebabaf36"
+  version = "v1.0.1"
 
 [[projects]]
   branch = "master"
@@ -205,13 +205,13 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "8dd112bcdc25174059e45e07517d9fc663123347"
+  revision = "b7391e95e576cacdcdd422573063bc057239113d"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "c2f5717e611cf8e89a852a41081355194d80c943"
+  revision = "f49334f85ddcf0f08d7fb6dd7363e9e6d6b777eb"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -229,8 +229,8 @@
 [[projects]]
   name = "google.golang.org/appengine"
   packages = ["cloudsql"]
-  revision = "e9657d882bb81064595ca3b56cbe2546bbabf7b1"
-  version = "v1.4.0"
+  revision = "54a98f90d1c46b7731eb8fb305d2a321c30ef610"
+  version = "v1.5.0"
 
 [[projects]]
   name = "gopkg.in/yaml.v2"
