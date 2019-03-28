@@ -70,6 +70,10 @@ func (w *SimpleWebEcho) AddNamespace(path string, middleware []MiddlewareFunc, r
 	return nil
 }
 
+func (w *SimpleWebEcho) AddFilter(pattern string, position string, middleware MiddlewareFunc, method string, methods ...string) {
+	// TODO: implement
+}
+
 // Start ...
 func (w *SimpleWebEcho) Start(waitGroup ...*sync.WaitGroup) error {
 	var wg *sync.WaitGroup

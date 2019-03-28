@@ -61,7 +61,7 @@
   branch = "master"
   name = "github.com/joaosoft/errors"
   packages = ["."]
-  revision = "595507b0a4a675ff2b92ad6f8884f74a36a07df2"
+  revision = "ca3111f742816c05f282ac530763f3baca241fe3"
 
 [[projects]]
   branch = "master"
@@ -73,7 +73,7 @@
   branch = "master"
   name = "github.com/joaosoft/web"
   packages = ["."]
-  revision = "2915f01acd7ffecdeade3f7b6f37b10db0f9679a"
+  revision = "79ef49e895a80a52bc56cf5283cf031486c5f9cf"
 
 [[projects]]
   branch = "master"
@@ -153,8 +153,8 @@
     ".",
     "mem"
   ]
-  revision = "f4711e4db9e9a1d3887343acb72b2bbfc2f686f5"
-  version = "v1.2.1"
+  revision = "588a75ec4f32903aa5e39a2619ba6a4631e28424"
+  version = "v1.2.2"
 
 [[projects]]
   name = "github.com/spf13/cast"
@@ -205,7 +205,7 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "b7391e95e576cacdcdd422573063bc057239113d"
+  revision = "a5d413f7728c81fb97d96a2b722368945f651e78"
 
 [[projects]]
   branch = "master"

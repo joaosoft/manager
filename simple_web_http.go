@@ -49,6 +49,10 @@ func (w *SimpleWebHttp) AddNamespace(path string, middleware []MiddlewareFunc, r
 	return nil
 }
 
+func (w *SimpleWebHttp) AddFilter(pattern string, position string, middleware MiddlewareFunc, method string, methods ...string) {
+	// TODO: implement
+}
+
 // Start ...
 func (w *SimpleWebHttp) Start(waitGroup ...*sync.WaitGroup) error {
 	var wg *sync.WaitGroup

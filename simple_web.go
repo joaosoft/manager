@@ -78,6 +78,15 @@ func (w *SimpleWebServer) AddNamespace(path string, middleware []MiddlewareFunc,
 	return nil
 }
 
+func (w *SimpleWebServer) AddFilter(pattern string, position string, middleware MiddlewareFunc, method string, methods ...string) {
+	webMethods := make([]web.Method, 0)
+	for _, m := range methods {
+		webMethods = append(webMethods, web.Method(m))
+	}
+
+	w.server.AddFilter(pattern, web.Position(position), middleware.(web.MiddlewareFunc), web.Method(method), webMethods...)
+}
+
 // Start ...
 func (w *SimpleWebServer) Start(waitGroup ...*sync.WaitGroup) error {
 	var wg *sync.WaitGroup

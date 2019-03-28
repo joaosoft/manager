@@ -20,6 +20,7 @@ type IWeb interface {
 	AddRoute(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error
 	AddRoutes(routes ...*Route) error
 	AddNamespace(path string, middleware []MiddlewareFunc, routes ...*Route) error
+	AddFilter(pattern string, position string, middleware MiddlewareFunc, method string, methods ...string)
 	Start(waitGroup ...*sync.WaitGroup) error
 	Stop(waitGroup ...*sync.WaitGroup) error
 	Started() bool
