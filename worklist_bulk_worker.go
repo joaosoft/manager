@@ -18,7 +18,7 @@ type BulkWorker struct {
 	name       string
 	handler    BulkWorkHandler
 	list       IList
-	maxJobs    int
+	maxWorks   int
 	maxRetries int
 	sleepTime  time.Duration
 	quit       chan bool
@@ -32,7 +32,7 @@ func NewBulkWorker(id int, config *BulkWorkListConfig, handler BulkWorkHandler, 
 	bulkWorker := &BulkWorker{
 		id:         id,
 		name:       config.Name,
-		maxJobs:    config.MaxJobs,
+		maxWorks:   config.MaxWorks,
 		maxRetries: config.MaxRetries,
 		sleepTime:  config.SleepTime,
 		handler:    handler,
@@ -100,16 +100,16 @@ func (bulkWorker *BulkWorker) AddWork(id string, data interface{}) error {
 func (bulkWorker *BulkWorker) execute() bool {
 	var work *Work
 
-	var jobs []*Work
-	for i := 0; i < bulkWorker.maxJobs; i++ {
+	var works []*Work
+	for i := 0; i < bulkWorker.maxWorks; i++ {
 		if tmp := bulkWorker.list.Remove(); tmp != nil {
-			jobs = append(jobs, tmp.(*Work))
+			works = append(works, tmp.(*Work))
 		} else {
 			return false
 		}
 	}
 
-	if err := bulkWorker.handler(jobs); err != nil {
+	if err := bulkWorker.handler(works); err != nil {
 		if work.retries < bulkWorker.maxRetries {
 			work.retries++
 			if err := bulkWorker.list.Add(work.Id, work); err != nil {

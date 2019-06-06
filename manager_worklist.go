@@ -35,7 +35,7 @@ func NewWorkListConfig(name string, maxWorkers, maxRetries int, sleepTime time.D
 // BulkWorkListConfig ...
 type BulkWorkListConfig struct {
 	Name       string        `json:"name"`
-	MaxJobs    int           `json:"max_jobs"`
+	MaxWorks   int           `json:"max_works"`
 	MaxWorkers int           `json:"max_workers"`
 	MaxRetries int           `json:"max_retries"`
 	SleepTime  time.Duration `json:"sleep_time"`
@@ -43,10 +43,10 @@ type BulkWorkListConfig struct {
 }
 
 // NewBulkWorkListConfig...
-func NewBulkWorkListConfig(name string, maxJobs, maxWorkers, maxRetries int, sleepTime time.Duration, mode Mode) *BulkWorkListConfig {
+func NewBulkWorkListConfig(name string, maxWorks, maxWorkers, maxRetries int, sleepTime time.Duration, mode Mode) *BulkWorkListConfig {
 	return &BulkWorkListConfig{
 		Name:       name,
-		MaxJobs:    maxJobs,
+		MaxWorks:   maxWorks,
 		MaxWorkers: maxWorkers,
 		MaxRetries: maxRetries,
 		SleepTime:  sleepTime,
