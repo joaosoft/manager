@@ -60,6 +60,11 @@ func work_handler(id string, data interface{}) error {
 	return nil
 }
 
+func bulk_work_handler(works []*manager.Work) error {
+	log.Infof("works with length %d!", len(works))
+	return nil
+}
+
 func rabbit_consumer_handler(message amqp.Delivery) error {
 	log.Errorf("\nA IMPRIMIR MENSAGEM %s", string(message.Body))
 	return nil
@@ -185,6 +190,19 @@ func main() {
 	}
 	if err := workqueue.Start(); err != nil {
 		log.Errorf("MAIN: error on workqueue %s", err)
+	}
+
+	//
+	// manager: bulk workqueue
+	bulkWorkqueueConfig := manager.NewBulkWorkListConfig("bulk_queue_001", 10, 1, 2, time.Second*2, manager.FIFO)
+	bulkWorkqueue := m.NewSimpleBulkWorkList(bulkWorkqueueConfig, bulk_work_handler)
+	m.AddWorkList("bulk_queue_001", bulkWorkqueue)
+	workqueue = m.GetWorkList("bulk_queue_001")
+	for i := 1; i <= 1000; i++ {
+		workqueue.AddWork(fmt.Sprintf("PROCESS: %d", i), fmt.Sprintf("THIS IS MY MESSAGE %d", i))
+	}
+	if err := workqueue.Start(); err != nil {
+		log.Errorf("MAIN: error on bulk workqueue %s", err)
 	}
 
 	//

@@ -32,6 +32,28 @@ func NewWorkListConfig(name string, maxWorkers, maxRetries int, sleepTime time.D
 	}
 }
 
+// BulkWorkListConfig ...
+type BulkWorkListConfig struct {
+	Name       string        `json:"name"`
+	MaxJobs    int           `json:"max_jobs"`
+	MaxWorkers int           `json:"max_workers"`
+	MaxRetries int           `json:"max_retries"`
+	SleepTime  time.Duration `json:"sleep_time"`
+	Mode       Mode          `json:"mode"`
+}
+
+// NewBulkWorkListConfig...
+func NewBulkWorkListConfig(name string, maxJobs, maxWorkers, maxRetries int, sleepTime time.Duration, mode Mode) *BulkWorkListConfig {
+	return &BulkWorkListConfig{
+		Name:       name,
+		MaxJobs:    maxJobs,
+		MaxWorkers: maxWorkers,
+		MaxRetries: maxRetries,
+		SleepTime:  sleepTime,
+		Mode:       mode,
+	}
+}
+
 // AddWorkList ...
 func (manager *Manager) AddWorkList(key string, worklist IWorkList) error {
 	manager.worklist[key] = worklist
