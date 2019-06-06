@@ -70,7 +70,7 @@ func (worker *Worker) Start() error {
 					worker.execute()
 					log.Debugf("worker finished [ name: %s, queue size: %d]", worker.name, worker.list.Size())
 				} else {
-					//log.Infof("worker waiting for work to do... [ id: %d, name: %s ]", worker.id, worker.name)
+					//log.Infof("worker waiting for work to do... [ Id: %d, name: %s ]", worker.Id, worker.name)
 					<-time.After(worker.sleepTime)
 				}
 			}
@@ -112,10 +112,10 @@ func (worker *Worker) execute() bool {
 		return false
 	}
 
-	if err := worker.handler(work.id, work.data); err != nil {
+	if err := worker.handler(work.Id, work.Data); err != nil {
 		if work.retries < worker.maxRetries {
 			work.retries++
-			if err := worker.list.Add(work.id, work); err != nil {
+			if err := worker.list.Add(work.Id, work); err != nil {
 				log.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err)
 			}
 		} else {

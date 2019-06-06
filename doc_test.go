@@ -32,7 +32,7 @@ func (dummy *dummy_nsq_handler) HandleMessage(msg *nsq.Message) error {
 // --------- dummy web http ---------
 func dummy_web_http_handler(w http.ResponseWriter, r *http.Request) {
 	type Example struct {
-		Id   string `json:"id"`
+		Id   string `json:"Id"`
 		Name string `json:"name"`
 		Age  int    `json:"age"`
 	}
@@ -45,16 +45,16 @@ func dummy_web_http_handler(w http.ResponseWriter, r *http.Request) {
 // --------- dummy web echo ---------
 func dummy_web_echo_handler(ctx echo.Context) error {
 	type Example struct {
-		Id   string `json:"id"`
+		Id   string `json:"Id"`
 		Name string `json:"name"`
 		Age  int    `json:"age"`
 	}
 
-	return ctx.JSON(http.StatusOK, Example{Id: ctx.Param("id"), Name: "joao", Age: 29})
+	return ctx.JSON(http.StatusOK, Example{Id: ctx.Param("Id"), Name: "joao", Age: 29})
 }
 
 func work_handler(id string, data interface{}) error {
-	logger.Infof("work with the id %s and data %s done!", id, data.(string))
+	logger.Infof("work with the Id %s and Data %s done!", id, data.(string))
 	return nil
 }
 
@@ -99,7 +99,7 @@ func usage() {
 	}
 	dir, _ := os.Getwd()
 	obj := &dummy_config{}
-	simpleConfig, _ := NewSimpleConfig(dir+"/bin/launcher/data/config.json", obj)
+	simpleConfig, _ := NewSimpleConfig(dir+"/bin/launcher/Data/config.json", obj)
 	manager.AddConfig("config_1", simpleConfig)
 	config := manager.GetConfig("config_1")
 
@@ -132,7 +132,7 @@ func usage() {
 		logger.Error("error adding web process to Manager")
 	}
 	web = manager.GetWeb("web_echo")
-	web.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
+	web.AddRoute(http.MethodGet, "/web_echo/:Id", dummy_web_echo_handler)
 	go web.Start(&sync.WaitGroup{}) // starting this because of the gateway
 
 	logger.Info("waiting 1 seconds...")

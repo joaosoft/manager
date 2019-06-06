@@ -8,8 +8,8 @@ import (
 
 // Work ...
 type Work struct {
-	id          string
-	data        interface{}
+	Id          string
+	Data        interface{}
 	retries     int
 	createdAt   time.Time
 	elapsedTime time.Time
@@ -20,8 +20,8 @@ type Work struct {
 // NewWork ...
 func NewWork(id string, data interface{}, logger logger.ILogger) *Work {
 	return &Work{
-		id:        id,
-		data:      data,
+		Id:        id,
+		Data:      data,
 		createdAt: time.Now(),
 		logger:    logger,
 	}

@@ -63,7 +63,7 @@ func (bulkWorker *BulkWorker) Start() error {
 					bulkWorker.execute()
 					log.Debugf("worker finished [ name: %s, queue size: %d]", bulkWorker.name, bulkWorker.list.Size())
 				} else {
-					//log.Infof("worker waiting for work to do... [ id: %d, name: %s ]", bulkWorker.id, bulkWorker.name)
+					//log.Infof("worker waiting for work to do... [ Id: %d, name: %s ]", bulkWorker.Id, bulkWorker.name)
 					<-time.After(bulkWorker.sleepTime)
 				}
 			}
@@ -112,7 +112,7 @@ func (bulkWorker *BulkWorker) execute() bool {
 	if err := bulkWorker.handler(jobs); err != nil {
 		if work.retries < bulkWorker.maxRetries {
 			work.retries++
-			if err := bulkWorker.list.Add(work.id, work); err != nil {
+			if err := bulkWorker.list.Add(work.Id, work); err != nil {
 				log.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err)
 			}
 		} else {
