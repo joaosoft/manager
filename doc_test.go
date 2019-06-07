@@ -170,7 +170,7 @@ func usage() {
 	//
 	// Manager: workqueue
 	workqueueConfig := NewWorkListConfig("queue_001", 1, 2, time.Second*2, FIFO)
-	workqueue := manager.NewSimpleWorkList(workqueueConfig, work_handler)
+	workqueue := manager.NewSimpleWorkList(workqueueConfig, work_handler, nil, nil)
 	manager.AddWorkList("queue_001", workqueue)
 	workqueue = manager.GetWorkList("queue_001")
 	for i := 1; i <= 1000; i++ {
