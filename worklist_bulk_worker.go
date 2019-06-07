@@ -13,41 +13,41 @@ type BulkWorkHandler func([]*Work) error
 // BulkWorkRecoverHandler ...
 type BulkWorkRecoverHandler func(list IList) error
 
-// BulkWorkRecoverOneHandler ...
-type BulkWorkRecoverOneHandler func(id string, data interface{}) error
+// BulkWorkRecoverWastedRetriesHandler ...
+type BulkWorkRecoverWastedRetriesHandler func(id string, data interface{}) error
 
 // Worker ...
 type BulkWorker struct {
-	id                int
-	name              string
-	handler           BulkWorkHandler
-	recoverHandler    BulkWorkRecoverHandler
-	recoverOneHandler BulkWorkRecoverOneHandler
-	list              IList
-	maxWorks          int
-	maxRetries        int
-	sleepTime         time.Duration
-	quit              chan bool
-	mux               *sync.Mutex
-	logger            logger.ILogger
-	started           bool
+	id                          int
+	name                        string
+	handler                     BulkWorkHandler
+	recoverHandler              BulkWorkRecoverHandler
+	recoverWastedRetriesHandler BulkWorkRecoverWastedRetriesHandler
+	list                        IList
+	maxWorks                    int
+	maxRetries                  int
+	sleepTime                   time.Duration
+	quit                        chan bool
+	mux                         *sync.Mutex
+	logger                      logger.ILogger
+	started                     bool
 }
 
 // NewBulkWorker ...
-func NewBulkWorker(id int, config *BulkWorkListConfig, handler BulkWorkHandler, list IList, bulkWorkRecoverOneHandler BulkWorkRecoverOneHandler, bulkWorkRecoverHandler BulkWorkRecoverHandler, logger logger.ILogger) *BulkWorker {
+func NewBulkWorker(id int, config *BulkWorkListConfig, handler BulkWorkHandler, list IList, bulkWorkRecoverHandler BulkWorkRecoverHandler, bulkWorkRecoverOneHandler BulkWorkRecoverWastedRetriesHandler, logger logger.ILogger) *BulkWorker {
 	bulkWorker := &BulkWorker{
-		id:                id,
-		name:              config.Name,
-		maxWorks:          config.MaxWorks,
-		maxRetries:        config.MaxRetries,
-		sleepTime:         config.SleepTime,
-		handler:           handler,
-		recoverOneHandler: bulkWorkRecoverOneHandler,
-		recoverHandler:    bulkWorkRecoverHandler,
-		list:              list,
-		quit:              make(chan bool),
-		mux:               &sync.Mutex{},
-		logger:            logger,
+		id:                          id,
+		name:                        config.Name,
+		maxWorks:                    config.MaxWorks,
+		maxRetries:                  config.MaxRetries,
+		sleepTime:                   config.SleepTime,
+		handler:                     handler,
+		recoverHandler:              bulkWorkRecoverHandler,
+		recoverWastedRetriesHandler: bulkWorkRecoverOneHandler,
+		list:                        list,
+		quit:                        make(chan bool),
+		mux:                         &sync.Mutex{},
+		logger:                      logger,
 	}
 
 	return bulkWorker
@@ -133,11 +133,11 @@ func (bulkWorker *BulkWorker) execute() error {
 					return logger.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err).ToError()
 				}
 			} else {
-				if bulkWorker.recoverOneHandler == nil {
+				if bulkWorker.recoverWastedRetriesHandler == nil {
 					return nil
 				}
 
-				if err := bulkWorker.recoverOneHandler(work.Id, work.Data); err != nil {
+				if err := bulkWorker.recoverWastedRetriesHandler(work.Id, work.Data); err != nil {
 					return logger.Errorf("error processing recovering one of worker. [ error: %s ]", err).ToError()
 				}
 				logger.Errorf("work discarded of the queue [ retries: %d, error: %s ]", work.retries, err)

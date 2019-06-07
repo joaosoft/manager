@@ -22,39 +22,39 @@ type WorkHandler func(id string, data interface{}) error
 // WorkRecoverHandler ...
 type WorkRecoverHandler func(list IList) error
 
-// WorkRecoverOneHandler ...
-type WorkRecoverOneHandler func(id string, data interface{}) error
+// WorkRecoverWastedRetriesHandler ...
+type WorkRecoverWastedRetriesHandler func(id string, data interface{}) error
 
 // Worker ...
 type Worker struct {
-	id                    int
-	name                  string
-	handler               WorkHandler
-	workRecoverOneHandler WorkRecoverOneHandler
-	workRecoverHandler    WorkRecoverHandler
-	list                  IList
-	maxRetries            int
-	sleepTime             time.Duration
-	quit                  chan bool
-	mux                   *sync.Mutex
-	logger                logger.ILogger
-	started               bool
+	id                              int
+	name                            string
+	handler                         WorkHandler
+	workRecoverHandler              WorkRecoverHandler
+	workRecoverWastedRetriesHandler WorkRecoverWastedRetriesHandler
+	list                            IList
+	maxRetries                      int
+	sleepTime                       time.Duration
+	quit                            chan bool
+	mux                             *sync.Mutex
+	logger                          logger.ILogger
+	started                         bool
 }
 
 // NewWorker ...
-func NewWorker(id int, config *WorkListConfig, handler WorkHandler, list IList, workRecoverOneHandler WorkRecoverOneHandler, workRecoverHandler WorkRecoverHandler, logger logger.ILogger) *Worker {
+func NewWorker(id int, config *WorkListConfig, handler WorkHandler, list IList, workRecoverHandler WorkRecoverHandler, workRecoverWastedRetriesHandler WorkRecoverWastedRetriesHandler, logger logger.ILogger) *Worker {
 	worker := &Worker{
-		id:                    id,
-		name:                  config.Name,
-		maxRetries:            config.MaxRetries,
-		sleepTime:             config.SleepTime,
-		handler:               handler,
-		workRecoverOneHandler: workRecoverOneHandler,
-		workRecoverHandler:    workRecoverHandler,
-		list:                  list,
-		quit:                  make(chan bool),
-		mux:                   &sync.Mutex{},
-		logger:                logger,
+		id:                              id,
+		name:                            config.Name,
+		maxRetries:                      config.MaxRetries,
+		sleepTime:                       config.SleepTime,
+		handler:                         handler,
+		workRecoverHandler:              workRecoverHandler,
+		workRecoverWastedRetriesHandler: workRecoverWastedRetriesHandler,
+		list:                            list,
+		quit:                            make(chan bool),
+		mux:                             &sync.Mutex{},
+		logger:                          logger,
 	}
 
 	return worker
@@ -140,11 +140,11 @@ func (worker *Worker) execute() error {
 				return logger.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err).ToError()
 			}
 		} else {
-			if worker.workRecoverOneHandler == nil {
+			if worker.workRecoverWastedRetriesHandler == nil {
 				return nil
 			}
 
-			if err := worker.workRecoverOneHandler(work.Id, work.Data); err != nil {
+			if err := worker.workRecoverWastedRetriesHandler(work.Id, work.Data); err != nil {
 				return logger.Errorf("error processing recovering one of worker. [ error: %s ]", err).ToError()
 			}
 

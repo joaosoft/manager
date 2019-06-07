@@ -8,27 +8,27 @@ import (
 
 // SimpleWorkList ...
 type SimpleWorkList struct {
-	name                  string
-	config                *WorkListConfig
-	handler               WorkHandler
-	workRecoverOneHandler WorkRecoverOneHandler
-	workRecoverHandler    WorkRecoverHandler
-	list                  IList
-	workers               []*Worker
-	logger                logger.ILogger
-	started               bool
+	name                            string
+	config                          *WorkListConfig
+	handler                         WorkHandler
+	workRecoverHandler              WorkRecoverHandler
+	workRecoverWastedRetriesHandler WorkRecoverWastedRetriesHandler
+	list                            IList
+	workers                         []*Worker
+	logger                          logger.ILogger
+	started                         bool
 }
 
 // NewSimpleWorkList ...
-func (manager *Manager) NewSimpleWorkList(config *WorkListConfig, handler WorkHandler, workRecoverOneHandler WorkRecoverOneHandler, workRecoverHandler WorkRecoverHandler) IWorkList {
+func (manager *Manager) NewSimpleWorkList(config *WorkListConfig, handler WorkHandler, workRecoverHandler WorkRecoverHandler, workRecoverWastedRetriesHandler WorkRecoverWastedRetriesHandler) IWorkList {
 	return &SimpleWorkList{
-		name:                  config.Name,
-		list:                  manager.NewQueue(WithMode(config.Mode)),
-		config:                config,
-		handler:               handler,
-		workRecoverOneHandler: workRecoverOneHandler,
-		workRecoverHandler:    workRecoverHandler,
-		logger:                manager.logger,
+		name:                            config.Name,
+		list:                            manager.NewQueue(WithMode(config.Mode)),
+		config:                          config,
+		handler:                         handler,
+		workRecoverHandler:              workRecoverHandler,
+		workRecoverWastedRetriesHandler: workRecoverWastedRetriesHandler,
+		logger:                          manager.logger,
 	}
 }
 
@@ -52,7 +52,7 @@ func (worklist *SimpleWorkList) Start(waitGroup ...*sync.WaitGroup) error {
 	var workers []*Worker
 	for i := 1; i <= worklist.config.MaxWorkers; i++ {
 		worklist.logger.Infof("starting worker [ %d ]", i)
-		worker := NewWorker(i, worklist.config, worklist.handler, worklist.list, worklist.workRecoverOneHandler, worklist.workRecoverHandler, worklist.logger)
+		worker := NewWorker(i, worklist.config, worklist.handler, worklist.list, worklist.workRecoverHandler, worklist.workRecoverWastedRetriesHandler, worklist.logger)
 		worker.Start()
 		workers = append(workers, worker)
 	}

@@ -8,27 +8,27 @@ import (
 
 // SimpleBulkWorkList ...
 type SimpleBulkWorkList struct {
-	name                      string
-	config                    *BulkWorkListConfig
-	handler                   BulkWorkHandler
-	bulkWorkRecoverOneHandler BulkWorkRecoverOneHandler
-	bulkWorkRecoverHandler    BulkWorkRecoverHandler
-	list                      IList
-	workers                   []*BulkWorker
-	logger                    logger.ILogger
-	started                   bool
+	name                                string
+	config                              *BulkWorkListConfig
+	handler                             BulkWorkHandler
+	bulkWorkRecoverWastedRetriesHandler BulkWorkRecoverWastedRetriesHandler
+	bulkWorkRecoverHandler              BulkWorkRecoverHandler
+	list                                IList
+	workers                             []*BulkWorker
+	logger                              logger.ILogger
+	started                             bool
 }
 
 // NewSimpleBulkWorkList ...
-func (manager *Manager) NewSimpleBulkWorkList(config *BulkWorkListConfig, handler BulkWorkHandler, bulkWorkRecoverOneHandler BulkWorkRecoverOneHandler, bulkWorkRecoverHandler BulkWorkRecoverHandler) IWorkList {
+func (manager *Manager) NewSimpleBulkWorkList(config *BulkWorkListConfig, handler BulkWorkHandler, bulkWorkRecoverHandler BulkWorkRecoverHandler, bulkWorkRecoverWastedRetriesHandler BulkWorkRecoverWastedRetriesHandler) IWorkList {
 	return &SimpleBulkWorkList{
-		name:                      config.Name,
-		list:                      manager.NewQueue(WithMode(config.Mode)),
-		config:                    config,
-		handler:                   handler,
-		bulkWorkRecoverOneHandler: bulkWorkRecoverOneHandler,
-		bulkWorkRecoverHandler:    bulkWorkRecoverHandler,
-		logger:                    manager.logger,
+		name:                                config.Name,
+		list:                                manager.NewQueue(WithMode(config.Mode)),
+		config:                              config,
+		handler:                             handler,
+		bulkWorkRecoverHandler:              bulkWorkRecoverHandler,
+		bulkWorkRecoverWastedRetriesHandler: bulkWorkRecoverWastedRetriesHandler,
+		logger:                              manager.logger,
 	}
 }
 
@@ -52,7 +52,7 @@ func (bulkWorklist *SimpleBulkWorkList) Start(waitGroup ...*sync.WaitGroup) erro
 	var workers []*BulkWorker
 	for i := 1; i <= bulkWorklist.config.MaxWorkers; i++ {
 		bulkWorklist.logger.Infof("starting worker [ %d ]", i)
-		worker := NewBulkWorker(i, bulkWorklist.config, bulkWorklist.handler, bulkWorklist.list, bulkWorklist.bulkWorkRecoverOneHandler, bulkWorklist.bulkWorkRecoverHandler, bulkWorklist.logger)
+		worker := NewBulkWorker(i, bulkWorklist.config, bulkWorklist.handler, bulkWorklist.list, bulkWorklist.bulkWorkRecoverHandler, bulkWorklist.bulkWorkRecoverWastedRetriesHandler, bulkWorklist.logger)
 		worker.Start()
 		workers = append(workers, worker)
 	}
