@@ -104,14 +104,12 @@ func (bulkWorker *BulkWorker) AddWork(id string, data interface{}) error {
 
 func (bulkWorker *BulkWorker) execute() error {
 	defer func() {
-		if bulkWorker.recoverHandler == nil {
-			return
-		}
-
-		if r := recover(); r != nil {
-			logger.Debug("recovering worker data")
-			if err := bulkWorker.recoverHandler(bulkWorker.list); err != nil {
-				logger.Errorf("error processing recovering of worker. [ error: %s ]", err)
+		if bulkWorker.recoverHandler != nil {
+			if r := recover(); r != nil {
+				logger.Debug("recovering worker data")
+				if err := bulkWorker.recoverHandler(bulkWorker.list); err != nil {
+					logger.Errorf("error processing recovering of worker. [ error: %s ]", err)
+				}
 			}
 		}
 	}()
@@ -130,15 +128,14 @@ func (bulkWorker *BulkWorker) execute() error {
 			if work.retries < bulkWorker.maxRetries {
 				work.retries++
 				if err := bulkWorker.list.Add(work.Id, work); err != nil {
-					return logger.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err).ToError()
+					logger.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err)
 				}
+				logger.Errorf("work requeued of the queue [ retries: %d, error: %s ]", work.retries, err).ToError()
 			} else {
-				if bulkWorker.recoverWastedRetriesHandler == nil {
-					return nil
-				}
-
-				if err := bulkWorker.recoverWastedRetriesHandler(work.Id, work.Data); err != nil {
-					return logger.Errorf("error processing recovering one of worker. [ error: %s ]", err).ToError()
+				if bulkWorker.recoverWastedRetriesHandler != nil {
+					if err := bulkWorker.recoverWastedRetriesHandler(work.Id, work.Data); err != nil {
+						logger.Errorf("error processing recovering one of worker. [ error: %s ]", err).ToError()
+					}
 				}
 				logger.Errorf("work discarded of the queue [ retries: %d, error: %s ]", work.retries, err)
 			}

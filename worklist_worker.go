@@ -115,14 +115,12 @@ func (worker *Worker) execute() error {
 	var work *Work
 
 	defer func() {
-		if worker.workRecoverHandler == nil {
-			return
-		}
-
-		if r := recover(); r != nil {
-			logger.Debug("recovering worker data")
-			if err := worker.workRecoverHandler(worker.list); err != nil {
-				logger.Errorf("error processing recovering of worker. [ error: %s ]", err)
+		if worker.workRecoverHandler != nil {
+			if r := recover(); r != nil {
+				logger.Debug("recovering worker data")
+				if err := worker.workRecoverHandler(worker.list); err != nil {
+					logger.Errorf("error processing recovering of worker. [ error: %s ]", err)
+				}
 			}
 		}
 	}()
@@ -137,17 +135,16 @@ func (worker *Worker) execute() error {
 		if work.retries < worker.maxRetries {
 			work.retries++
 			if err := worker.list.Add(work.Id, work); err != nil {
-				return logger.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err).ToError()
+				logger.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err).ToError()
 			}
+			logger.Errorf("work requeued of the queue [ retries: %d, error: %s ]", work.retries, err).ToError()
+
 		} else {
-			if worker.workRecoverWastedRetriesHandler == nil {
-				return nil
+			if worker.workRecoverWastedRetriesHandler != nil {
+				if err := worker.workRecoverWastedRetriesHandler(work.Id, work.Data); err != nil {
+					logger.Errorf("error processing recovering one of worker. [ error: %s ]", err).ToError()
+				}
 			}
-
-			if err := worker.workRecoverWastedRetriesHandler(work.Id, work.Data); err != nil {
-				return logger.Errorf("error processing recovering one of worker. [ error: %s ]", err).ToError()
-			}
-
 			logger.Errorf("work discarded of the queue [ retries: %d, error: %s ]", work.retries, err).ToError()
 
 		}
