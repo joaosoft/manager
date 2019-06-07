@@ -5,41 +5,49 @@ import (
 	"time"
 
 	"github.com/joaosoft/logger"
-
-	"github.com/labstack/gommon/log"
 )
 
 // BulkWorkHandler ...
 type BulkWorkHandler func([]*Work) error
 
+// BulkWorkRecoverHandler ...
+type BulkWorkRecoverHandler func(list IList) error
+
+// BulkWorkRecoverOneHandler ...
+type BulkWorkRecoverOneHandler func(id string, data interface{}) error
+
 // Worker ...
 type BulkWorker struct {
-	id         int
-	name       string
-	handler    BulkWorkHandler
-	list       IList
-	maxWorks   int
-	maxRetries int
-	sleepTime  time.Duration
-	quit       chan bool
-	mux        *sync.Mutex
-	logger     logger.ILogger
-	started    bool
+	id                int
+	name              string
+	handler           BulkWorkHandler
+	recoverHandler    BulkWorkRecoverHandler
+	recoverOneHandler BulkWorkRecoverOneHandler
+	list              IList
+	maxWorks          int
+	maxRetries        int
+	sleepTime         time.Duration
+	quit              chan bool
+	mux               *sync.Mutex
+	logger            logger.ILogger
+	started           bool
 }
 
 // NewBulkWorker ...
-func NewBulkWorker(id int, config *BulkWorkListConfig, handler BulkWorkHandler, list IList, logger logger.ILogger) *BulkWorker {
+func NewBulkWorker(id int, config *BulkWorkListConfig, handler BulkWorkHandler, list IList, bulkWorkRecoverOneHandler BulkWorkRecoverOneHandler, bulkWorkRecoverHandler BulkWorkRecoverHandler, logger logger.ILogger) *BulkWorker {
 	bulkWorker := &BulkWorker{
-		id:         id,
-		name:       config.Name,
-		maxWorks:   config.MaxWorks,
-		maxRetries: config.MaxRetries,
-		sleepTime:  config.SleepTime,
-		handler:    handler,
-		list:       list,
-		quit:       make(chan bool),
-		mux:        &sync.Mutex{},
-		logger:     logger,
+		id:                id,
+		name:              config.Name,
+		maxWorks:          config.MaxWorks,
+		maxRetries:        config.MaxRetries,
+		sleepTime:         config.SleepTime,
+		handler:           handler,
+		recoverOneHandler: bulkWorkRecoverOneHandler,
+		recoverHandler:    bulkWorkRecoverHandler,
+		list:              list,
+		quit:              make(chan bool),
+		mux:               &sync.Mutex{},
+		logger:            logger,
 	}
 
 	return bulkWorker
@@ -48,22 +56,19 @@ func NewBulkWorker(id int, config *BulkWorkListConfig, handler BulkWorkHandler, 
 // Start ...
 func (bulkWorker *BulkWorker) Start() error {
 	go func() error {
-		bulkWorker.mux.Lock()
-		bulkWorker.mux.Unlock()
-
 		for {
 			select {
 			case <-bulkWorker.quit:
-				log.Debugf("worker quited [name: %s, list size: %d ]", bulkWorker.name, bulkWorker.list.Size())
+				logger.Debugf("worker quited [name: %s, list size: %d ]", bulkWorker.name, bulkWorker.list.Size())
 
 				return nil
 			default:
 				if bulkWorker.list.Size() > 0 {
-					log.Debugf("worker starting [ name: %d, queue size: %d]", bulkWorker.name, bulkWorker.list.Size())
+					logger.Debugf("worker starting [ name: %d, queue size: %d]", bulkWorker.name, bulkWorker.list.Size())
 					bulkWorker.execute()
-					log.Debugf("worker finished [ name: %s, queue size: %d]", bulkWorker.name, bulkWorker.list.Size())
+					logger.Debugf("worker finished [ name: %s, queue size: %d]", bulkWorker.name, bulkWorker.list.Size())
 				} else {
-					//log.Infof("worker waiting for work to do... [ Id: %d, name: %s ]", bulkWorker.Id, bulkWorker.name)
+					//logger.Infof("worker waiting for work to do... [ Id: %d, name: %s ]", bulkWorker.Id, bulkWorker.name)
 					<-time.After(bulkWorker.sleepTime)
 				}
 			}
@@ -82,7 +87,7 @@ func (bulkWorker *BulkWorker) Stop() error {
 	defer bulkWorker.mux.Unlock()
 
 	if bulkWorker.list.Size() > 0 {
-		log.Infof("stopping worker with tasks in the list [ list size: %d ]", bulkWorker.list.Size())
+		logger.Infof("stopping worker with tasks in the list [ list size: %d ]", bulkWorker.list.Size())
 	}
 	bulkWorker.quit <- true
 
@@ -97,29 +102,49 @@ func (bulkWorker *BulkWorker) AddWork(id string, data interface{}) error {
 	return bulkWorker.list.Add(id, work)
 }
 
-func (bulkWorker *BulkWorker) execute() bool {
-	var work *Work
+func (bulkWorker *BulkWorker) execute() error {
+	defer func() {
+		if bulkWorker.recoverHandler == nil {
+			return
+		}
+
+		if r := recover(); r != nil {
+			logger.Debug("recovering worker data")
+			if err := bulkWorker.recoverHandler(bulkWorker.list); err != nil {
+				logger.Errorf("error processing recovering of worker. [ error: %s ]", err)
+			}
+		}
+	}()
 
 	var works []*Work
 	for i := 0; i < bulkWorker.maxWorks; i++ {
 		if tmp := bulkWorker.list.Remove(); tmp != nil {
 			works = append(works, tmp.(*Work))
 		} else {
-			return false
+			return nil
 		}
 	}
 
 	if err := bulkWorker.handler(works); err != nil {
-		if work.retries < bulkWorker.maxRetries {
-			work.retries++
-			if err := bulkWorker.list.Add(work.Id, work); err != nil {
-				log.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err)
+		for _, work := range works {
+			if work.retries < bulkWorker.maxRetries {
+				work.retries++
+				if err := bulkWorker.list.Add(work.Id, work); err != nil {
+					return logger.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err).ToError()
+				}
+			} else {
+				if bulkWorker.recoverOneHandler == nil {
+					return nil
+				}
+
+				if err := bulkWorker.recoverOneHandler(work.Id, work.Data); err != nil {
+					return logger.Errorf("error processing recovering one of worker. [ error: %s ]", err).ToError()
+				}
+				logger.Errorf("work discarded of the queue [ retries: %d, error: %s ]", work.retries, err)
 			}
-		} else {
-			log.Errorf("work discarded of the queue [ retries: %d, error: %s ]", work.retries, err)
 		}
 
-		return false
+		return nil
 	}
-	return true
+	return nil
 }

@@ -182,7 +182,7 @@ func main() {
 	//
 	// manager: workqueue
 	workqueueConfig := manager.NewWorkListConfig("queue_001", 1, 2, time.Second*2, manager.FIFO)
-	workqueue := m.NewSimpleWorkList(workqueueConfig, work_handler)
+	workqueue := m.NewSimpleWorkList(workqueueConfig, work_handler, nil, nil)
 	m.AddWorkList("queue_001", workqueue)
 	workqueue = m.GetWorkList("queue_001")
 	for i := 1; i <= 1000; i++ {
@@ -195,7 +195,7 @@ func main() {
 	//
 	// manager: bulk workqueue
 	bulkWorkqueueConfig := manager.NewBulkWorkListConfig("bulk_queue_001", 10, 1, 2, time.Second*2, manager.FIFO)
-	bulkWorkqueue := m.NewSimpleBulkWorkList(bulkWorkqueueConfig, bulk_work_handler)
+	bulkWorkqueue := m.NewSimpleBulkWorkList(bulkWorkqueueConfig, bulk_work_handler, nil, nil)
 	m.AddWorkList("bulk_queue_001", bulkWorkqueue)
 	workqueue = m.GetWorkList("bulk_queue_001")
 	for i := 1; i <= 1000; i++ {

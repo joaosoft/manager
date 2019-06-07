@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"github.com/joaosoft/logger"
-
-	"github.com/labstack/gommon/log"
 )
 
 // IList ...
@@ -21,32 +19,42 @@ type IList interface {
 // WorkHandler ...
 type WorkHandler func(id string, data interface{}) error
 
+// WorkRecoverHandler ...
+type WorkRecoverHandler func(list IList) error
+
+// WorkRecoverOneHandler ...
+type WorkRecoverOneHandler func(id string, data interface{}) error
+
 // Worker ...
 type Worker struct {
-	id         int
-	name       string
-	handler    WorkHandler
-	list       IList
-	maxRetries int
-	sleepTime  time.Duration
-	quit       chan bool
-	mux        *sync.Mutex
-	logger     logger.ILogger
-	started    bool
+	id                    int
+	name                  string
+	handler               WorkHandler
+	workRecoverOneHandler WorkRecoverOneHandler
+	workRecoverHandler    WorkRecoverHandler
+	list                  IList
+	maxRetries            int
+	sleepTime             time.Duration
+	quit                  chan bool
+	mux                   *sync.Mutex
+	logger                logger.ILogger
+	started               bool
 }
 
 // NewWorker ...
-func NewWorker(id int, config *WorkListConfig, handler WorkHandler, list IList, logger logger.ILogger) *Worker {
+func NewWorker(id int, config *WorkListConfig, handler WorkHandler, list IList, workRecoverOneHandler WorkRecoverOneHandler, workRecoverHandler WorkRecoverHandler, logger logger.ILogger) *Worker {
 	worker := &Worker{
-		id:         id,
-		name:       config.Name,
-		maxRetries: config.MaxRetries,
-		sleepTime:  config.SleepTime,
-		handler:    handler,
-		list:       list,
-		quit:       make(chan bool),
-		mux:        &sync.Mutex{},
-		logger:     logger,
+		id:                    id,
+		name:                  config.Name,
+		maxRetries:            config.MaxRetries,
+		sleepTime:             config.SleepTime,
+		handler:               handler,
+		workRecoverOneHandler: workRecoverOneHandler,
+		workRecoverHandler:    workRecoverHandler,
+		list:                  list,
+		quit:                  make(chan bool),
+		mux:                   &sync.Mutex{},
+		logger:                logger,
 	}
 
 	return worker
@@ -55,22 +63,21 @@ func NewWorker(id int, config *WorkListConfig, handler WorkHandler, list IList, 
 // Start ...
 func (worker *Worker) Start() error {
 	go func() error {
-		worker.mux.Lock()
-		worker.mux.Unlock()
-
 		for {
 			select {
 			case <-worker.quit:
-				log.Debugf("worker quited [name: %s, list size: %d ]", worker.name, worker.list.Size())
+				logger.Debugf("worker quited [name: %s, list size: %d ]", worker.name, worker.list.Size())
 
 				return nil
 			default:
 				if worker.list.Size() > 0 {
-					log.Debugf("worker starting [ name: %d, queue size: %d]", worker.name, worker.list.Size())
-					worker.execute()
-					log.Debugf("worker finished [ name: %s, queue size: %d]", worker.name, worker.list.Size())
+					logger.Debugf("worker starting [ name: %d, queue size: %d]", worker.name, worker.list.Size())
+					if err := worker.execute(); err != nil {
+
+					}
+					logger.Debugf("worker finished [ name: %s, queue size: %d]", worker.name, worker.list.Size())
 				} else {
-					//log.Infof("worker waiting for work to do... [ Id: %d, name: %s ]", worker.Id, worker.name)
+					//logger.Infof("worker waiting for work to do... [ Id: %d, name: %s ]", worker.Id, worker.name)
 					<-time.After(worker.sleepTime)
 				}
 			}
@@ -89,7 +96,7 @@ func (worker *Worker) Stop() error {
 	defer worker.mux.Unlock()
 
 	if worker.list.Size() > 0 {
-		log.Infof("stopping worker with tasks in the list [ list size: %d ]", worker.list.Size())
+		logger.Infof("stopping worker with tasks in the list [ list size: %d ]", worker.list.Size())
 	}
 	worker.quit <- true
 
@@ -104,25 +111,49 @@ func (worker *Worker) AddWork(id string, data interface{}) error {
 	return worker.list.Add(id, work)
 }
 
-func (worker *Worker) execute() bool {
+func (worker *Worker) execute() error {
 	var work *Work
+
+	defer func() {
+		if worker.workRecoverHandler == nil {
+			return
+		}
+
+		if r := recover(); r != nil {
+			logger.Debug("recovering worker data")
+			if err := worker.workRecoverHandler(worker.list); err != nil {
+				logger.Errorf("error processing recovering of worker. [ error: %s ]", err)
+			}
+		}
+	}()
+
 	if tmp := worker.list.Remove(); tmp != nil {
 		work = tmp.(*Work)
 	} else {
-		return false
+		return nil
 	}
 
 	if err := worker.handler(work.Id, work.Data); err != nil {
 		if work.retries < worker.maxRetries {
 			work.retries++
 			if err := worker.list.Add(work.Id, work); err != nil {
-				log.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err)
+				return logger.Errorf("error processing the work. re-adding the work to the list [retries: %d, error: %s ]", work.retries, err).ToError()
 			}
 		} else {
-			log.Errorf("work discarded of the queue [ retries: %d, error: %s ]", work.retries, err)
+			if worker.workRecoverOneHandler == nil {
+				return nil
+			}
+
+			if err := worker.workRecoverOneHandler(work.Id, work.Data); err != nil {
+				return logger.Errorf("error processing recovering one of worker. [ error: %s ]", err).ToError()
+			}
+
+			logger.Errorf("work discarded of the queue [ retries: %d, error: %s ]", work.retries, err).ToError()
+
 		}
 
-		return false
+		return nil
 	}
-	return true
+
+	return nil
 }
