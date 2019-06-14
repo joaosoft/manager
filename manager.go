@@ -112,7 +112,11 @@ func (manager *Manager) executeStart(c chan bool) error {
 
 	// listen for termination signals
 	termChan := make(chan os.Signal, 1)
-	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
+
+	if !manager.runInBackground {
+		signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
+	}
+
 	var wg sync.WaitGroup
 
 	if err := manager.executeAction("start", manager.dbs, &wg); err != nil {

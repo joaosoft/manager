@@ -195,7 +195,7 @@ func main() {
 	//
 	// manager: bulk workqueue
 	bulkWorkqueueConfig := manager.NewBulkWorkListConfig("bulk_queue_001", 10, 1, 2, time.Second*2, manager.FIFO)
-	bulkWorkqueue := m.NewSimpleBulkWorkList(bulkWorkqueueConfig, bulk_work_handler, nil, nil)
+	bulkWorkqueue := m.NewSimpleBulkWorkList(bulkWorkqueueConfig, bulk_work_handler, bulkWorkRecoverHandler, bulkWorkRecoverWastedRetriesHandler)
 	m.AddWorkList("bulk_queue_001", bulkWorkqueue)
 	workqueue = m.GetWorkList("bulk_queue_001")
 	for i := 1; i <= 1000; i++ {
@@ -239,4 +239,14 @@ func main() {
 	m.AddRabbitmqConsumer("rabbitmq_consumer", rabbitmqconsumer)
 
 	m.Start()
+}
+
+func bulkWorkRecoverHandler(list manager.IList) error {
+	fmt.Printf("\nrecovering list with length %d", list.Size())
+	return nil
+}
+
+func bulkWorkRecoverWastedRetriesHandler(id string, data interface{}) error {
+	fmt.Printf("\nrecovering work with id: %s, data: %+v", id, data)
+	return nil
 }
