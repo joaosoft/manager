@@ -4,7 +4,7 @@ import "fmt"
 
 // AppConfig ...
 type AppConfig struct {
-	Manager *ManagerConfig `json:"Manager"`
+	Manager *ManagerConfig `json:"manager"`
 }
 
 // ManagerConfig ...
