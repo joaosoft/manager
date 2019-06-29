@@ -11,7 +11,7 @@ type AppConfig struct {
 type ManagerConfig struct {
 	Log struct {
 		Level string `json:"level"`
-	} `json:"logger"`
+	} `json:"log"`
 }
 
 // NewConfig ...
