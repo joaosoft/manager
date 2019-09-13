@@ -78,7 +78,6 @@ func (queue *Queue) Remove(ids ...string) interface{} {
 	defer queue.mux.Unlock()
 
 	if queue.size == 0 {
-		log.Error("the list is empty")
 		return nil
 	}
 	var nodeToRemove *Node
