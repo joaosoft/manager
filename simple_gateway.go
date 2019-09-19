@@ -1,12 +1,9 @@
 package manager
 
 import (
-	"io/ioutil"
-	"net/http"
-
 	"github.com/joaosoft/logger"
+	"github.com/joaosoft/web"
 
-	"bytes"
 	"fmt"
 )
 
@@ -15,48 +12,47 @@ type Headers map[string][]string
 
 // SimpleGateway ...
 type SimpleGateway struct {
-	client *http.Client
+	client *web.Client
 	logger logger.ILogger
 }
 
 // NewSimpleGateway ...
-func (manager *Manager) NewSimpleGateway() IGateway {
-	return &SimpleGateway{
-		client: &http.Client{},
-		logger: manager.logger,
+func (manager *Manager) NewSimpleGateway() (IGateway, error) {
+	client, err := web.NewClient()
+	if err != nil {
+		return nil, err
 	}
+
+	return &SimpleGateway{
+		client: client,
+		logger: manager.logger,
+	}, nil
 }
 
 // Request ...
 func (gateway *SimpleGateway) Request(method, host, endpoint string, headers map[string][]string, body []byte) (int, []byte, error) {
 	url := fmt.Sprintf("%s%s", host, endpoint)
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(body))
+
+	request, err := gateway.client.NewRequest(web.Method(method), url)
 	if err != nil {
-		return 0, nil, err
+		panic(err)
+	}
+
+	if body != nil {
+		request.WithBody(body, web.ContentTypeApplicationJSON)
 	}
 
 	if headers != nil {
 		for key, value := range headers {
 			gateway.logger.Infof("adding header with [ name: %s, value: %s ]", key, value)
-			req.Header.Set(key, value[0])
+			request.SetHeader(key, value)
 		}
 	}
 
-	response, err := gateway.client.Do(req)
-
-	var bodyResponse []byte
-
-	if response != nil {
-		defer response.Body.Close()
-		bodyResponse, err = ioutil.ReadAll(response.Body)
-		if err != nil {
-			return response.StatusCode, nil, err
-		}
-	}
-
+	response, err := request.Send()
 	if err != nil {
-		return 0, bodyResponse, err
+		return 0, nil, err
 	}
 
-	return response.StatusCode, bodyResponse, nil
+	return int(response.Status), response.Body, nil
 }
