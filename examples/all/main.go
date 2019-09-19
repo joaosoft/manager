@@ -154,7 +154,11 @@ func main() {
 	// manager: gateway
 	headers := map[string][]string{"Content-Type": {"application/json"}}
 
-	gateway := m.NewSimpleGateway()
+	gateway, err := m.NewSimpleGateway()
+	if err != nil {
+		log.Errorf("%s", err)
+	}
+
 	m.AddGateway("gateway_1", gateway)
 	gateway = m.GetGateway("gateway_1")
 	status, bytes, err := gateway.Request(http.MethodGet, "http://127.0.0.1:8082", "/web_echo/123", headers, nil)
