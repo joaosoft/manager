@@ -2,7 +2,7 @@ package manager
 
 // IGateway ...
 type IGateway interface {
-	Request(method, host, endpoint string, headers map[string][]string, body []byte) (int, []byte, error)
+	Request(method, host, endpoint string, contentType string, headers map[string][]string, body []byte) (int, []byte, error)
 }
 
 // AddGateway ...

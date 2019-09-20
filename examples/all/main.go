@@ -10,6 +10,7 @@ import (
 
 	"manager"
 
+	"github.com/joaosoft/web"
 	"github.com/joaosoft/logger"
 	"github.com/labstack/echo"
 	"github.com/nsqio/go-nsq"
@@ -128,24 +129,24 @@ func main() {
 	}
 
 	//
-	// manager: web
+	// manager: simpleWeb
 
-	// web - with http
-	web := m.NewSimpleWebHttp(":8081")
-	if err := m.AddWeb("web_http", web); err != nil {
-		log.Error("error adding web process to manager")
+	// simpleWeb - with http
+	simpleWeb := m.NewSimpleWebHttp(":8081")
+	if err := m.AddWeb("web_http", simpleWeb); err != nil {
+		log.Error("error adding simpleWeb process to manager")
 	}
-	web = m.GetWeb("web_http")
-	web.AddRoute(http.MethodGet, "/web_http", dummy_web_http_handler)
+	simpleWeb = m.GetWeb("web_http")
+	simpleWeb.AddRoute(http.MethodGet, "/web_http", dummy_web_http_handler)
 
-	// web - with echo
-	web = m.NewSimpleWebEcho(":8082")
-	if err := m.AddWeb("web_echo", web); err != nil {
-		log.Error("error adding web process to manager")
+	// simpleWeb - with echo
+	simpleWeb = m.NewSimpleWebEcho(":8082")
+	if err := m.AddWeb("web_echo", simpleWeb); err != nil {
+		log.Error("error adding simpleWeb process to manager")
 	}
-	web = m.GetWeb("web_echo")
-	web.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
-	go web.Start() // starting this because of the gateway
+	simpleWeb = m.GetWeb("web_echo")
+	simpleWeb.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
+	go simpleWeb.Start() // starting this because of the gateway
 
 	log.Info("waiting 1 seconds...")
 	<-time.After(time.Duration(1) * time.Second)
@@ -161,7 +162,7 @@ func main() {
 
 	m.AddGateway("gateway_1", gateway)
 	gateway = m.GetGateway("gateway_1")
-	status, bytes, err := gateway.Request(http.MethodGet, "http://127.0.0.1:8082", "/web_echo/123", headers, nil)
+	status, bytes, err := gateway.Request(http.MethodGet, "http://127.0.0.1:8082", "/web_echo/123", string(web.ContentTypeApplicationJSON), headers, nil)
 	log.Infof("status: %d, response: %s, error? %t", status, string(bytes), err != nil)
 
 	//

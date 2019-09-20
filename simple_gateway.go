@@ -30,10 +30,10 @@ func (manager *Manager) NewSimpleGateway() (IGateway, error) {
 }
 
 // Request ...
-func (gateway *SimpleGateway) Request(method, host, endpoint string, headers map[string][]string, body []byte) (int, []byte, error) {
+func (gateway *SimpleGateway) Request(method, host, endpoint string, contentType string, headers map[string][]string, body []byte) (int, []byte, error) {
 	url := fmt.Sprintf("%s%s", host, endpoint)
 
-	request, err := gateway.client.NewRequest(web.Method(method), url, web.ContentTypeApplicationJSON, headers)
+	request, err := gateway.client.NewRequest(web.Method(method), url, web.ContentType(contentType), headers)
 	if err != nil {
 		panic(err)
 	}
