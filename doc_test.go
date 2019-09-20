@@ -3,6 +3,7 @@ package manager
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/joaosoft/web"
 	"github.com/joaosoft/logger"
 	"github.com/labstack/gommon/log"
 	"math/rand"
@@ -117,24 +118,24 @@ func usage() {
 	}
 
 	//
-	// Manager: web
+	// Manager: simpleWeb
 
-	// web - with http
-	web := manager.NewSimpleWebHttp(":8081")
-	if err := manager.AddWeb("web_http", web); err != nil {
-		logger.Error("error adding web process to Manager")
+	// simpleWeb - with http
+	simpleWeb := manager.NewSimpleWebHttp(":8081")
+	if err := manager.AddWeb("web_http", simpleWeb); err != nil {
+		logger.Error("error adding simpleWeb process to Manager")
 	}
-	web = manager.GetWeb("web_http")
-	web.AddRoute(http.MethodGet, "/web_http", dummy_web_http_handler)
+	simpleWeb = manager.GetWeb("web_http")
+	simpleWeb.AddRoute(http.MethodGet, "/web_http", dummy_web_http_handler)
 
-	// web - with echo
-	web = manager.NewSimpleWebEcho(":8082")
-	if err := manager.AddWeb("web_echo", web); err != nil {
-		logger.Error("error adding web process to Manager")
+	// simpleWeb - with echo
+	simpleWeb = manager.NewSimpleWebEcho(":8082")
+	if err := manager.AddWeb("web_echo", simpleWeb); err != nil {
+		logger.Error("error adding simpleWeb process to Manager")
 	}
-	web = manager.GetWeb("web_echo")
-	web.AddRoute(http.MethodGet, "/web_echo/:Id", dummy_web_echo_handler)
-	go web.Start(&sync.WaitGroup{}) // starting this because of the gateway
+	simpleWeb = manager.GetWeb("web_echo")
+	simpleWeb.AddRoute(http.MethodGet, "/web_echo/:Id", dummy_web_echo_handler)
+	go simpleWeb.Start(&sync.WaitGroup{}) // starting this because of the gateway
 
 	logger.Info("waiting 1 seconds...")
 	<-time.After(time.Duration(1) * time.Second)
@@ -150,7 +151,7 @@ func usage() {
 
 	manager.AddGateway("gateway_1", gateway)
 	gateway = manager.GetGateway("gateway_1")
-	status, bytes, err := gateway.Request(http.MethodGet, "http://127.0.0.1:8082", "/web_echo/123", headers, nil)
+	status, bytes, err := gateway.Request(http.MethodGet, "http://127.0.0.1:8082", "/web_echo/123", string(web.ContentTypeApplicationJSON), headers, nil)
 	logger.Infof("status: %d, response: %s, error? %t", status, string(bytes), err != nil)
 
 	//
