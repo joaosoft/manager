@@ -33,20 +33,13 @@ func (manager *Manager) NewSimpleGateway() (IGateway, error) {
 func (gateway *SimpleGateway) Request(method, host, endpoint string, headers map[string][]string, body []byte) (int, []byte, error) {
 	url := fmt.Sprintf("%s%s", host, endpoint)
 
-	request, err := gateway.client.NewRequest(web.Method(method), url)
+	request, err := gateway.client.NewRequest(web.Method(method), url, web.ContentTypeApplicationJSON, headers)
 	if err != nil {
 		panic(err)
 	}
 
 	if body != nil {
-		request.WithBody(body, web.ContentTypeApplicationJSON)
-	}
-
-	if headers != nil {
-		for key, value := range headers {
-			gateway.logger.Infof("adding header with [ name: %s, value: %s ]", key, value)
-			request.SetHeader(key, value)
-		}
+		request.WithBody(body)
 	}
 
 	response, err := request.Send()

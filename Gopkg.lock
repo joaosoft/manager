@@ -89,11 +89,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:cae908d30212103c5cede7d97ebbf5d8cb4e4a414681774a77d19abc11a70931"
+  digest = "1:445f8cd17deeb419df2528d8c26b8f1c0e2bfdf99eb2924e743aac2e00ee787e"
   name = "github.com/joaosoft/web"
   packages = ["."]
   pruneopts = "UT"
-  revision = "cf92c794fc031ed9e809d02ef52eac9dcf37766a"
+  revision = "329cd986616e04760d4b9b32cde1da4752c615bc"
 
 [[projects]]
   branch = "master"
