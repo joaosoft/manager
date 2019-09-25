@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+
+	"gopkg.in/yaml.v2"
 )
 
 func GetEnv() string {
@@ -43,8 +46,15 @@ func ReadFile(fileName string, obj interface{}) ([]byte, error) {
 	}
 
 	if obj != nil {
-		if err := json.Unmarshal(data, obj); err != nil {
-			return nil, err
+		switch filepath.Ext(fileName) {
+		case ".json":
+			if err := json.Unmarshal(data, obj); err != nil {
+				return nil, err
+			}
+		case ".yaml":
+			if err := yaml.Unmarshal(data, obj); err != nil {
+				return nil, err
+			}
 		}
 	}
 
