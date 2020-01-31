@@ -33,7 +33,7 @@ func (manager *Manager) NewSimpleWorkList(config *WorkListConfig, handler WorkHa
 }
 
 // Start ...
-func (worklist *SimpleWorkList) Start(waitGroup ...*sync.WaitGroup) error {
+func (s *SimpleWorkList) Start(waitGroup ...*sync.WaitGroup) (err error) {
 	var wg *sync.WaitGroup
 
 	if len(waitGroup) == 0 {
@@ -45,26 +45,38 @@ func (worklist *SimpleWorkList) Start(waitGroup ...*sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	if worklist.started {
+	if s.started {
 		return nil
 	}
 
 	var workers []*Worker
-	for i := 1; i <= worklist.config.MaxWorkers; i++ {
-		worklist.logger.Infof("starting worker [ %d ]", i)
-		worker := NewWorker(i, worklist.config, worklist.handler, worklist.list, worklist.workRecoverHandler, worklist.workRecoverWastedRetriesHandler, worklist.logger)
-		worker.Start()
+	for i := 1; i <= s.config.MaxWorkers; i++ {
+		s.logger.Infof("starting worker [ %d ]", i)
+		worker := NewWorker(i, s.config, s.handler, s.list, s.workRecoverHandler, s.workRecoverWastedRetriesHandler, s.logger)
+
+		if err = worker.Start(); err != nil {
+			s.logger.Errorf("error starting worker [ %d: %s ]: %s", worker.id, worker.name, err)
+
+			for _, w := range workers {
+				if err := w.Stop(); err != nil {
+					s.logger.Errorf("error stopping worker [ %d: %s ]: %s", w.id, w.name, err)
+				}
+			}
+
+			return err
+		}
+
 		workers = append(workers, worker)
 	}
-	worklist.workers = workers
 
-	worklist.started = true
+	s.workers = workers
+	s.started = true
 
 	return nil
 }
 
 // Stop ...
-func (worklist *SimpleWorkList) Stop(waitGroup ...*sync.WaitGroup) error {
+func (s *SimpleWorkList) Stop(waitGroup ...*sync.WaitGroup) error {
 	var wg *sync.WaitGroup
 
 	if len(waitGroup) == 0 {
@@ -76,28 +88,30 @@ func (worklist *SimpleWorkList) Stop(waitGroup ...*sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	if !worklist.started {
+	if !s.started {
 		return nil
 	}
 
-	for _, worker := range worklist.workers {
-		worklist.logger.Infof("stopping worker [ %d: %s ]", worker.id, worker.name)
-		worker.Stop()
+	for _, worker := range s.workers {
+		s.logger.Infof("stopping worker [ %d: %s ]", worker.id, worker.name)
+		if err := worker.Stop(); err != nil {
+			s.logger.Errorf("error stopping worker [ %d: %s ]: %s", worker.id, worker.name, err)
+		}
 	}
 
-	worklist.started = false
+	s.started = false
 
 	return nil
 }
 
 // Started ...
-func (worklist *SimpleWorkList) Started() bool {
-	return worklist.started
+func (s *SimpleWorkList) Started() bool {
+	return s.started
 }
 
 // AddWork ...
-func (worklist *SimpleWorkList) AddWork(id string, data interface{}) {
-	worklist.logger.Infof("adding work to the list [ name: %s ]", worklist.name)
-	work := NewWork(id, data, worklist.logger)
-	worklist.list.Add(id, work)
+func (s *SimpleWorkList) AddWork(id string, data interface{}) {
+	s.logger.Infof("adding work to the list [ name: %s ]", s.name)
+	work := NewWork(id, data, s.logger)
+	s.list.Add(id, work)
 }

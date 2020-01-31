@@ -73,11 +73,11 @@ func (worker *Worker) Start() error {
 				if worker.list.Size() > 0 {
 					logger.Debugf("worker starting [ name: %d, queue size: %d]", worker.name, worker.list.Size())
 					if err := worker.execute(); err != nil {
-
+						logger.Errorf("worker errored [ name: %s, queue size: %d]", worker.name, worker.list.Size())
 					}
 					logger.Debugf("worker finished [ name: %s, queue size: %d]", worker.name, worker.list.Size())
 				} else {
-					//logger.Infof("worker waiting for work to do... [ Id: %d, name: %s ]", worker.Id, worker.name)
+					logger.Debugf("worker waiting for work to do... [ id: %d, name: %s ]", worker.id, worker.name)
 					<-time.After(worker.sleepTime)
 				}
 			}
@@ -127,8 +127,6 @@ func (worker *Worker) execute() error {
 
 	if tmp := worker.list.Remove(); tmp != nil {
 		work = tmp.(*Work)
-	} else {
-		return nil
 	}
 
 	if err := worker.handler(work.Id, work.Data); err != nil {

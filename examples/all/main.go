@@ -84,7 +84,7 @@ func main() {
 	}
 
 	//
-	// nsq rabbitmqProducer
+	// nsq Producer
 	nsqConfigProducer := manager.NewNSQConfig("topic_1", "channel_1", []string{"127.0.0.1:4150"}, []string{"127.0.0.1:4161"}, 30, 5)
 	nsqProducer, _ := m.NewSimpleNSQProducer(nsqConfigProducer)
 	m.AddNSQProducer("nsq_producer_1", nsqProducer)

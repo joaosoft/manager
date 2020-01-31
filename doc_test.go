@@ -34,7 +34,7 @@ func (dummy *dummy_nsq_handler) HandleMessage(msg *nsq.Message) error {
 // --------- dummy web http ---------
 func dummy_web_http_handler(w http.ResponseWriter, r *http.Request) {
 	type Example struct {
-		Id   string `json:"Id"`
+		Id   string `json:"id"`
 		Name string `json:"name"`
 		Age  int    `json:"age"`
 	}
@@ -47,16 +47,16 @@ func dummy_web_http_handler(w http.ResponseWriter, r *http.Request) {
 // --------- dummy web echo ---------
 func dummy_web_echo_handler(ctx echo.Context) error {
 	type Example struct {
-		Id   string `json:"Id"`
+		Id   string `json:"id"`
 		Name string `json:"name"`
 		Age  int    `json:"age"`
 	}
 
-	return ctx.JSON(http.StatusOK, Example{Id: ctx.Param("Id"), Name: "joao", Age: 29})
+	return ctx.JSON(http.StatusOK, Example{Id: ctx.Param("id"), Name: "joao", Age: 29})
 }
 
 func work_handler(id string, data interface{}) error {
-	logger.Infof("work with the Id %s and Data %s done!", id, data.(string))
+	logger.Infof("work with the id %s and Data %s done!", id, data.(string))
 	return nil
 }
 
@@ -134,7 +134,7 @@ func usage() {
 		logger.Error("error adding simpleWeb process to Manager")
 	}
 	simpleWeb = manager.GetWeb("web_echo")
-	simpleWeb.AddRoute(http.MethodGet, "/web_echo/:Id", dummy_web_echo_handler)
+	simpleWeb.AddRoute(http.MethodGet, "/web_echo/:id", dummy_web_echo_handler)
 	go simpleWeb.Start(&sync.WaitGroup{}) // starting this because of the gateway
 
 	logger.Info("waiting 1 seconds...")
