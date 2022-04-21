@@ -339,6 +339,7 @@
     "github.com/nsqio/go-nsq",
     "github.com/spf13/viper",
     "github.com/streadway/amqp",
+    "gopkg.in/yaml.v2",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
