@@ -1,4 +1,4 @@
-module github.com/joaosoft/manager
+module github.com/joaosoft/go-manager
 
 go 1.20
 
