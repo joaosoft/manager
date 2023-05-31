@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func New(level Level, code int, err interface{}, params ...interface{}) *Err {
+func New(level Level, code interface{}, err interface{}, params ...interface{}) *Error {
 
 	var message string
 	switch v := err.(type) {
@@ -26,7 +26,7 @@ func New(level Level, code int, err interface{}, params ...interface{}) *Err {
 	}
 
 	var stack string
-	if level <= ErrorLevel {
+	if level <= LevelError {
 		pc := make([]uintptr, 1)
 		runtime.Callers(2, pc)
 		function := runtime.FuncForPC(pc[0])
@@ -38,7 +38,7 @@ func New(level Level, code int, err interface{}, params ...interface{}) *Err {
 		stack = stack[index:]
 	}
 
-	return &Err{
+	return &Error{
 		Level:   level,
 		Code:    code,
 		Message: message,
@@ -46,10 +46,10 @@ func New(level Level, code int, err interface{}, params ...interface{}) *Err {
 	}
 }
 
-func Add(err *Err) *Err {
+func Add(err *Error) *Error {
 
 	var stack string
-	if err.Level <= ErrorLevel {
+	if err.Level <= LevelError {
 		pc := make([]uintptr, 1)
 		runtime.Callers(2, pc)
 		function := runtime.FuncForPC(pc[0])
@@ -61,10 +61,20 @@ func Add(err *Err) *Err {
 		stack = stack[index:]
 	}
 
-	return &Err{
+	return &Error{
 		Level:   err.Level,
 		Code:    err.Code,
 		Message: err.Message,
 		Stack:   stack,
 	}
+}
+
+func AddList(errs ...*Error) *ErrorList {
+	errorList := &ErrorList{}
+
+	for _, err := range errs {
+		errorList.Add(err)
+	}
+
+	return errorList
 }

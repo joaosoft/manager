@@ -21,8 +21,8 @@ go get github.com/joaosoft/errors
 This examples are available in the project at [examples/main.go](https://github.com/joaosoft/errors/tree/master/example_test.go)
 ```go
 var (
-	ErrorOne = errors.New(errors.ErrorLevel, 1, "Error one")
-	ErrorTwo = errors.New(errors.ErrorLevel, 2, "Error two")
+	ErrorOne = errors.New(errors.LevelError, 1, "Error one")
+	ErrorTwo = errors.New(errors.LevelError, 2, "Error two")
 )
 
 func main() {

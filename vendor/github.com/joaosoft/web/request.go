@@ -7,14 +7,14 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/joaosoft/auth-types/basic"
-	"github.com/joaosoft/auth-types/jwt"
 	"io"
 	"path/filepath"
 	"strconv"
 	"time"
-)
 
+	"github.com/joaosoft/auth-types/basic"
+	"github.com/joaosoft/auth-types/jwt"
+)
 
 func (r *Request) Set(contentType ContentType, b []byte) error {
 	r.ContentType = contentType

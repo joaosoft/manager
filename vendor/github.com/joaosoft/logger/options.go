@@ -18,16 +18,16 @@ func (logger *Logger) Reconfigure(options ...LoggerOption) {
 }
 
 // WithWriter ...
-func WithWriter(writer io.Writer) LoggerOption {
+func WithWriter(writer ...io.Writer) LoggerOption {
 	return func(logger *Logger) {
-		logger.writer = writer
+		logger.writer = append(logger.writer, writer...)
 	}
 }
 
 // WithSpecialWriter ...
-func WithSpecialWriter(writer ISpecialWriter) LoggerOption {
+func WithSpecialWriter(writer ...ISpecialWriter) LoggerOption {
 	return func(logger *Logger) {
-		logger.specialWriter = writer
+		logger.specialWriter = append(logger.specialWriter, writer...)
 	}
 }
 

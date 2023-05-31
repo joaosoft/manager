@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"runtime"
@@ -17,7 +18,7 @@ var logger = NewLoggerEmpty(InfoLevel)
 // NewLogger ...
 func NewLogger(options ...LoggerOption) ILogger {
 	logger := &Logger{
-		writer:        os.Stdout,
+		writer:        []io.Writer{os.Stdout},
 		formatHandler: writer.JsonFormatHandler,
 		level:         InfoLevel,
 		prefixes:      make(map[string]interface{}),
@@ -260,10 +261,14 @@ func (logger *Logger) writeLog(level Level, message interface{}) {
 		if bytes, err := logger.formatHandler(prefixes, logger.tags, message, logger.fields, sufixes); err != nil {
 			return
 		} else {
-			logger.writer.Write(bytes)
+			for _, w := range logger.writer {
+				w.Write(bytes)
+			}
 		}
 	} else {
-		logger.specialWriter.SWrite(prefixes, logger.tags, message, logger.fields, sufixes)
+		for _, w := range logger.specialWriter {
+			w.SWrite(prefixes, logger.tags, message, logger.fields, sufixes)
+		}
 	}
 }
 

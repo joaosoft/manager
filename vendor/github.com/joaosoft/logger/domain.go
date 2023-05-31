@@ -58,8 +58,8 @@ type ILogger interface {
 // Logger ...
 type Logger struct {
 	level         Level
-	writer        io.Writer
-	specialWriter ISpecialWriter
+	writer        []io.Writer
+	specialWriter []ISpecialWriter
 	prefixes      map[string]interface{} `json:"prefixes"`
 	tags          map[string]interface{} `json:"tags"`
 	fields        map[string]interface{} `json:"fields"`

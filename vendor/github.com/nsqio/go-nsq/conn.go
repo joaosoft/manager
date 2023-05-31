@@ -52,7 +52,6 @@ type Conn struct {
 	messagesInFlight int64
 	maxRdyCount      int64
 	rdyCount         int64
-	lastRdyCount     int64
 	lastRdyTimestamp int64
 	lastMsgTimestamp int64
 
@@ -66,9 +65,9 @@ type Conn struct {
 
 	delegate ConnDelegate
 
-	logger   logger
+	logger   []logger
 	logLvl   LogLevel
-	logFmt   string
+	logFmt   []string
 	logGuard sync.RWMutex
 
 	r io.Reader
@@ -104,6 +103,9 @@ func NewConn(addr string, config *Config, delegate ConnDelegate) *Conn {
 		msgResponseChan: make(chan *msgResponse),
 		exitChan:        make(chan int),
 		drainReady:      make(chan int),
+
+		logger: make([]logger, LogLevelMax+1),
+		logFmt: make([]string, LogLevelMax+1),
 	}
 }
 
@@ -123,19 +125,47 @@ func (c *Conn) SetLogger(l logger, lvl LogLevel, format string) {
 	c.logGuard.Lock()
 	defer c.logGuard.Unlock()
 
-	c.logger = l
-	c.logLvl = lvl
-	c.logFmt = format
-	if c.logFmt == "" {
-		c.logFmt = "(%s)"
+	if format == "" {
+		format = "(%s)"
 	}
+	for level := range c.logger {
+		c.logger[level] = l
+		c.logFmt[level] = format
+	}
+	c.logLvl = lvl
 }
 
-func (c *Conn) getLogger() (logger, LogLevel, string) {
+func (c *Conn) SetLoggerForLevel(l logger, lvl LogLevel, format string) {
+	c.logGuard.Lock()
+	defer c.logGuard.Unlock()
+
+	if format == "" {
+		format = "(%s)"
+	}
+	c.logger[lvl] = l
+	c.logFmt[lvl] = format
+}
+
+// SetLoggerLevel sets the package logging level.
+func (c *Conn) SetLoggerLevel(lvl LogLevel) {
+	c.logGuard.Lock()
+	defer c.logGuard.Unlock()
+
+	c.logLvl = lvl
+}
+
+func (c *Conn) getLogger(lvl LogLevel) (logger, LogLevel, string) {
 	c.logGuard.RLock()
 	defer c.logGuard.RUnlock()
 
-	return c.logger, c.logLvl, c.logFmt
+	return c.logger[lvl], c.logLvl, c.logFmt[lvl]
+}
+
+func (c *Conn) getLogLevel() LogLevel {
+	c.logGuard.RLock()
+	defer c.logGuard.RUnlock()
+
+	return c.logLvl
 }
 
 // Connect dials and bootstraps the nsqd connection
@@ -207,13 +237,12 @@ func (c *Conn) RDY() int64 {
 
 // LastRDY returns the previously set RDY count
 func (c *Conn) LastRDY() int64 {
-	return atomic.LoadInt64(&c.lastRdyCount)
+	return atomic.LoadInt64(&c.rdyCount)
 }
 
 // SetRDY stores the specified RDY count
 func (c *Conn) SetRDY(rdy int64) {
 	atomic.StoreInt64(&c.rdyCount, rdy)
-	atomic.StoreInt64(&c.lastRdyCount, rdy)
 	if rdy > 0 {
 		atomic.StoreInt64(&c.lastRdyTimestamp, time.Now().UnixNano())
 	}
@@ -225,6 +254,8 @@ func (c *Conn) MaxRDY() int64 {
 	return c.maxRdyCount
 }
 
+// LastRdyTime returns the time of the last non-zero RDY
+// update for this connection
 func (c *Conn) LastRdyTime() time.Time {
 	return time.Unix(0, atomic.LoadInt64(&c.lastRdyTimestamp))
 }
@@ -384,18 +415,19 @@ func (c *Conn) identify() (*IdentifyResponse, error) {
 }
 
 func (c *Conn) upgradeTLS(tlsConf *tls.Config) error {
-	// create a local copy of the config to set ServerName for this connection
-	var conf tls.Config
-	if tlsConf != nil {
-		conf = *tlsConf
-	}
 	host, _, err := net.SplitHostPort(c.addr)
 	if err != nil {
 		return err
 	}
+
+	// create a local copy of the config to set ServerName for this connection
+	conf := &tls.Config{}
+	if tlsConf != nil {
+		conf = tlsConf.Clone()
+	}
 	conf.ServerName = host
 
-	c.tlsConn = tls.Client(c.conn, &conf)
+	c.tlsConn = tls.Client(c.conn, conf)
 	err = c.tlsConn.Handshake()
 	if err != nil {
 		return err
@@ -523,7 +555,6 @@ func (c *Conn) readLoop() {
 			msg.Delegate = delegate
 			msg.NSQDAddress = c.String()
 
-			atomic.AddInt64(&c.rdyCount, -1)
 			atomic.AddInt64(&c.messagesInFlight, 1)
 			atomic.StoreInt64(&c.lastMsgTimestamp, time.Now().UnixNano())
 
@@ -718,7 +749,7 @@ func (c *Conn) onMessageTouch(m *Message) {
 }
 
 func (c *Conn) log(lvl LogLevel, line string, args ...interface{}) {
-	logger, logLvl, logFmt := c.getLogger()
+	logger, logLvl, logFmt := c.getLogger(lvl)
 
 	if logger == nil {
 		return

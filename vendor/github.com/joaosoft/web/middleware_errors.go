@@ -7,5 +7,5 @@ import (
 )
 
 var (
-	ErrorInvalidAuthorization = errors.New(errors.ErrorLevel, http.StatusUnauthorized, "invalid authorization")
+	ErrorInvalidAuthorization = errors.New(errors.LevelError, http.StatusUnauthorized, "invalid authorization")
 )

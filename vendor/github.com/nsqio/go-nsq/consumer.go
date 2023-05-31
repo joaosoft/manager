@@ -8,6 +8,7 @@ import (
 	"math"
 	"math/rand"
 	"net"
+	"net/http"
 	"net/url"
 	"os"
 	"strconv"
@@ -95,7 +96,7 @@ type Consumer struct {
 
 	mtx sync.RWMutex
 
-	logger   logger
+	logger   []logger
 	logLvl   LogLevel
 	logGuard sync.RWMutex
 
@@ -111,11 +112,11 @@ type Consumer struct {
 
 	needRDYRedistributed int32
 
-	backoffMtx sync.RWMutex
+	backoffMtx sync.Mutex
 
 	incomingMessages chan *Message
 
-	rdyRetryMtx    sync.RWMutex
+	rdyRetryMtx    sync.Mutex
 	rdyRetryTimers map[string]*time.Timer
 
 	pendingConnections map[string]*Conn
@@ -127,6 +128,7 @@ type Consumer struct {
 	lookupdRecheckChan chan int
 	lookupdHTTPAddrs   []string
 	lookupdQueryIndex  int
+	lookupdHttpClient  *http.Client
 
 	wg              sync.WaitGroup
 	runningHandlers int32
@@ -145,8 +147,6 @@ type Consumer struct {
 // The only valid way to create a Config is via NewConfig, using a struct literal will panic.
 // After Config is passed into NewConsumer the values are no longer mutable (they are copied).
 func NewConsumer(topic string, channel string, config *Config) (*Consumer, error) {
-	config.assertInitialized()
-
 	if err := config.Validate(); err != nil {
 		return nil, err
 	}
@@ -166,7 +166,7 @@ func NewConsumer(topic string, channel string, config *Config) (*Consumer, error
 		channel: channel,
 		config:  *config,
 
-		logger:      log.New(os.Stderr, "", log.Flags()),
+		logger:      make([]logger, LogLevelMax+1),
 		logLvl:      LogLevelInfo,
 		maxInFlight: int32(config.MaxInFlight),
 
@@ -183,6 +183,13 @@ func NewConsumer(topic string, channel string, config *Config) (*Consumer, error
 		StopChan: make(chan int),
 		exitChan: make(chan int),
 	}
+
+	// Set default logger for all log levels
+	l := log.New(os.Stderr, "", log.Flags())
+	for index := range r.logger {
+		r.logger[index] = l
+	}
+
 	r.wg.Add(1)
 	go r.rdyLoop()
 	return r, nil
@@ -213,21 +220,46 @@ func (r *Consumer) conns() []*Conn {
 // The logger parameter is an interface that requires the following
 // method to be implemented (such as the the stdlib log.Logger):
 //
-//    Output(calldepth int, s string)
+//    Output(calldepth int, s string) error
 //
 func (r *Consumer) SetLogger(l logger, lvl LogLevel) {
 	r.logGuard.Lock()
 	defer r.logGuard.Unlock()
 
-	r.logger = l
+	for level := range r.logger {
+		r.logger[level] = l
+	}
 	r.logLvl = lvl
 }
 
-func (r *Consumer) getLogger() (logger, LogLevel) {
+// SetLoggerForLevel assigns the same logger for specified `level`.
+func (r *Consumer) SetLoggerForLevel(l logger, lvl LogLevel) {
+	r.logGuard.Lock()
+	defer r.logGuard.Unlock()
+
+	r.logger[lvl] = l
+}
+
+// SetLoggerLevel sets the package logging level.
+func (r *Consumer) SetLoggerLevel(lvl LogLevel) {
+	r.logGuard.Lock()
+	defer r.logGuard.Unlock()
+
+	r.logLvl = lvl
+}
+
+func (r *Consumer) getLogger(lvl LogLevel) (logger, LogLevel) {
 	r.logGuard.RLock()
 	defer r.logGuard.RUnlock()
 
-	return r.logger, r.logLvl
+	return r.logger[lvl], r.logLvl
+}
+
+func (r *Consumer) getLogLevel() LogLevel {
+	r.logGuard.RLock()
+	defer r.logGuard.RUnlock()
+
+	return r.logLvl
 }
 
 // SetBehaviorDelegate takes a type implementing one or more
@@ -264,7 +296,7 @@ func (r *Consumer) perConnMaxInFlight() int64 {
 // before being able to receive more messages (ie. RDY count of 0 and not exiting)
 func (r *Consumer) IsStarved() bool {
 	for _, conn := range r.conns() {
-		threshold := int64(float64(atomic.LoadInt64(&conn.lastRdyCount)) * 0.85)
+		threshold := int64(float64(conn.RDY()) * 0.85)
 		inFlight := atomic.LoadInt64(&conn.messagesInFlight)
 		if inFlight >= threshold && inFlight > 0 && !conn.IsClosing() {
 			return true
@@ -295,6 +327,11 @@ func (r *Consumer) ChangeMaxInFlight(maxInFlight int) {
 	}
 }
 
+// set lookupd http client
+func (r *Consumer) SetLookupdHttpClient(httpclient *http.Client) {
+	r.lookupdHttpClient = httpclient
+}
+
 // ConnectToNSQLookupd adds an nsqlookupd address to the list for this Consumer instance.
 //
 // If it is the first to be added, it initiates an HTTP request to discover nsqd
@@ -309,7 +346,8 @@ func (r *Consumer) ConnectToNSQLookupd(addr string) error {
 		return errors.New("no handlers")
 	}
 
-	if err := validatedLookupAddr(addr); err != nil {
+	parsedAddr, err := buildLookupAddr(addr, r.topic)
+	if err != nil {
 		return err
 	}
 
@@ -317,12 +355,29 @@ func (r *Consumer) ConnectToNSQLookupd(addr string) error {
 
 	r.mtx.Lock()
 	for _, x := range r.lookupdHTTPAddrs {
-		if x == addr {
+		if x == parsedAddr {
 			r.mtx.Unlock()
 			return nil
 		}
 	}
-	r.lookupdHTTPAddrs = append(r.lookupdHTTPAddrs, addr)
+	r.lookupdHTTPAddrs = append(r.lookupdHTTPAddrs, parsedAddr)
+	if r.lookupdHttpClient == nil {
+		transport := &http.Transport{
+			DialContext: (&net.Dialer{
+				Timeout:   r.config.LookupdPollTimeout,
+				KeepAlive: 30 * time.Second,
+			}).DialContext,
+			ResponseHeaderTimeout: r.config.LookupdPollTimeout,
+			MaxIdleConns:          100,
+			IdleConnTimeout:       90 * time.Second,
+			TLSHandshakeTimeout:   10 * time.Second,
+		}
+		r.lookupdHttpClient = &http.Client{
+			Transport: transport,
+			Timeout:   r.config.LookupdPollTimeout,
+		}
+	}
+
 	numLookupd := len(r.lookupdHTTPAddrs)
 	r.mtx.Unlock()
 
@@ -348,20 +403,6 @@ func (r *Consumer) ConnectToNSQLookupds(addresses []string) error {
 		if err != nil {
 			return err
 		}
-	}
-	return nil
-}
-
-func validatedLookupAddr(addr string) error {
-	if strings.Contains(addr, "/") {
-		_, err := url.Parse(addr)
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-	if !strings.Contains(addr, ":") {
-		return errors.New("missing port")
 	}
 	return nil
 }
@@ -415,23 +456,7 @@ func (r *Consumer) nextLookupdEndpoint() string {
 	r.mtx.RUnlock()
 	r.lookupdQueryIndex = (r.lookupdQueryIndex + 1) % num
 
-	urlString := addr
-	if !strings.Contains(urlString, "://") {
-		urlString = "http://" + addr
-	}
-
-	u, err := url.Parse(urlString)
-	if err != nil {
-		panic(err)
-	}
-	if u.Path == "/" || u.Path == "" {
-		u.Path = "/lookup"
-	}
-
-	v, err := url.ParseQuery(u.RawQuery)
-	v.Add("topic", r.topic)
-	u.RawQuery = v.Encode()
-	return u.String()
+	return addr
 }
 
 type lookupResp struct {
@@ -462,7 +487,11 @@ retry:
 	r.log(LogLevelInfo, "querying nsqlookupd %s", endpoint)
 
 	var data lookupResp
-	err := apiRequestNegotiateV1("GET", endpoint, nil, &data)
+	headers := make(http.Header)
+	if r.config.AuthSecret != "" && r.config.LookupdAuthorization {
+		headers.Set("Authorization", fmt.Sprintf("Bearer %s", r.config.AuthSecret))
+	}
+	err := apiRequestNegotiateV1(r.lookupdHttpClient, "GET", endpoint, headers, &data)
 	if err != nil {
 		r.log(LogLevelError, "error querying nsqlookupd (%s) - %s", endpoint, err)
 		retries++
@@ -523,12 +552,12 @@ func (r *Consumer) ConnectToNSQD(addr string) error {
 
 	atomic.StoreInt32(&r.connectedFlag, 1)
 
-	logger, logLvl := r.getLogger()
-
 	conn := NewConn(addr, &r.config, &consumerConnDelegate{r})
-	conn.SetLogger(logger, logLvl,
-		fmt.Sprintf("%3d [%s/%s] (%%s)", r.id, r.topic, r.channel))
-
+	conn.SetLoggerLevel(r.getLogLevel())
+	format := fmt.Sprintf("%3d [%s/%s] (%%s)", r.id, r.topic, r.channel)
+	for index := range r.logger {
+		conn.SetLoggerForLevel(r.logger[index], LogLevel(index), format)
+	}
 	r.mtx.Lock()
 	_, pendingOk := r.pendingConnections[addr]
 	_, ok := r.connections[addr]
@@ -624,10 +653,15 @@ func (r *Consumer) DisconnectFromNSQD(addr string) error {
 // DisconnectFromNSQLookupd removes the specified `nsqlookupd` address
 // from the list used for periodic discovery.
 func (r *Consumer) DisconnectFromNSQLookupd(addr string) error {
+	parsedAddr, err := buildLookupAddr(addr, r.topic)
+	if err != nil {
+		return err
+	}
+
 	r.mtx.Lock()
 	defer r.mtx.Unlock()
 
-	idx := indexOf(addr, r.lookupdHTTPAddrs)
+	idx := indexOf(parsedAddr, r.lookupdHTTPAddrs)
 	if idx == -1 {
 		return ErrNotConnected
 	}
@@ -642,10 +676,8 @@ func (r *Consumer) DisconnectFromNSQLookupd(addr string) error {
 }
 
 func (r *Consumer) onConnMessage(c *Conn, msg *Message) {
-	atomic.AddInt64(&r.totalRdyCount, -1)
 	atomic.AddUint64(&r.messagesReceived, 1)
 	r.incomingMessages <- msg
-	r.maybeUpdateRDY(c)
 }
 
 func (r *Consumer) onConnMessageFinished(c *Conn, msg *Message) {
@@ -771,11 +803,10 @@ func (r *Consumer) startStopContinueBackoff(conn *Conn, signal backoffSignal) {
 	// max backoff/normal rate (by ensuring that we dont continually incr/decr
 	// the counter during a backoff period)
 	r.backoffMtx.Lock()
+	defer r.backoffMtx.Unlock()
 	if r.inBackoffTimeout() {
-		r.backoffMtx.Unlock()
 		return
 	}
-	defer r.backoffMtx.Unlock()
 
 	// update backoff state
 	backoffUpdated := false
@@ -879,19 +910,9 @@ func (r *Consumer) maybeUpdateRDY(conn *Conn) {
 		return
 	}
 
-	remain := conn.RDY()
-	lastRdyCount := conn.LastRDY()
 	count := r.perConnMaxInFlight()
-
-	// refill when at 1, or at 25%, or if connections have changed and we're imbalanced
-	if remain <= 1 || remain < (lastRdyCount/4) || (count > 0 && count < remain) {
-		r.log(LogLevelDebug, "(%s) sending RDY %d (%d remain from last RDY %d)",
-			conn, count, remain, lastRdyCount)
-		r.updateRDY(conn, count)
-	} else {
-		r.log(LogLevelDebug, "(%s) skip sending RDY %d (%d remain out of last RDY %d)",
-			conn, count, remain, lastRdyCount)
-	}
+	r.log(LogLevelDebug, "(%s) sending RDY %d", conn, count)
+	r.updateRDY(conn, count)
 }
 
 func (r *Consumer) rdyLoop() {
@@ -961,8 +982,14 @@ func (r *Consumer) sendRDY(c *Conn, count int64) error {
 		return nil
 	}
 
-	atomic.AddInt64(&r.totalRdyCount, -c.RDY()+count)
+	atomic.AddInt64(&r.totalRdyCount, count-c.RDY())
+
+	lastRDY := c.LastRDY()
 	c.SetRDY(count)
+	if count == lastRDY {
+		return nil
+	}
+
 	err := c.WriteCommand(Ready(int(count)))
 	if err != nil {
 		r.log(LogLevelError, "(%s) error sending RDY %d - %s", c.String(), count, err)
@@ -1162,7 +1189,7 @@ func (r *Consumer) exit() {
 }
 
 func (r *Consumer) log(lvl LogLevel, line string, args ...interface{}) {
-	logger, logLvl := r.getLogger()
+	logger, logLvl := r.getLogger(lvl)
 
 	if logger == nil {
 		return
@@ -1175,4 +1202,29 @@ func (r *Consumer) log(lvl LogLevel, line string, args ...interface{}) {
 	logger.Output(2, fmt.Sprintf("%-4s %3d [%s/%s] %s",
 		lvl, r.id, r.topic, r.channel,
 		fmt.Sprintf(line, args...)))
+}
+
+func buildLookupAddr(addr, topic string) (string, error) {
+	urlString := addr
+	if !strings.Contains(urlString, "://") {
+		urlString = "http://" + addr
+	}
+
+	u, err := url.Parse(urlString)
+	if err != nil {
+		return "", err
+	}
+
+	if u.Port() == "" {
+		return "", errors.New("missing port")
+	}
+
+	if u.Path == "/" || u.Path == "" {
+		u.Path = "/lookup"
+	}
+
+	v, err := url.ParseQuery(u.RawQuery)
+	v.Add("topic", topic)
+	u.RawQuery = v.Encode()
+	return u.String(), nil
 }

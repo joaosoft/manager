@@ -1,8 +1,6 @@
 package logger
 
-import (
-	"github.com/joaosoft/errors"
-)
+import "github.com/joaosoft/errors"
 
 type Addition struct {
 	message string
@@ -19,5 +17,5 @@ func NewAddition(message string) IAddition {
 
 // ToError
 func (addition *Addition) ToError() error {
-	return errors.New(errors.ErrorLevel, 0, addition.message)
+	return errors.New(errors.LevelError, 0, addition.message)
 }

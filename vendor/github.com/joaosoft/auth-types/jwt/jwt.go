@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	ErrorInvalidAuthorization   = errors.New(errors.ErrorLevel, http.StatusUnauthorized, "invalid authorization")
-	ErrorInvalidSignatureMethod = errors.New(errors.ErrorLevel, http.StatusUnauthorized, "invalid signature method")
-	ErrorInvalidJwtAlgorithm    = errors.New(errors.ErrorLevel, http.StatusUnauthorized, "invalid signature method")
-	ErrorClaimsValidation       = errors.New(errors.ErrorLevel, http.StatusUnauthorized, "error on claims validation")
+	ErrorInvalidAuthorization   = errors.New(errors.LevelError, http.StatusUnauthorized, "invalid authorization")
+	ErrorInvalidSignatureMethod = errors.New(errors.LevelError, http.StatusUnauthorized, "invalid signature method")
+	ErrorInvalidJwtAlgorithm    = errors.New(errors.LevelError, http.StatusUnauthorized, "invalid signature method")
+	ErrorClaimsValidation       = errors.New(errors.LevelError, http.StatusUnauthorized, "error on claims validation")
 )
 
 type KeyFunc func(*Token) (interface{}, error)
