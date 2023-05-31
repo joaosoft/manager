@@ -13,6 +13,6 @@ Redis Connections
 Work Queues (with FIFO and LIFO modes)
 
 Usage
-at https://github.com/joaosoft/go-manager/tree/master/example
+at https://github.com/joaosoft/manager/tree/master/example
 */
 package manager
