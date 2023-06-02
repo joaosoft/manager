@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"manager"
+	"github.com/joaosoft/go-manager"
 
 	"github.com/joaosoft/web"
 	"github.com/joaosoft/logger"

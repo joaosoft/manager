@@ -1,7 +1,7 @@
 package main
 
 import (
-	"manager"
+	"github.com/joaosoft/go-manager"
 
 	"github.com/joaosoft/logger"
 )
