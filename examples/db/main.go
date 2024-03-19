@@ -1,9 +1,8 @@
 package main
 
 import (
-	"github.com/joaosoft/manager"
-
 	"github.com/joaosoft/logger"
+	"github.com/joaosoft/manager"
 )
 
 var log = logger.NewLogDefault("manager", logger.InfoLevel)

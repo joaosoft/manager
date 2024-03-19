@@ -8,9 +8,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/joaosoft/manager"
-
 	"github.com/joaosoft/logger"
+	"github.com/joaosoft/manager"
 	"github.com/joaosoft/web"
 	"github.com/labstack/echo"
 	"github.com/nsqio/go-nsq"
