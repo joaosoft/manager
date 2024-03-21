@@ -8,43 +8,43 @@ import (
 func ParseLevel(level string) (Level, error) {
 	switch strings.ToLower(level) {
 	case "print":
-		return PrintLevel, nil
+		return LevelPrint, nil
 	case "panic":
-		return PanicLevel, nil
+		return LevelPanic, nil
 	case "fatal":
-		return FatalLevel, nil
+		return LevelFatal, nil
 	case "error":
-		return ErrorLevel, nil
+		return LevelError, nil
 	case "warn":
-		return WarnLevel, nil
+		return LevelWarn, nil
 	case "info":
-		return InfoLevel, nil
+		return LevelInfo, nil
 	case "debug":
-		return DebugLevel, nil
+		return LevelDebug, nil
 	case "none":
-		return NoneLevel, nil
+		return LevelNone, nil
 	default:
-		return DefaultLevel, fmt.Errorf("invalid level: %s, set default level: %s", level, DefaultLevel)
+		return LevelDefault, fmt.Errorf("invalid level: %s, set default level: %s", level, LevelDefault)
 	}
 }
 
 func (level Level) String() string {
 	switch level {
-	case PrintLevel:
+	case LevelPrint:
 		return "print"
-	case PanicLevel:
+	case LevelPanic:
 		return "panic"
-	case FatalLevel:
+	case LevelFatal:
 		return "fatal"
-	case ErrorLevel:
+	case LevelError:
 		return "error"
-	case WarnLevel:
+	case LevelWarn:
 		return "warn"
-	case InfoLevel:
+	case LevelInfo:
 		return "info"
-	case DebugLevel:
+	case LevelDebug:
 		return "debug"
-	case NoneLevel:
+	case LevelNone:
 		return "none"
 	default:
 		return "info"

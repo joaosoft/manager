@@ -5,8 +5,8 @@ go 1.20
 require (
 	github.com/alphazero/Go-Redis v0.0.0-20120924171622-a0637b154364
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/joaosoft/logger v0.0.0-20230531142923-753c0a3e836a
-	github.com/joaosoft/web v0.0.0-20230531143830-cd31d8a8c35e
+	github.com/joaosoft/logger v0.0.0-20240321164508-fe379344de3b
+	github.com/joaosoft/web v0.0.0-20240321165800-ab860bfd0ff2
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.4.0
 	github.com/lib/pq v1.10.9

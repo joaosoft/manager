@@ -22,7 +22,7 @@ func NewClient(options ...ClientOption) (*Client, error) {
 	config, err := NewClientConfig()
 
 	service := &Client{
-		logger:              logger.NewLogDefault("client", logger.WarnLevel),
+		logger:              logger.NewLogDefault("client", logger.LevelWarn),
 		multiAttachmentMode: MultiAttachmentModeZip,
 		config:              &config.Client,
 	}
@@ -103,4 +103,8 @@ func (c *Client) Send(request *Request) (*Response, error) {
 	fmt.Println(color.WithColor("Status[%d] Method[%s] Url[%s] on Start[%s] Elapsed[%s]", color.FormatBold, color.ForegroundCyan, color.BackgroundBlack, response.Status, request.Method, request.Address.Url, startTime.Format(TimeFormat), time.Since(startTime)))
 
 	return response, err
+}
+
+func (c *Client) Config() *ClientConfig {
+	return c.config
 }

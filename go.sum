@@ -137,10 +137,10 @@ github.com/joaosoft/color v0.0.0-20230531140514-b61c18d53e39/go.mod h1:AgsP+zahQ
 github.com/joaosoft/errors v0.0.0-20210812101433-f58fbcc4c1c8/go.mod h1:88WoG5oDStLTaG0n5e8NR0rKcugZttofMwD5cajQnTA=
 github.com/joaosoft/errors v0.0.0-20230531141818-ebb38600b462 h1:FH9gGVdSVA9ERuIlyYI4+U36FZtSMulMzID37MdLfGc=
 github.com/joaosoft/errors v0.0.0-20230531141818-ebb38600b462/go.mod h1:/dazfOGZSVYLVcrKzAJATbOhYm+/9BNoS5ZDzKz+ltI=
-github.com/joaosoft/logger v0.0.0-20230531142923-753c0a3e836a h1:O53XPtsnwnmBsGptCKSlupo0aNT5wG02AMqttSCE0vk=
-github.com/joaosoft/logger v0.0.0-20230531142923-753c0a3e836a/go.mod h1:xhFyqfT2p8E7qK6UXhv2U0tFuMOTeOR7Un1v5hoX7Gs=
-github.com/joaosoft/web v0.0.0-20230531143830-cd31d8a8c35e h1:6iZ5BpR2d45gA/0mFiVD/TdE2MrMzuep90ts8lHg6QU=
-github.com/joaosoft/web v0.0.0-20230531143830-cd31d8a8c35e/go.mod h1:o/AtSUa5ODbcVrYZr04rbedGYGsmOxta7OJD46YdbD0=
+github.com/joaosoft/logger v0.0.0-20240321164508-fe379344de3b h1:ZUoPEkz6DEnCoY6xUC+qB3oPTu6knCeJJC6/cNxRzs0=
+github.com/joaosoft/logger v0.0.0-20240321164508-fe379344de3b/go.mod h1:xhFyqfT2p8E7qK6UXhv2U0tFuMOTeOR7Un1v5hoX7Gs=
+github.com/joaosoft/web v0.0.0-20240321165800-ab860bfd0ff2 h1:yor4XpQOJimQpV2ZXIZzxQ8z2CseNilbQoauWS7d5mg=
+github.com/joaosoft/web v0.0.0-20240321165800-ab860bfd0ff2/go.mod h1:aePCnUMxlfLsMhT+2cYb3BitFjhNndQadZGy5q0WoRg=
 github.com/joaosoft/writers v0.0.0-20230531142123-83465954fcda h1:2qopUF9Y7UHkjFcZnmSD1nqlgQvZ0m15zdQL5UjemFE=
 github.com/joaosoft/writers v0.0.0-20230531142123-83465954fcda/go.mod h1:Ycm4M3XU0GDGFDdP03GTlBAgB8R8ZjevPKvZYdhpDeQ=
 github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024/go.mod h1:6v2b51hI/fHJwM22ozAgKL4VKDeJcHhJFhtBdhmNjmU=

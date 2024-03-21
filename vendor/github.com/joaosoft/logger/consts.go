@@ -4,16 +4,16 @@ type Level int
 type Prefix string
 
 const (
-	DefaultLevel = InfoLevel // DefaultLevel Level
+	LevelDefault = LevelInfo // LevelDefault Level
 
-	NoneLevel  Level = iota // NoneLevel, when the logging is disabled
-	PrintLevel              // PrintLevel, when it is a system message
-	PanicLevel              // PanicLevel, when there is no recover
-	FatalLevel              // FatalLevel, when the error is fatal to the application
-	ErrorLevel              // ErrorLevel, when there is a controlled error
-	WarnLevel               // WarnLevel, when there is a warning
-	InfoLevel               // InfoLevel, when it is a informational message
-	DebugLevel              // DebugLevel, when it is a debugging message
+	LevelNone  Level = iota // LevelNone, when the logging is disabled
+	LevelPrint              // LevelPrint, when it is a system message
+	LevelPanic              // LevelPanic, when there is no recover
+	LevelFatal              // LevelFatal, when the error is fatal to the application
+	LevelError              // LevelError, when there is a controlled error
+	LevelWarn               // LevelWarn, when there is a warning
+	LevelInfo               // LevelInfo, when it is a informational message
+	LevelDebug              // LevelDebug, when it is a debugging message
 
 	// Special Prefixes
 	LEVEL     Prefix = "{{LEVEL}}"     // Add the level value to the prefix

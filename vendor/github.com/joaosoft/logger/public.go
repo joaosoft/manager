@@ -1,6 +1,6 @@
 package logger
 
-var Instance = NewLoggerEmpty(InfoLevel)
+var Instance = NewLoggerEmpty(LevelInfo)
 
 func SetLevel(level Level) {
 	Instance.SetLevel(level)
@@ -98,31 +98,31 @@ func Fatalf(format string, arguments ...interface{}) IAddition {
 	return Instance.Fatalf(format, arguments)
 }
 
-func  IsDebugEnabled() bool {
-return Instance.IsDebugEnabled()
+func IsDebugEnabled() bool {
+	return Instance.IsDebugEnabled()
 }
 
-func  IsInfoEnabled() bool {
+func IsInfoEnabled() bool {
 	return Instance.IsInfoEnabled()
 }
 
-func  IsWarnEnabled() bool {
+func IsWarnEnabled() bool {
 	return Instance.IsWarnEnabled()
 }
 
-func  IsErrorEnabled() bool {
+func IsErrorEnabled() bool {
 	return Instance.IsErrorEnabled()
 }
 
-func  IsPanicEnabled() bool {
+func IsPanicEnabled() bool {
 	return Instance.IsPanicEnabled()
 }
 
-func  IsFatalEnabled() bool {
+func IsFatalEnabled() bool {
 	return Instance.IsFatalEnabled()
 }
 
-func  IsPrintEnabled() bool {
+func IsPrintEnabled() bool {
 	return Instance.IsPrintEnabled()
 }
 

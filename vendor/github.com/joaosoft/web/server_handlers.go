@@ -8,7 +8,7 @@ import (
 	"github.com/joaosoft/logger"
 )
 
-func (w *Server) handlerFile(ctx *Context) error {
+func (s *Server) handlerFile(ctx *Context) error {
 	logger.Infof("handling file %s", ctx.Request.Address.Full)
 
 	dir, _ := os.Getwd()

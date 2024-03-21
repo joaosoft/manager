@@ -13,14 +13,14 @@ import (
 	writer "github.com/joaosoft/writers"
 )
 
-var logger = NewLoggerEmpty(InfoLevel)
+var logger = NewLoggerEmpty(LevelInfo)
 
 // NewLogger ...
 func NewLogger(options ...LoggerOption) ILogger {
 	logger := &Logger{
 		writer:        []io.Writer{os.Stdout},
 		formatHandler: writer.JsonFormatHandler,
-		level:         InfoLevel,
+		level:         LevelInfo,
 		prefixes:      make(map[string]interface{}),
 		tags:          make(map[string]interface{}),
 		fields:        make(map[string]interface{}),
@@ -126,128 +126,128 @@ func (logger *Logger) clone() *Logger {
 
 func (logger *Logger) Print(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
-	logger.writeLog(PrintLevel, message)
+	logger.writeLog(LevelPrint, message)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) Debug(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
-	logger.writeLog(DebugLevel, message)
+	logger.writeLog(LevelDebug, message)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) Info(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
-	logger.writeLog(InfoLevel, msg)
+	logger.writeLog(LevelInfo, msg)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) Warn(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
-	logger.writeLog(WarnLevel, msg)
+	logger.writeLog(LevelWarn, msg)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) Error(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
-	logger.writeLog(ErrorLevel, msg)
+	logger.writeLog(LevelError, msg)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) Panic(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
-	logger.writeLog(PanicLevel, msg)
+	logger.writeLog(LevelPanic, msg)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) Fatal(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
-	logger.writeLog(FatalLevel, msg)
+	logger.writeLog(LevelFatal, msg)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) Printf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
-	logger.writeLog(PrintLevel, msg)
+	logger.writeLog(LevelPrint, msg)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) Debugf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
-	logger.writeLog(DebugLevel, msg)
+	logger.writeLog(LevelDebug, msg)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) Infof(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
-	logger.writeLog(InfoLevel, msg)
+	logger.writeLog(LevelInfo, msg)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) Warnf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
-	logger.writeLog(WarnLevel, msg)
+	logger.writeLog(LevelWarn, msg)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) Errorf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
-	logger.writeLog(ErrorLevel, msg)
+	logger.writeLog(LevelError, msg)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) Fatalf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
-	logger.writeLog(FatalLevel, msg)
+	logger.writeLog(LevelFatal, msg)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) Panicf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
-	logger.writeLog(PanicLevel, msg)
+	logger.writeLog(LevelPanic, msg)
 
 	return NewAddition(msg)
 }
 
 func (logger *Logger) IsDebugEnabled() bool {
-	return logger.level == DebugLevel
+	return logger.level == LevelDebug
 }
 
 func (logger *Logger) IsInfoEnabled() bool {
-	return logger.level == InfoLevel
+	return logger.level == LevelInfo
 }
 
 func (logger *Logger) IsWarnEnabled() bool {
-	return logger.level == WarnLevel
+	return logger.level == LevelWarn
 }
 
 func (logger *Logger) IsErrorEnabled() bool {
-	return logger.level == ErrorLevel
+	return logger.level == LevelError
 }
 
 func (logger *Logger) IsPanicEnabled() bool {
-	return logger.level == PanicLevel
+	return logger.level == LevelPanic
 }
 
 func (logger *Logger) IsFatalEnabled() bool {
-	return logger.level == FatalLevel
+	return logger.level == LevelFatal
 }
 
 func (logger *Logger) IsPrintEnabled() bool {
-	return logger.level == PrintLevel
+	return logger.level == LevelPrint
 }
 
 func (logger *Logger) writeLog(level Level, message interface{}) {
@@ -299,7 +299,7 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 			}
 
 		case TRACE:
-			if level <= ErrorLevel {
+			if level <= LevelError {
 				pc := make([]uintptr, 1)
 				runtime.Callers(4, pc)
 				function := runtime.FuncForPC(pc[0])
@@ -326,7 +326,7 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 			}
 
 		case FILE:
-			if level <= ErrorLevel {
+			if level <= LevelError {
 				pc := make([]uintptr, 1)
 				runtime.Callers(4, pc)
 				function := runtime.FuncForPC(pc[0])
@@ -336,7 +336,7 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 			}
 
 		case PACKAGE:
-			if level <= ErrorLevel {
+			if level <= LevelError {
 				pc := make([]uintptr, 1)
 				runtime.Callers(4, pc)
 				function := runtime.FuncForPC(pc[0])
@@ -346,7 +346,7 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 			}
 
 		case FUNCTION:
-			if level <= ErrorLevel {
+			if level <= LevelError {
 				pc := make([]uintptr, 1)
 				runtime.Callers(4, pc)
 				function := runtime.FuncForPC(pc[0])
@@ -356,7 +356,7 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 			}
 
 		case STACK:
-			if level <= ErrorLevel {
+			if level <= LevelError {
 				pc := make([]uintptr, 1)
 				runtime.Callers(4, pc)
 				function := runtime.FuncForPC(pc[0])

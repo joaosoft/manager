@@ -8,9 +8,9 @@ import (
 type ServerOption func(builder *Server)
 
 // Reconfigure ...
-func (w *Server) Reconfigure(options ...ServerOption) {
+func (s *Server) Reconfigure(options ...ServerOption) {
 	for _, option := range options {
-		option(w)
+		option(s)
 	}
 }
 

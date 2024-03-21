@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func (w *Server) NewRequest(conn net.Conn, server *Server) (*Request, error) {
+func (s *Server) NewRequest(conn net.Conn, server *Server) (*Request, error) {
 
 	request := &Request{
 		Base: Base{

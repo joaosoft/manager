@@ -31,7 +31,7 @@ func NewServer(options ...ServerOption) (*Server, error) {
 
 	service := &Server{
 		name:                "server",
-		logger:              logger.NewLogDefault("server", logger.WarnLevel),
+		logger:              logger.NewLogDefault("server", logger.LevelWarn),
 		routes:              make(Routes),
 		filters:             make(Filters),
 		middlewares:         make([]MiddlewareFunc, 0),
@@ -70,16 +70,16 @@ func NewServer(options ...ServerOption) (*Server, error) {
 	return service, nil
 }
 
-func (w *Server) AddMiddlewares(middlewares ...MiddlewareFunc) {
-	w.middlewares = append(w.middlewares, middlewares...)
+func (s *Server) AddMiddlewares(middlewares ...MiddlewareFunc) {
+	s.middlewares = append(s.middlewares, middlewares...)
 }
 
-func (w *Server) AddFilter(pattern string, position Position, middleware MiddlewareFunc, method Method, methods ...Method) {
-	w.filters.AddFilter(pattern, position, middleware, method, methods...)
+func (s *Server) AddFilter(pattern string, position Position, middleware MiddlewareFunc, method Method, methods ...Method) {
+	s.filters.AddFilter(pattern, position, middleware, method, methods...)
 }
 
-func (w *Server) AddRoute(method Method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
-	w.routes[method] = append(w.routes[method], Route{
+func (s *Server) AddRoute(method Method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) error {
+	s.routes[method] = append(s.routes[method], Route{
 		Method:      method,
 		Path:        path,
 		Regex:       ConvertPathToRegex(path),
@@ -91,20 +91,20 @@ func (w *Server) AddRoute(method Method, path string, handler HandlerFunc, middl
 	return nil
 }
 
-func (w *Server) AddRoutes(route ...*Route) error {
+func (s *Server) AddRoutes(route ...*Route) error {
 	for _, r := range route {
-		if err := w.AddRoute(r.Method, r.Path, r.Handler, r.Middlewares...); err != nil {
+		if err := s.AddRoute(r.Method, r.Path, r.Handler, r.Middlewares...); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (w *Server) AddNamespace(path string, middlewares ...MiddlewareFunc) *Namespace {
+func (s *Server) AddNamespace(path string, middlewares ...MiddlewareFunc) *Namespace {
 	return &Namespace{
 		Path:        path,
 		Middlewares: middlewares,
-		WebServer:   w,
+		WebServer:   s,
 	}
 }
 
@@ -121,12 +121,12 @@ func (n *Namespace) AddRoute(method Method, path string, handler HandlerFunc, mi
 	return n.WebServer.AddRoute(method, fmt.Sprintf("%s%s", path, path), handler, append(middleware, n.Middlewares...)...)
 }
 
-func (w *Server) SetErrorHandler(handler ErrorHandler) error {
-	w.errorhandler = handler
+func (s *Server) SetErrorHandler(handler ErrorHandler) error {
+	s.errorhandler = handler
 	return nil
 }
 
-func (w *Server) handleConnection(conn net.Conn) (err error) {
+func (s *Server) handleConnection(conn net.Conn) (err error) {
 	var ctx *Context
 	var length int
 	var handlerRoute HandlerFunc
@@ -138,20 +138,20 @@ func (w *Server) handleConnection(conn net.Conn) (err error) {
 	}()
 
 	// read response from connection
-	request, err := w.NewRequest(conn, w)
+	request, err := s.NewRequest(conn, s)
 	if err != nil {
-		w.logger.Errorf("error getting request: [%s]", err)
+		s.logger.Errorf("error getting request: [%s]", err)
 		return err
 	}
 
-	if w.logger.IsDebugEnabled() {
+	if s.logger.IsDebugEnabled() {
 		if request.Body != nil {
-			w.logger.Infof("[REQUEST BODY] [%s]", string(request.Body))
+			s.logger.Infof("[REQUEST BODY] [%s]", string(request.Body))
 		}
 	}
 
 	// create response for request
-	response := w.NewResponse(request)
+	response := s.NewResponse(request)
 
 	// create context with request and response
 	ctx = NewContext(startTime, request, response)
@@ -159,14 +159,14 @@ func (w *Server) handleConnection(conn net.Conn) (err error) {
 
 	// when options method, validate request route
 	if request.Method == MethodOptions {
-		if _, ok := w.routes[MethodOptions]; !ok {
+		if _, ok := s.routes[MethodOptions]; !ok {
 			var method Method
 			if val, ok := request.Headers[HeaderAccessControlRequestMethod]; ok {
 				method = Method(val[0])
 			}
-			route, err = w.GetRoute(method, request.Address.Url)
+			route, err = s.GetRoute(method, request.Address.Url)
 			if err != nil {
-				w.logger.Errorf("error getting route: [%s]", err)
+				s.logger.Errorf("error getting route: [%s]", err)
 				goto done
 			}
 
@@ -186,25 +186,25 @@ func (w *Server) handleConnection(conn net.Conn) (err error) {
 	}
 
 	// route of the Server
-	route, err = w.GetRoute(request.Method, request.Address.Url)
+	route, err = s.GetRoute(request.Method, request.Address.Url)
 	if err != nil {
-		w.logger.Errorf("error getting route: [%s]", err)
+		s.logger.Errorf("error getting route: [%s]", err)
 		goto done
 	}
 
 	// get url parameters
-	if err = w.LoadUrlParms(request, route); err != nil {
-		w.logger.Errorf("error loading url parameters: [%s]", err)
+	if err = s.LoadUrlParms(request, route); err != nil {
+		s.logger.Errorf("error loading url parameters: [%s]", err)
 		goto done
 	}
 
 	// execute before filters
 	handlerRoute = emptyHandler
-	if after, ok := w.filters[PositionAfter]; ok {
+	if after, ok := s.filters[PositionAfter]; ok {
 
-		filters, err := w.GetMatchedFilters(after, request.Method, request.Address.Url)
+		filters, err := s.GetMatchedFilters(after, request.Method, request.Address.Url)
 		if err != nil {
-			w.logger.Errorf("error getting route: [%s]", err)
+			s.logger.Errorf("error getting route: [%s]", err)
 			goto done
 		}
 
@@ -231,11 +231,11 @@ func (w *Server) handleConnection(conn net.Conn) (err error) {
 	}
 
 	// execute before filters
-	if between, ok := w.filters[PositionBetween]; ok {
+	if between, ok := s.filters[PositionBetween]; ok {
 
-		filters, err := w.GetMatchedFilters(between, request.Method, request.Address.Url)
+		filters, err := s.GetMatchedFilters(between, request.Method, request.Address.Url)
 		if err != nil {
-			w.logger.Errorf("error getting route: [%s]", err)
+			s.logger.Errorf("error getting route: [%s]", err)
 			goto done
 		}
 
@@ -248,10 +248,10 @@ func (w *Server) handleConnection(conn net.Conn) (err error) {
 	}
 
 	// execute middlewares
-	length = len(w.middlewares)
-	for i, _ := range w.middlewares {
-		if w.middlewares[length-1-i] != nil {
-			handlerRoute = w.middlewares[length-1-i](handlerRoute)
+	length = len(s.middlewares)
+	for i, _ := range s.middlewares {
+		if s.middlewares[length-1-i] != nil {
+			handlerRoute = s.middlewares[length-1-i](handlerRoute)
 		}
 	}
 
@@ -264,11 +264,11 @@ func (w *Server) handleConnection(conn net.Conn) (err error) {
 	}
 
 	// execute before filters
-	if before, ok := w.filters[PositionBefore]; ok {
+	if before, ok := s.filters[PositionBefore]; ok {
 
-		filters, err := w.GetMatchedFilters(before, request.Method, request.Address.Url)
+		filters, err := s.GetMatchedFilters(before, request.Method, request.Address.Url)
 		if err != nil {
-			w.logger.Errorf("error getting route: [%s]", err)
+			s.logger.Errorf("error getting route: [%s]", err)
 			goto done
 		}
 
@@ -282,23 +282,23 @@ func (w *Server) handleConnection(conn net.Conn) (err error) {
 
 	// run handlers with middleware's
 	if err = handlerRoute(ctx); err != nil {
-		w.logger.Errorf("error executing handler: [%s]", err)
+		s.logger.Errorf("error executing handler: [%s]", err)
 		goto done
 	}
 
 done:
 	if err != nil {
-		if er := w.errorhandler(ctx, err); er != nil {
-			w.logger.Errorf("error writing error: [error: %s] %s", err, er)
+		if er := s.errorhandler(ctx, err); er != nil {
+			s.logger.Errorf("error writing error: [error: %s] %s", err, er)
 		}
 	}
 
 	// write response to connection
 	if err = ctx.Response.write(); err != nil {
-		w.logger.Errorf("error writing response: [%s]", err)
+		s.logger.Errorf("error writing response: [%s]", err)
 	}
 
-	fmt.Println(color.WithColor("Server[%s] Status[%d] Address[%s] Method[%s] Url[%s] Protocol[%s] Start[%s] Elapsed[%s]", color.FormatBold, color.ForegroundCyan, color.BackgroundBlack, w.name, ctx.Response.Status, ctx.Request.IP, ctx.Request.Method, ctx.Request.Address.Url, ctx.Request.Protocol, startTime.Format(TimeFormat), time.Since(startTime)))
+	fmt.Println(color.WithColor("Server[%s] Status[%d] Address[%s] Method[%s] Url[%s] Protocol[%s] Start[%s] Elapsed[%s]", color.FormatBold, color.ForegroundCyan, color.BackgroundBlack, s.name, ctx.Response.Status, ctx.Request.IP, ctx.Request.Method, ctx.Request.Address.Url, ctx.Request.Protocol, startTime.Format(TimeFormat), time.Since(startTime)))
 
 	return nil
 }
@@ -312,9 +312,9 @@ func ConvertPathToRegex(path string) string {
 	return fmt.Sprintf("^%s$", regx)
 }
 
-func (w *Server) GetRoute(method Method, url string) (*Route, error) {
+func (s *Server) GetRoute(method Method, url string) (*Route, error) {
 
-	for _, route := range w.routes[method] {
+	for _, route := range s.routes[method] {
 		if regx, err := regexp.Compile(route.Regex); err != nil {
 			return nil, err
 		} else {
@@ -327,7 +327,7 @@ func (w *Server) GetRoute(method Method, url string) (*Route, error) {
 	return nil, ErrorNotFound
 }
 
-func (w *Server) GetMatchedFilters(filters map[Method][]*Filter, method Method, url string) ([]*Filter, error) {
+func (s *Server) GetMatchedFilters(filters map[Method][]*Filter, method Method, url string) ([]*Filter, error) {
 	matched := make([]*Filter, 0)
 
 	for _, filter := range filters[method] {
@@ -353,7 +353,7 @@ func (w *Server) GetMatchedFilters(filters map[Method][]*Filter, method Method, 
 	return matched, nil
 }
 
-func (w *Server) LoadUrlParms(request *Request, route *Route) error {
+func (s *Server) LoadUrlParms(request *Request, route *Route) error {
 
 	routeUrl := strings.Split(route.Path, "/")
 	url := strings.Split(request.Address.Url, "/")
@@ -371,7 +371,7 @@ func emptyHandler(ctx *Context) error {
 	return nil
 }
 
-func (w *Server) Start(waitGroup ...*sync.WaitGroup) error {
+func (s *Server) Start(waitGroup ...*sync.WaitGroup) error {
 	var wg *sync.WaitGroup
 
 	if len(waitGroup) == 0 {
@@ -381,49 +381,49 @@ func (w *Server) Start(waitGroup ...*sync.WaitGroup) error {
 		wg = waitGroup[0]
 	}
 
-	w.logger.Debug("executing Start")
+	s.logger.Debug("executing Start")
 	var err error
 
-	w.listener, err = net.Listen("tcp", w.config.Address)
+	s.listener, err = net.Listen("tcp", s.config.Address)
 	if err != nil {
-		w.logger.Errorf("error connecting to %s: %s", w.config.Address, err)
+		s.logger.Errorf("error connecting to %s: %s", s.config.Address, err)
 		return err
 	}
 
-	if w.config.Address == ":0" {
-		split := strings.Split(w.listener.Addr().String(), ":")
-		w.config.Address = fmt.Sprintf(":%s", split[len(split)-1])
+	if s.config.Address == ":0" {
+		split := strings.Split(s.listener.Addr().String(), ":")
+		s.config.Address = fmt.Sprintf(":%s", split[len(split)-1])
 	}
 
-	fmt.Println(color.WithColor("http Server [%s] started on [%s]", color.FormatBold, color.ForegroundRed, color.BackgroundBlack, w.name, w.config.Address))
+	fmt.Println(color.WithColor("http Server [%s] started on [%s]", color.FormatBold, color.ForegroundRed, color.BackgroundBlack, s.name, s.config.Address))
 
-	w.started = true
+	s.started = true
 	wg.Done()
 
 	for {
-		conn, err := w.listener.Accept()
-		w.logger.Info("accepted connection")
+		conn, err := s.listener.Accept()
+		s.logger.Info("accepted connection")
 		if err != nil {
-			w.logger.Errorf("error accepting connection: %s", err)
+			s.logger.Errorf("error accepting connection: %s", err)
 			continue
 		}
 
 		if conn == nil {
-			w.logger.Error("the connection isn't initialized")
+			s.logger.Error("the connection isn't initialized")
 			continue
 		}
 
-		go w.handleConnection(conn)
+		go s.handleConnection(conn)
 	}
 
 	return err
 }
 
-func (w *Server) Started() bool {
-	return w.started
+func (s *Server) Started() bool {
+	return s.started
 }
 
-func (w *Server) Stop(waitGroup ...*sync.WaitGroup) error {
+func (s *Server) Stop(waitGroup ...*sync.WaitGroup) error {
 	var wg *sync.WaitGroup
 
 	if len(waitGroup) == 0 {
@@ -435,13 +435,17 @@ func (w *Server) Stop(waitGroup ...*sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	w.logger.Debug("executing Stop")
+	s.logger.Debug("executing Stop")
 
-	if w.listener != nil {
-		w.listener.Close()
+	if s.listener != nil {
+		s.listener.Close()
 	}
 
-	w.started = false
+	s.started = false
 
 	return nil
+}
+
+func (s *Server) Config() *ServerConfig {
+	return s.config
 }

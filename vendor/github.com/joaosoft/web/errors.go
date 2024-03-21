@@ -32,8 +32,8 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("status=%d, message=%v", e.Status, e.Message)
 }
 
-func (w *Server) DefaultErrorHandler(ctx *Context, err error) error {
-	w.logger.Infof("handling error: %s", err)
+func (s *Server) DefaultErrorHandler(ctx *Context, err error) error {
+	s.logger.Infof("handling error: %s", err)
 
 	if e, ok := err.(*Error); ok {
 		return ctx.Response.JSON(e.Status, e)
